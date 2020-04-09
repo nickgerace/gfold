@@ -48,6 +48,7 @@ While not officially tested in a GitHub Action, its worth noting that the applic
 - Add installation instructions with releases available.
 - Add version checking, using the GitHub API ([example: bat](https://api.github.com/repos/sharkdp/bat/releases/latest)), to compare the latest tag with Clap's local version.
 
-## License
+## Additional Information
 
-This repository and its contents are under the MIT license.
+- Author: [Nick Gerace](https://nickgerace.dev)
+- License: MIT
