@@ -66,24 +66,3 @@ jobs:
         with:
           command: build
           args: --release
-      - name: Rename (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          cp target/release/gfold ./gfold-linux-amd64
-      - name: Rename (MacOS)
-        if: runner.os == 'MacOS'
-        run: |
-          cp target/release/gfold ./gfold-macos-amd64
-      - name: Rename (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          Copy-Item target\release\gfold.exe gfold-windows-amd64.exe
-      - name: Github Release
-        if: github.actor == 'nickgerace'
-        uses: ncipollo/release-action@v1.6.1
-        with:
-          tag: ${{ github.run_number }}
-          artifacts: "gfold*"
-          allowUpdates: "true"
-          token: ${{ secrets.GITHUB_TOKEN }}
-            
