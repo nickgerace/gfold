@@ -5,9 +5,21 @@
 
 ```gfold``` is a CLI application that helps you keep track of multiple Git repositories.
 
+```bash
+nick at hostname in ~/git
+% gfold
+bat         clean    master  git@github.com:sharkdp/bat.git
+exa         clean    master  git@github.com:ogham/exa.git
+gfold       unclean  master  git@github.com:nickgerace/gfold.git
+nushell     clean    master  git@github.com:nushell/nushell.git
+tockilator  clean    master  git@github.com:oxidecomputer/tockilator.git
+```
+
 ## Description and Motivation
 
 This app displays relevant information for multiple Git repositories in one directory or folder.
+It prints each repository in alphabetical order, and pads each result based on the longest directory name.
+
 By default, ```gfold``` looks at every Git repository in the current working directory.
 However, you can use the ```-p/--path``` flag to target another directory.
 
