@@ -63,4 +63,5 @@ While not officially tested in a GitHub Action, its worth noting that the applic
 ## Additional Information
 
 - Author: [Nick Gerace](https://nickgerace.dev)
+- [Contributors](https://github.com/nickgerace/gfold/graphs/contributors)
 - License: MIT
