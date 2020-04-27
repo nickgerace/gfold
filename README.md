@@ -31,10 +31,10 @@ One more thing: doing one or few things well includes not only the usual Linux/m
 
 ## Installation
 
-While there are no release builds at the moment, you can build ```gfold``` by executing the following.
+While there are no release builds at the moment, you can build and install ```gfold``` by executing the following.
 
 ```bash
-cargo build --release
+cargo install --git https://github.com/nickgerace/gfold
 ```
 
 ## Usage
