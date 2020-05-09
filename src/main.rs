@@ -5,6 +5,9 @@
  * License: MIT License
  */
 
+#[macro_use]
+extern crate prettytable;
+
 use clap::App;
 
 use std::env::current_dir;
