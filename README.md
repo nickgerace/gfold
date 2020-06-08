@@ -37,6 +37,8 @@ While there are no release builds at the moment, you can build and install ```gf
 cargo install --git https://github.com/nickgerace/gfold
 ```
 
+**Note**: There is now an experimental release build for Linux amd64. It's a statically linked binary using MUSL.
+
 ## Usage
 
 There's only two usage options at the moment (CWD or specified path), but you can use the ```--help``` flag for more details.
