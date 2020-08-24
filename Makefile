@@ -16,4 +16,4 @@ tree:
 
 static:
 	docker pull clux/muslrust
-	cd $(MAKEPATH); docker run -v $(MAKEPATH):/volume --rm -t clux/muslrust cargo build
+	cd $(MAKEPATH); docker run -v $(MAKEPATH):/volume --rm -t clux/muslrust cargo build --release
