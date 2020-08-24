@@ -1,6 +1,6 @@
 [package]
 name = "gfold"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 edition = "2018"
 
