@@ -7,9 +7,13 @@
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
 
-cargo-tree:
+run:
+	@cd $(MAKEPATH); cargo fmt
+	@cd $(MAKEPATH); cargo run -- -p ..
+
+tree:
 	cd $(MAKEPATH); cargo tree
 
-build-static:
+static:
 	docker pull clux/muslrust
 	cd $(MAKEPATH); docker run -v $(MAKEPATH):/volume --rm -t clux/muslrust cargo build
