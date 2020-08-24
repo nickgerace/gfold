@@ -5,7 +5,7 @@
  * License: MIT License
  */
 
-use git2::{ErrorClass, Repository, StatusOptions};
+use git2::{ErrorClass, ErrorCode, Repository, StatusOptions};
 use prettytable::{format, Table};
 
 use std::fs;
@@ -65,11 +65,18 @@ pub fn walk_dir(path: &Path) {
                 Some(head) => head,
                 None => "none",
             };
+
+            // If the repository is bare, then we skip it altogether. This addresses GitHub
+            // issue: https://github.com/nickgerace/gfold/issues/11
             let mut opts = StatusOptions::new();
             let statuses = match repo_obj.statuses(Some(&mut opts)) {
                 Ok(statuses) => statuses,
-                Err(e) => panic!("failed get statuses: {}", e),
+                Err(error) => match error.code() {
+                    ErrorCode::BareRepo => continue,
+                    _ => panic!("failed to get statuses: {}", error),
+                },
             };
+
             let formatted_name = match Path::new(&repo).strip_prefix(path) {
                 Ok(formatted_name) => formatted_name,
                 Err(e) => panic!("failed to format name from Path object: {}", e),
