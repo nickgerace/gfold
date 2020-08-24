@@ -6,12 +6,13 @@
 ```gfold``` is a CLI application that helps you keep track of multiple Git repositories.
 
 ```bash
-nick at hostname in ~/git
+user at hostname in ~/git
 % gfold
 bat         clean    master  git@github.com:sharkdp/bat.git
+bare-repo   bare     dev     https://github.com/<user>/bare-repo.git
 exa         clean    master  git@github.com:ogham/exa.git
-gfold       unclean  master  git@github.com:nickgerace/gfold.git
-nushell     clean    master  git@github.com:nushell/nushell.git
+gfold       unclean  async   git@github.com:nickgerace/gfold.git
+nushell     clean    master  https://github.com/nushell/nushell.git
 tockilator  clean    master  git@github.com:oxidecomputer/tockilator.git
 ```
 
@@ -29,11 +30,13 @@ This application aims to do one or few things well.
 
 ## Installation
 
-You can download a [release](https://github.com/nickgerace/gfold/releases), or you can build and install ```gfold``` by executing the following.
+The recommended method to install ```gfold``` is by executing the following...
 
 ```bash
 cargo install --git https://github.com/nickgerace/gfold
 ```
+
+There may be some [releases](https://github.com/nickgerace/gfold/releases) available, but there is not a consistent, CI/CD pipeline for this tool yet.
 
 ## Usage
 
@@ -53,18 +56,22 @@ gfold -p $HOME
 
 ## Compatibility
 
-```gfold``` should work on Linux amd64, macOS amd64, and Windows amd64.
 All external crates were vetted for multi-platform (including Windows 10) support.
+```gfold``` is tested for the following systems, but may work on more...
+
+- Linux amd64 (default, dynamically linked)
+- Linux amd64 (MUSL, statically linked)
+- macOS amd64
+- Windows 10 amd64
 
 ## Future Plans
 
 - Add recursive function to search sub-directories.
 - Replace sequential functions with async-await.
-- Add better error handling for edge cases (i.e. bare repositories).
 - Add version checking, using the GitHub API ([example: bat](https://api.github.com/repos/sharkdp/bat/releases/latest)), to compare the latest tag with Clap's local version.
 
 ## Additional Information
 
 - Author: [Nick Gerace](https://nickgerace.dev)
-- Contributors: [graph](https://github.com/nickgerace/gfold/graphs/contributors)
-- License: MIT
+- Contributors: [Graph](https://github.com/nickgerace/gfold/graphs/contributors)
+- License: [MIT](https://github.com/nickgerace/gfold/blob/master/LICENSE)

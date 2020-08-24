@@ -66,15 +66,20 @@ pub fn walk_dir(path: &Path) {
                 None => "none",
             };
 
-            // If the repository is bare, then we skip it altogether. This addresses GitHub
-            // issue: https://github.com/nickgerace/gfold/issues/11
+            // If the repository is bare, then we return "None". This addresses GitHub issue #11
+            // (https://github.com/nickgerace/gfold/issues/11), and special thanks to @yaahc_ for
+            // the recommendation to use a "match guard" here. We also use the Option type instead
+            // to handle the "None" case later.
             let mut opts = StatusOptions::new();
             let statuses = match repo_obj.statuses(Some(&mut opts)) {
-                Ok(statuses) => statuses,
-                Err(error) => match error.code() {
-                    ErrorCode::BareRepo => continue,
-                    _ => panic!("failed to get statuses: {}", error),
-                },
+                Ok(statuses) => Some(statuses),
+                Err(error)
+                    if error.code() == ErrorCode::BareRepo
+                        && error.class() == ErrorClass::Repository =>
+                {
+                    None
+                }
+                Err(error) => panic!("failed to get statuses: {}", error),
             };
 
             let formatted_name = match Path::new(&repo).strip_prefix(path) {
@@ -86,10 +91,12 @@ pub fn walk_dir(path: &Path) {
                 None => "none",
             };
 
-            if statuses.is_empty() {
-                table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url]);
-            } else {
-                table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url]);
+            match statuses {
+                Some(statuses) if statuses.is_empty() => {
+                    table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
+                }
+                Some(_) => table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url]),
+                None => table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url]),
             };
         }
     }
