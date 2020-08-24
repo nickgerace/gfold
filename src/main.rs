@@ -17,7 +17,7 @@ use gfold::walk_dir;
 
 fn main() {
     let matches = App::new("gfold")
-        .version("0.2.1")
+        .version("0.2.2")
         .about(
             "https://github.com/nickgerace/gfold\n\n\
             This application helps your organize multiple Git repositories via CLI.\n\
