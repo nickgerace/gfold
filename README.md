@@ -80,12 +80,10 @@ All external crates were vetted for multi-platform (including Windows 10) suppor
 - macOS amd64
 - Windows 10 amd64
 
-## Future Plans
+## Changelog
 
-- Add recursive function to search sub-directories.
-- Replace sequential functions with async-await.
-- Add version checking, using the GitHub API ([example: bat](https://api.github.com/repos/sharkdp/bat/releases/latest)), to compare the latest tag with the CLI's local version string.
-- Create a consistent [CHANGELOG.md](https://keepachangelog.com/).
+Please check out [CHANGELOG.md](https://github.com/nickgerace/gfold/blob/master/CHANGELOG.md) for more information.
+It follows the [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## Additional Information
 
@@ -94,6 +92,6 @@ All external crates were vetted for multi-platform (including Windows 10) suppor
 
 ## Special Thanks
 
-- [yaahc](https://github.com/yaahc) (mentoring)
-- [orhun](https://github.com/orhun) (maintaining AUR packages)
-- [jrcichra](https://github.com/jrcichra) (adding multi-OS support to the original CI pipeline)
+- [@yaahc](https://github.com/yaahc) (mentoring)
+- [@orhun](https://github.com/orhun) (maintaining AUR packages)
+- [@jrcichra](https://github.com/jrcichra) (adding multi-OS support to the original CI pipeline)
