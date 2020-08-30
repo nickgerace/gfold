@@ -33,6 +33,10 @@ test:
 tree:
 	cd $(MAKEPATH); cargo tree
 
+tag:
+	cd $(MAKEPATH); git tag $(VERSION)
+	cd $(MAKEPATH); git push --tags origin master
+
 grep-version:
 	@cd $(MAKEPATH); grep -r \
 		--exclude-dir={target,.git} \
