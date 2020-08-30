@@ -36,7 +36,7 @@ pub fn walk_dir(path: &Path) {
             .build(),
     );
 
-    // TODO: Make this an asychronous function and sort afterwards.
+    // FIXME: Make this an asychronous function and sort afterwards.
     if !repos.is_empty() {
         repos.sort();
         for repo in repos {

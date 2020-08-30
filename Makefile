@@ -8,21 +8,41 @@ MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
 VERSION:=0.3.0
 
-run: fmt
+run:
 	@cd $(MAKEPATH); cargo run -- -p ..
 
-build: fmt
-	@cd $(MAKEPATH); cargo build
+install:
+	cargo install --git https://github.com/nickgerace/gfold
+
+build: fmt test
+	cd $(MAKEPATH); cargo build
+
+build-static: fmt test
+	docker pull clux/muslrust
+	cd $(MAKEPATH); docker run -v $(MAKEPATH):/volume --rm -t clux/muslrust cargo build --release
+
+build-release: fmt test
+	cd $(MAKEPATH); cargo build --release
 
 fmt:
-	@cd $(MAKEPATH); cargo fmt
+	cd $(MAKEPATH); cargo fmt
+
+test:
+	cd $(MAKEPATH); cargo test
 
 tree:
 	cd $(MAKEPATH); cargo tree
 
-static:
-	docker pull clux/muslrust
-	cd $(MAKEPATH); docker run -v $(MAKEPATH):/volume --rm -t clux/muslrust cargo build --release
+grep-version:
+	@cd $(MAKEPATH); grep -r \
+		--exclude-dir={target,.git} \
+		--exclude=Cargo.lock \
+		--color=always \
+		$(VERSION) $(MAKEPATH)
 
-version:
-	grep -r --exclude-dir=target $(VERSION) $(MAKEPATH)
+grep-fixme:
+	@cd $(MAKEPATH); grep -r \
+		--exclude-dir={target,.git} \
+		--exclude=Cargo.lock \
+		--color=always \
+		FIXME $(MAKEPATH)
