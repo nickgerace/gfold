@@ -30,11 +30,27 @@ This application aims to do one or few things well.
 
 ## Installation
 
-The recommended method to install ```gfold``` is by executing the following...
+There are multiple ways to install ```gfold```, but here are the recommended methods.
+
+### AUR (Arch User Repository)
+
+This application is available for all Linux distributions that support installing packages from the AUR.
+Special thanks to [orhun](https://github.com/orhun) for maintaining these packages.
+
+- [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
+- [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
+
+Note: many folks chose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (e.g: yay -S gfold), in order to install their AUR packages.
+
+### Cargo Install
+
+You can build from source with ```cargo``` by executing the following...
 
 ```bash
 cargo install --git https://github.com/nickgerace/gfold
 ```
+
+### Other
 
 There may be some [releases](https://github.com/nickgerace/gfold/releases) available, but there is not a consistent, CI/CD pipeline for this tool yet.
 
@@ -68,10 +84,17 @@ All external crates were vetted for multi-platform (including Windows 10) suppor
 
 - Add recursive function to search sub-directories.
 - Replace sequential functions with async-await.
-- Add version checking, using the GitHub API ([example: bat](https://api.github.com/repos/sharkdp/bat/releases/latest)), to compare the latest tag with Clap's local version.
+- Add version checking, using the GitHub API ([example: bat](https://api.github.com/repos/sharkdp/bat/releases/latest)), to compare the latest tag with the CLI's local version string.
+- Create a consistent [CHANGELOG.md](https://keepachangelog.com/).
 
 ## Additional Information
 
 - Author: [Nick Gerace](https://nickgerace.dev)
-- Contributors: [Graph](https://github.com/nickgerace/gfold/graphs/contributors)
 - License: [MIT](https://github.com/nickgerace/gfold/blob/master/LICENSE)
+- [Contributors](https://github.com/nickgerace/gfold/graphs/contributors)
+
+## Special Thanks
+
+- @yaahc (mentoring)
+- @orhun (maintaining AUR packages)
+- @jrcichra (adding multi-OS support to the original CI pipeline)
