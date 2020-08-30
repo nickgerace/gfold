@@ -1,6 +1,6 @@
 # gfold
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache2.0-yellow.svg)](https://opensource.org/licenses/apache2.0)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fnickgerace%2Fgfold%2Fbadge&style=flat)](https://actions-badge.atrox.dev/nickgerace/gfold/goto)
 
 ```gfold``` is a CLI application that helps you keep track of multiple Git repositories.
@@ -90,11 +90,10 @@ All external crates were vetted for multi-platform (including Windows 10) suppor
 ## Additional Information
 
 - Author: [Nick Gerace](https://nickgerace.dev)
-- License: [MIT](https://github.com/nickgerace/gfold/blob/master/LICENSE)
-- [Contributors](https://github.com/nickgerace/gfold/graphs/contributors)
+- License: [Apache 2.0](https://github.com/nickgerace/gfold/blob/master/LICENSE)
 
 ## Special Thanks
 
-- @yaahc (mentoring)
-- @orhun (maintaining AUR packages)
-- @jrcichra (adding multi-OS support to the original CI pipeline)
+- [yaahc](https://github.com/yaahc) (mentoring)
+- [orhun](https://github.com/orhun) (maintaining AUR packages)
+- [jrcichra](https://github.com/jrcichra) (adding multi-OS support to the original CI pipeline)

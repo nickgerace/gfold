@@ -2,7 +2,7 @@
  * gfold
  * https://github.com/nickgerace/gfold
  * Author: Nick Gerace
- * License: MIT License
+ * License: Apache 2.0
  */
 
 #[macro_use]
