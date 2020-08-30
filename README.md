@@ -8,12 +8,12 @@
 ```bash
 user at hostname in ~/git
 % gfold
-bat         clean    master  git@github.com:sharkdp/bat.git
-bare-repo   bare     dev     https://github.com/<user>/bare-repo.git
-exa         clean    master  git@github.com:ogham/exa.git
-gfold       unclean  async   git@github.com:nickgerace/gfold.git
-nushell     clean    master  https://github.com/nushell/nushell.git
-tockilator  clean    master  git@github.com:oxidecomputer/tockilator.git
+great-journey      unclean  main      git@github.com:truth/great-journey.git
+installation-zero  bare     main      https://github.com/the-ark/installation-zero.git
+sierra             clean    dev       https://github.com/forward-unto-dawn/sierra.git
+spark              clean    issue343  git@github.com:guilty/spark.git
+tartarus           unclean  delta     git@github.com:covenant/tartarus.git
+voi                clean    main      https://github.com/earth/voi.git
 ```
 
 ## Description and Motivation
@@ -40,7 +40,7 @@ Special thanks to [orhun](https://github.com/orhun) for maintaining these packag
 - [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
 - [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
 
-Note: many folks chose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (e.g: yay -S gfold), in order to install their AUR packages.
+**Note**: many folks chose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
 
 ### Cargo Install
 
@@ -49,10 +49,6 @@ You can build from source with ```cargo``` by executing the following...
 ```bash
 cargo install --git https://github.com/nickgerace/gfold
 ```
-
-### Other
-
-There may be some [releases](https://github.com/nickgerace/gfold/releases) available, but there is not a consistent, CI/CD pipeline for this tool yet.
 
 ## Usage
 
@@ -75,8 +71,8 @@ gfold -p $HOME
 All external crates were vetted for multi-platform (including Windows 10) support.
 ```gfold``` is tested for the following systems, but may work on more...
 
-- Linux amd64 (default, dynamically linked)
-- Linux amd64 (MUSL, statically linked)
+- Linux amd64 (dynamically linked)
+- Linux amd64 (statically linked using MUSL)
 - macOS amd64
 - Windows 10 amd64
 

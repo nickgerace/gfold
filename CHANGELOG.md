@@ -10,14 +10,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Changelog from [@nickgerace](https://github.com/nickgerace).
-- Tags automation from from [@nickgerace](https://github.com/nickgerace).
+- Tags automation from [@nickgerace](https://github.com/nickgerace).
+
+### Changed
+
+- Example output to use mythical repositories from [@nickgerace](https://github.com/nickgerace).
+
+### Removed
+
+- Tag v0.3.0 (duplicate of 0.3.0 with the "v" character) from [@nickgerace](https://github.com/nickgerace).
+- All GitHub releases before 0.3.1 from [@nickgerace](https://github.com/nickgerace).
+- Releases information from README from [@nickgerace](https://github.com/nickgerace).
 
 ## [0.3.1] - 2020-08-30
 
 ### Added
 
 - Add AUR installation documentation from [@nickgerace](https://github.com/nickgerace).
-- Add AUR packages from from [@orhun](https://github.com/orhun).
+- Add AUR packages from [@orhun](https://github.com/orhun).
 
 ### Changed
 
