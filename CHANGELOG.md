@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+The latest version contains all changes.
+
+## [0.4.0] - 2020-08-31
+
 ### Added
 
 - Changelog from [@nickgerace](https://github.com/nickgerace).
@@ -16,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Example output to use mythical repositories from [@nickgerace](https://github.com/nickgerace).
 - Path flag to positional argument from [@nickgerace](https://github.com/nickgerace).
+- Switched to structopt library for CLI parsing from [@nickgerace](https://github.com/nickgerace).
 
 ### Removed
 

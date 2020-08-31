@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.3.1
+VERSION:=0.4.0
 
 run:
 	@cd $(MAKEPATH); cargo run -- ..
@@ -40,7 +40,6 @@ tag:
 grep-version:
 	@cd $(MAKEPATH); grep -r \
 		--exclude-dir={target,.git} \
-		--exclude=Cargo.lock \
 		--color=always \
 		$(VERSION) $(MAKEPATH)
 
