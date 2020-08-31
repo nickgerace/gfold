@@ -9,7 +9,7 @@ NAME:=gfold
 VERSION:=0.3.1
 
 run:
-	@cd $(MAKEPATH); cargo run -- -p ..
+	@cd $(MAKEPATH); cargo run -- ..
 
 install:
 	cargo install --git https://github.com/nickgerace/gfold

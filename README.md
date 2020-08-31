@@ -22,7 +22,7 @@ This app displays relevant information for multiple Git repositories in one dire
 It prints each repository in alphabetical order, and pads each result based on the longest directory name.
 
 By default, ```gfold``` looks at every Git repository in the current working directory.
-However, you can use the ```-p/--path``` flag to target another directory.
+However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument.
 
 While this tool might seem limited in scope and purpose, that is by design.
 Features, such as recursive search and async-await support, are future goals.
@@ -40,7 +40,7 @@ Special thanks to [orhun](https://github.com/orhun) for maintaining these packag
 - [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
 - [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
 
-**Note**: many folks chose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
+**Note**: many folks choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
 
 ### Cargo Install
 
@@ -62,8 +62,10 @@ Here are some example invocations...
 
 ```bash
 gfold
-gfold -p ..
-gfold -p $HOME
+gfold ..
+gfold $HOME
+gfold /this/is/an/absolute/path
+gfold ../../this/is/a/relative/path
 ```
 
 ## Compatibility
