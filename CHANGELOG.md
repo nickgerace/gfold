@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Example output to use mythical repositories from [@nickgerace](https://github.com/nickgerace).
+- Path flag to positional argument from [@nickgerace](https://github.com/nickgerace).
 
 ### Removed
 
