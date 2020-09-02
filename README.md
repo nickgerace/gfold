@@ -35,19 +35,19 @@ There are multiple ways to install ```gfold```, but here are the recommended met
 ### AUR (Arch User Repository)
 
 This application is available for all Linux distributions that support installing packages from the AUR.
-Special thanks to [orhun](https://github.com/orhun) for maintaining these packages.
+Special thanks to [orhun](https://github.com/orhun) for [maintaining](https://github.com/orhun/PKGBUILDs) these packages.
 
 - [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
 - [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
 
-**Note**: many folks choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
+**Note**: many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
 
 ### Cargo Install
 
 You can build from source with ```cargo``` by executing the following...
 
 ```bash
-cargo install --git https://github.com/nickgerace/gfold
+cargo install --git https://github.com/nickgerace/gfold --tag 0.4.0
 ```
 
 ## Usage
