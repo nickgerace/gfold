@@ -18,15 +18,12 @@ voi                clean    main      https://github.com/earth/voi.git
 
 ## Description and Motivation
 
-This app displays relevant information for multiple Git repositories in one directory or folder.
-It prints each repository in alphabetical order, and pads each result based on the longest directory name.
+This app displays relevant information for multiple Git repositories in one, or multiple, directories.
+While this tool might seem limited in scope and purpose, that is by design.
 
+It prints each repository in alphabetical order, and pads each result based on the longest directory, branch, and status string.
 By default, ```gfold``` looks at every Git repository in the current working directory.
 However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument.
-
-While this tool might seem limited in scope and purpose, that is by design.
-Features, such as recursive search and async-await support, are future goals.
-This application aims to do one or few things well.
 
 ## Installation
 
@@ -47,12 +44,12 @@ Special thanks to [orhun](https://github.com/orhun) for [maintaining](https://gi
 You can build from source with ```cargo``` by executing the following...
 
 ```bash
-cargo install --git https://github.com/nickgerace/gfold --tag 0.4.0
+cargo install --git https://github.com/nickgerace/gfold --tag 0.5.0
 ```
 
 ## Usage
 
-There's only two usage options at the moment (CWD or specified path), but you can use the ```--help``` flag for more details.
+For all the ways on how to use this application, pass in the ```--help``` flag.
 
 ```bash
 gfold --help
@@ -66,6 +63,8 @@ gfold ..
 gfold $HOME
 gfold /this/is/an/absolute/path
 gfold ../../this/is/a/relative/path
+gfold ~/repositories/ -r
+gfold -r $HOME/repositories
 ```
 
 ## Compatibility
