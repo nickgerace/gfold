@@ -8,12 +8,14 @@
 #[macro_use]
 extern crate prettytable;
 
-use std::env::current_dir;
-use std::path::PathBuf;
 use structopt::StructOpt;
 
+use std::env::current_dir;
+use std::path::PathBuf;
+
 mod gfold;
-use gfold::walk_dir;
+mod util;
+use gfold::harness;
 
 #[derive(StructOpt, Debug)]
 #[structopt(
@@ -24,28 +26,22 @@ By default, it displays relevant information for all repos in the current\n\
 working directory."
 )]
 struct Opt {
-    #[structopt(
-        name = "path",
-        help = "Target a different directory",
-        parse(from_os_str)
-    )]
+    #[structopt(parse(from_os_str), help = "Target a different directory")]
     path: Option<PathBuf>,
+    #[structopt(short, long, help = "Search recursively")]
+    recursive: bool,
+    #[structopt(short, long, help = "Toggle to skip sorting")]
+    skip_sort: bool,
 }
 
 fn main() {
-    let mut path = match current_dir() {
-        Ok(path) => path,
-        Err(e) => panic!("failed to get CWD: {}", e),
-    };
+    let mut path = current_dir().expect("failed to get CWD");
 
     let opt = Opt::from_args();
     if let Some(provided_path) = opt.path {
         path.push(provided_path)
     };
 
-    path = match path.canonicalize() {
-        Ok(path) => path,
-        Err(e) => panic!("failed to canonicalize path: {}", e),
-    };
-    walk_dir(&path);
+    path = path.canonicalize().expect("failed to canonicalize path");
+    harness(&path, opt.recursive, opt.skip_sort);
 }

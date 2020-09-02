@@ -11,56 +11,83 @@ use prettytable::{format, Table};
 use std::fs;
 use std::path::Path;
 
-pub fn walk_dir(path: &Path) {
-    let paths = match fs::read_dir(&path) {
-        Ok(paths) => paths,
-        Err(e) => panic!("failed to get sub directories: {}", e),
-    };
+use crate::util::is_git_repo;
 
-    let mut repos = Vec::new();
-    for item in paths {
-        let temp = match &item {
-            Ok(temp) => temp.path(),
-            Err(e) => panic!("failed to get DirEntry: {}", e),
-        };
-        if temp.as_path().is_dir() && is_git_repo(temp.as_path()) {
-            repos.push(temp.as_path().to_owned());
+struct TableWrapper {
+    path_string: String,
+    table: Table,
+}
+
+struct Results {
+    recursive: bool,
+    tables: Vec<TableWrapper>,
+}
+
+impl Results {
+    fn print_results(self) {
+        if self.recursive && self.tables.len() > 1 {
+            for table_wrapper in self.tables {
+                println!("\n{}", table_wrapper.path_string);
+                table_wrapper.table.printstd();
+            }
+        } else if self.tables.len() == 1 {
+            self.tables[0].table.printstd();
+        } else {
+            println!("There are no results to display.");
         }
     }
 
-    let mut table = Table::new();
-    table.set_format(
-        format::FormatBuilder::new()
-            .column_separator(' ')
-            .padding(0, 1)
-            .build(),
-    );
+    fn sort_results(&mut self) {
+        // FIXME: find a way to do this without "clone()".
+        self.tables.sort_by_key(|table| table.path_string.clone());
+    }
 
-    // FIXME: Make this an asychronous function and sort afterwards.
-    if !repos.is_empty() {
+    fn execute_on_path(&mut self, path: &Path) {
+        // FIXME: find ways to add concurrent programming (tokio, async, etc.) to this section.
+        // In such implementation, sort the results at the end after concurrent operations conclude.
+        let path_entries = fs::read_dir(path).expect("failed to get sub directories");
+        let mut repos = Vec::new();
+
+        for entry in path_entries {
+            let subpath = &entry.expect("failed to get DirEntry").path();
+            if subpath.is_dir() {
+                if is_git_repo(subpath) {
+                    repos.push(subpath.to_owned());
+                } else if self.recursive {
+                    self.execute_on_path(&subpath);
+                }
+            }
+        }
+        if repos.is_empty() {
+            return;
+        }
+
+        // Alphabetically sort the repository paths, and create a mutable Table object. For
+        // every path, we will create a Table containing its results.
         repos.sort();
-        for repo in repos {
-            let repo_obj = match Repository::open(&repo) {
-                Ok(repo_obj) => repo_obj,
-                Err(e) => panic!("failed to open: {}", e),
-            };
+        let mut table = Table::new();
+        table.set_format(
+            format::FormatBuilder::new()
+                .column_separator(' ')
+                .padding(0, 1)
+                .build(),
+        );
 
-            // This match cascade combats the error: remote 'origin' does not exist.
+        for repo in repos {
+            let repo_obj = Repository::open(&repo).expect("failed to open");
+
+            // This match cascade combats the error: remote 'origin' does not exist. If we
+            // encounter this specific error, then we "continue" to the next iteration.
             let origin = match repo_obj.find_remote("origin") {
                 Ok(origin) => origin,
-                Err(e) => match e.class() {
-                    ErrorClass::Config => continue,
-                    e => panic!("{:?}", e),
-                },
+                Err(error) if error.class() == ErrorClass::Config => continue,
+                Err(error) => panic!("{}", error),
             };
             let url = match origin.url() {
                 Some(url) => url,
                 None => "none",
             };
-            let head = match repo_obj.head() {
-                Ok(head) => head,
-                Err(e) => panic!("failed get head: {}", e),
-            };
+            let head = repo_obj.head().expect("failed get head");
             let branch = match head.shorthand() {
                 Some(head) => head,
                 None => "none",
@@ -82,10 +109,9 @@ pub fn walk_dir(path: &Path) {
                 Err(error) => panic!("failed to get statuses: {}", error),
             };
 
-            let formatted_name = match Path::new(&repo).strip_prefix(path) {
-                Ok(formatted_name) => formatted_name,
-                Err(e) => panic!("failed to format name from Path object: {}", e),
-            };
+            let formatted_name = Path::new(&repo)
+                .strip_prefix(path)
+                .expect("failed to format name from Path object");
             let str_name = match formatted_name.to_str() {
                 Some(x) => x,
                 None => "none",
@@ -99,58 +125,64 @@ pub fn walk_dir(path: &Path) {
                 None => table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url]),
             };
         }
-    }
 
-    table.printstd();
+        // Only perform the following actions if the Table object is not empty. We only want
+        // results for directories that contain repositories. Push the resulting TableWrapper
+        // object aftering creating a heap-allocated string for the path name.
+        if !table.is_empty() {
+            let path_string = path
+                .to_str()
+                .expect("could not convert &Path object to &str object");
+            let table_wrapper = TableWrapper {
+                path_string: path_string.to_string(),
+                table: table,
+            };
+            self.tables.push(table_wrapper);
+        }
+    }
 }
 
-fn is_git_repo(target: &Path) -> bool {
-    let repo = match Repository::open(target) {
-        Ok(_) => true,
-        Err(_) => false,
+pub fn harness(path: &Path, recursive: bool, skip_sort: bool) {
+    let mut results = Results {
+        recursive: recursive,
+        tables: Vec::new(),
     };
-    return repo;
+    results.execute_on_path(&path);
+    if !skip_sort {
+        results.sort_results();
+    }
+    results.print_results();
 }
 
 #[cfg(test)]
 mod tests {
-    use super::walk_dir;
+    use super::harness;
     use std::env::current_dir;
 
     #[test]
     fn current_directory() {
-        let current_dir = match current_dir() {
-            Ok(current_dir) => current_dir,
-            Err(e) => panic!("failed to get CWD: {}", e),
-        };
-        walk_dir(&current_dir);
+        let current_dir = current_dir().expect("failed to get CWD");
+        harness(&current_dir, false, false);
     }
 
     #[test]
     fn parent_directory() {
-        let mut current_dir = match current_dir() {
-            Ok(current_dir) => current_dir,
-            Err(e) => panic!("failed to get CWD: {}", e),
-        };
+        let mut current_dir = current_dir().expect("failed to get CWD");
         current_dir.pop();
-        walk_dir(&current_dir);
+        harness(&current_dir, false, false);
+    }
+
+    #[test]
+    fn parent_directory_recursive() {
+        let mut current_dir = current_dir().expect("failed to get CWD");
+        current_dir.pop();
+        harness(&current_dir, true, false);
+    }
+
+    #[test]
+    fn parent_directory_recursive_skip_sort() {
+        let mut current_dir = current_dir().expect("failed to get CWD");
+        current_dir.pop();
+        harness(&current_dir, true, true);
     }
 }
-
-/*
-FIXME: this section is for the eventual recursive function. It's a proof of concept and is
-not "safe" or "good" code yet.
-
-if is_git_repo(Path::new(temp)) {
-    // Print output or store in data sctructure.
-} else {
-    walk_dir(Path::new(temp), &depth + 1);
-}
-
-// Print the current directory, not the current working directory.
-let components: Vec<_> = path.components().map(|comp| comp.as_os_str()).collect();
-println!("{}{}", " ".repeat(depth * 2), components.last().unwrap().to_str().unwrap().bold());
-
-// If padding is used on the left-side of the terminal emulator, then add it here.
-let pad = (depth * 2) + 2;
-*/

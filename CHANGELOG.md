@@ -7,7 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Added
+
+- Recursive search feature and flag from [@nickgerace](https://github.com/nickgerace).
+- Skip sort feature and flag from [@nickgerace](https://github.com/nickgerace).
+- Unit tests for recursive search and skip sort from [@nickgerace](https://github.com/nickgerace).
+- AUR PKGBUILD GitHub repository to README from [@nickgerace](https://github.com/nickgerace).
+- Results and TableWrapper structs, and relevant functions, from [@nickgerace](https://github.com/nickgerace).
+- Three methods for Results struct (printing/sorting/populating results) from [@nickgerace](https://github.com/nickgerace).
+- Make targets for ```run-recursive``` and ```install-local``` from [@nickgerace](https://github.com/nickgerace).
+
+### Changed
+
+- Switch from ```walk_dir``` function to object-driven harness for execution from [@nickgerace](https://github.com/nickgerace).
+- Move ```walk_dir``` function logic to ```Results``` method from [@nickgerace](https://github.com/nickgerace).
+- Function ```is_git_repo``` to its own file from [@nickgerace](https://github.com/nickgerace).
+- Any unnecessary match block to use "expect" instead from [@nickgerace](https://github.com/nickgerace).
+- Cargo install to use a specific tag from [@nickgerace](https://github.com/nickgerace).
+- Version upgrade workflow to Makefile from [@nickgerace](https://github.com/nickgerace).
+
+### Removed
+
+- Leftover "FIXME" comments for recursive search ideas from [@nickgerace](https://github.com/nickgerace).
 
 ## [0.4.0] - 2020-08-31
 

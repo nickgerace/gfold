@@ -11,8 +11,14 @@ VERSION:=0.4.0
 run:
 	@cd $(MAKEPATH); cargo run -- ..
 
+run-recursive:
+	@cd $(MAKEPATH); cargo run -- .. -r
+
 install:
-	cargo install --git https://github.com/nickgerace/gfold
+	cargo install --git https://github.com/nickgerace/gfold --tag $(VERSION)
+
+install-local:
+	cargo install --path $(MAKEPATH)
 
 build: fmt test
 	cd $(MAKEPATH); cargo build
@@ -33,19 +39,20 @@ test:
 tree:
 	cd $(MAKEPATH); cargo tree
 
+prepare-release:
+	@printf "Change version at the following locations...\n"
+	@printf "    Makefile\n    README.md\n    main.rs\n"
+	@printf "Then, run the following command...\n"
+	@printf "    time make build-release\n"
+
 tag:
 	cd $(MAKEPATH); git tag $(VERSION)
 	cd $(MAKEPATH); git push --tags origin master
 
-grep-version:
-	@cd $(MAKEPATH); grep -r \
-		--exclude-dir={target,.git} \
-		--color=always \
-		$(VERSION) $(MAKEPATH)
-
-grep-fixme:
+fixme:
 	@cd $(MAKEPATH); grep -r \
 		--exclude-dir={target,.git} \
 		--exclude=Cargo.lock \
+		--exclude=CHANGELOG.md \
 		--color=always \
 		FIXME $(MAKEPATH)
