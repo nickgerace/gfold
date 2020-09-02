@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.4.0
+VERSION:=0.5.0
 
 run:
 	@cd $(MAKEPATH); cargo run -- ..
@@ -39,12 +39,6 @@ test:
 tree:
 	cd $(MAKEPATH); cargo tree
 
-prepare-release:
-	@printf "Change version at the following locations...\n"
-	@printf "    Makefile\n    README.md\n    main.rs\n"
-	@printf "Then, run the following command...\n"
-	@printf "    time make build-release\n"
-
 tag:
 	cd $(MAKEPATH); git tag $(VERSION)
 	cd $(MAKEPATH); git push --tags origin master
@@ -56,3 +50,14 @@ fixme:
 		--exclude=CHANGELOG.md \
 		--color=always \
 		FIXME $(MAKEPATH)
+
+release:
+	@printf "Change version at the following locations...\n"
+	@printf "    Makefile: $(shell grep $(VERSION) $(MAKEPATH)/Makefile)\n"
+	@printf "    README.md: $(shell grep $(VERSION) $(MAKEPATH)/README.md)\n"
+	@printf "    CHANGELOG.md: $(shell grep $(VERSION) $(MAKEPATH)/CHANGELOG.md)\n"
+	@printf "    Cargo.toml: $(shell grep $(VERSION) $(MAKEPATH)/Cargo.toml)\n"
+	@printf "Uncomment the unreleased string in CHANGELOG.md...\n"
+	@printf "    <!--The latest version contains all changes.-->\n"
+	@printf "Then, run the following command...\n"
+	@printf "    time make build-release\n"
