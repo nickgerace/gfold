@@ -69,13 +69,12 @@ gfold -r $HOME/repositories
 
 ## Compatibility
 
-All external crates were vetted for multi-platform (including Windows 10) support.
-```gfold``` is tested for the following systems, but may work on more...
+All external crates were vetted for support on all three major desktop platforms.
+```gfold``` is tested for the latest version of the following systems, but may work on more...
 
-- Linux amd64 (dynamically linked)
-- Linux amd64 (statically linked using MUSL)
-- macOS amd64
-- Windows 10 amd64
+- **Linux**: ```linux-gnu-amd64```
+- **macOS**: ```darwin-amd64```
+- **Windows 10**: ```windows-amd64```
 
 ## Changelog
 
