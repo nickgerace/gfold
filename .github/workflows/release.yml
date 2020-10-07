@@ -11,13 +11,13 @@ jobs:
         include:
           - os: ubuntu-latest
             artifact_name: gfold
-            asset_name: gfold-${{ github.ref }}-linux-gnu-amd64
+            asset_name: gfold-linux-gnu-amd64
           - os: windows-latest
             artifact_name: gfold.exe
-            asset_name: gfold-${{ github.ref }}-windows-amd64
+            asset_name: gfold-windows-amd64
           - os: macos-latest
             artifact_name: gfold
-            asset_name: gfold-${{ github.ref }}-macos-amd64
+            asset_name: gfold-macos-amd64
     steps:
     - uses: actions/checkout@v2
     - name: Build

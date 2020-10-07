@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- GitHub release downloads to README from [@nickgerace](https://github.com/nickgerace).
 - Binary publishing workflow to the dummy file from [@nickgerace](https://github.com/nickgerace).
 
 ### Changed

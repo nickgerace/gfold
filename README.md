@@ -28,9 +28,39 @@ However, if you would like to target another directory, you can pass that path (
 
 ## Installation
 
-There are multiple ways to install ```gfold```, but here are the recommended methods.
+There are multiple ways to install ```gfold```, but here are the currently recommended methods...
 
-### AUR (Arch User Repository)
+### 1) Download a GitHub Binary
+
+Most likely, the easiest method of obtaining ```gfold``` is via the [latest GitHub release](https://github.com/nickgerace/gfold/releases/latest).
+
+Once you have it downloaded, you can add it to your ```PATH```.
+Here is an example on how to do that on macOS and Linux...
+
+```bash
+chmod +x ./gfold
+sudo mv ./gfold /usr/local/bin/
+```
+
+*Note*: you may have to reload your shell in order to see ```gfold``` in your ```PATH```.
+
+#### Advanced Management
+
+You can use symbolic links to swap between versions, and manage multiple at a time.
+Here is a full install workflow...
+
+```bash
+wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-linux-gnu-amd64)
+mv gfold-linux-gnu-amd64 gfold-$VERSION
+chmod +x ./gfold-$VERSION
+sudo mkdir /usr/local/gfold/
+sudo mv ./gfold-$VERSION /usr/local/gfold/
+ln -s /usr/local/gfold/gfold-$VERSION /usr/local/bin/gfold
+```
+
+Now, you can add/remove versions of the binary from ```/usr/local/gfold/```, and change the symbolic link as needed.
+
+### 2) AUR (Arch User Repository)
 
 This application is available for all Linux distributions that support installing packages from the AUR.
 Special thanks to [orhun](https://github.com/orhun) for [maintaining](https://github.com/orhun/PKGBUILDs) these packages.
@@ -40,7 +70,7 @@ Special thanks to [orhun](https://github.com/orhun) for [maintaining](https://gi
 
 **Note**: many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
 
-### Cargo Install
+### 3) Cargo Install
 
 You can build from source with ```cargo``` by executing the following...
 
