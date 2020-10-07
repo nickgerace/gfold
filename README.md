@@ -1,7 +1,7 @@
 # gfold
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache2.0-yellow.svg)](https://opensource.org/licenses/apache2.0)
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fnickgerace%2Fgfold%2Fbadge&style=flat)](https://actions-badge.atrox.dev/nickgerace/gfold/goto)
+[![GitHub](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square)](./LICENSE)
+[![Build Status](https://img.shields.io/github/workflow/status/nickgerace/gfold/gfold-actions/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
 
 ```gfold``` is a CLI application that helps you keep track of multiple Git repositories.
 
@@ -78,13 +78,13 @@ All external crates were vetted for support on all three major desktop platforms
 
 ## Changelog
 
-Please check out [CHANGELOG.md](https://github.com/nickgerace/gfold/blob/master/CHANGELOG.md) for more information.
+Please check out [CHANGELOG.md](./CHANGELOG.md) for more information.
 It follows the [Keep a Changelog](https://keepachangelog.com/) format.
 
 ## Additional Information
 
 - Author: [Nick Gerace](https://nickgerace.dev)
-- License: [Apache 2.0](https://github.com/nickgerace/gfold/blob/master/LICENSE)
+- License: [Apache 2.0](./LICENSE)
 
 ## Special Thanks
 
