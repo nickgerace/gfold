@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-The latest version contains all changes.
+### Changed
+
+- README badges to use shields.io from [@nickgerace](https://github.com/nickgerace).
+- GitHub workflow name to "merge" from [@nickgerace](https://github.com/nickgerace).
+- A reduction to CI build time and complexity by combining the test and check steps, from [@nickgerace](https://github.com/nickgerace).
+- OS compatibility claims in README through a simplified list from [@nickgerace](https://github.com/nickgerace).
+
+### Removed 
+
+- MUSL mentions in docs from [@nickgerace](https://github.com/nickgerace).
 
 ## [0.5.0] - 2020-09-02
 
