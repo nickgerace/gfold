@@ -45,7 +45,7 @@ Special thanks to [orhun](https://github.com/orhun) for [maintaining](https://gi
 You can build from source with ```cargo``` by executing the following...
 
 ```bash
-cargo install --git https://github.com/nickgerace/gfold --tag 0.5.0
+cargo install --git https://github.com/nickgerace/gfold --tag 0.5.1
 ```
 
 ## Usage

@@ -7,18 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+The latest version contains all changes.
+
+## [0.5.1] - 2020-10-07
+
 ### Added
 
-- Version README badge from [@nickgerace](https://github.com/nickgerace).
 - Release dummy GitHub Action from [@nickgerace](https://github.com/nickgerace).
+- Version README badge from [@nickgerace](https://github.com/nickgerace).
 
 ### Changed
 
-- README badges to use shields.io from [@nickgerace](https://github.com/nickgerace).
-- GitHub workflow name to "merge" from [@nickgerace](https://github.com/nickgerace).
-- GitHub workflow "merge" file name to "merge.yml" from [@nickgerace](https://github.com/nickgerace).
 - A reduction to CI build time and complexity by combining the test and check steps, from [@nickgerace](https://github.com/nickgerace).
+- GitHub workflow "merge" file name to "merge.yml" from [@nickgerace](https://github.com/nickgerace).
+- GitHub workflow name to "merge" from [@nickgerace](https://github.com/nickgerace).
 - OS compatibility claims in README through a simplified list from [@nickgerace](https://github.com/nickgerace).
+- README badges to use shields.io from [@nickgerace](https://github.com/nickgerace).
 
 ### Removed 
 

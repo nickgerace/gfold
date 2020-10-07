@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.5.0
+VERSION:=0.5.1
 
 run:
 	@cd $(MAKEPATH); cargo run -- ..
@@ -24,6 +24,7 @@ build: fmt test
 	cd $(MAKEPATH); cargo build
 
 build-static: fmt test
+	@printf "Warning: gfold has deprecated this workflow.\n"
 	docker pull clux/muslrust
 	cd $(MAKEPATH); docker run -v $(MAKEPATH):/volume --rm -t clux/muslrust cargo build --release
 
