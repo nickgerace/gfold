@@ -1,7 +1,6 @@
 on: [push]
 name: merge
 jobs:
-
   pre-build:
     name: Pre-Build
     runs-on: ubuntu-latest
@@ -33,7 +32,6 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-
   build:
     name: Build
     runs-on: ${{ matrix.os }}
@@ -53,4 +51,3 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release
