@@ -1,0 +1,11 @@
+on:
+  push:
+    tags: ['*']
+name: release
+jobs:
+  dummy:
+    name: dummy
+    runs-on: ubuntu-latest
+    steps:
+      - name: hello-world
+        run: echo hello-world
