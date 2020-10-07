@@ -6,8 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+<!-- The latest version contains all changes. -->
 
-The latest version contains all changes.
+### Added
+
+- Binary publishing workflow to the dummy file from [@nickgerace](https://github.com/nickgerace).
+
+### Changed
+
+- Existing merge workflow to use debug building instead of release building from [@nickgerace](https://github.com/nickgerace).
+- Makefile target containing the old default branch name from [@nickgerace](https://github.com/nickgerace).
+
+### Removed
+
+- Makefile target for statically-linked building from [@nickgerace](https://github.com/nickgerace).
 
 ## [0.5.1] - 2020-10-07
 

@@ -64,14 +64,14 @@ gfold ..
 gfold $HOME
 gfold /this/is/an/absolute/path
 gfold ../../this/is/a/relative/path
-gfold ~/repositories/ -r
-gfold -r $HOME/repositories
+gfold ~/path/to/multiple/repositories/ -r
+gfold -r $HOME/path/to/multiple/repositories
 ```
 
 ## Compatibility
 
 All external crates were vetted for support on all three major desktop platforms.
-```gfold``` is tested for the latest version of the following systems, but may work on more...
+```gfold``` is tested for the latest versions of the following systems, but may work on more...
 
 - **Linux**: ```linux-gnu-amd64```
 - **macOS**: ```darwin-amd64```

@@ -3,9 +3,29 @@ on:
     tags: ['*']
 name: release
 jobs:
-  dummy:
-    name: dummy
-    runs-on: ubuntu-latest
+  publish:
+    name: Publish for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: gfold
+            asset_name: gfold-${{ github.ref }}-linux-gnu-amd64
+          - os: windows-latest
+            artifact_name: gfold.exe
+            asset_name: gfold-${{ github.ref }}-windows-amd64
+          - os: macos-latest
+            artifact_name: gfold
+            asset_name: gfold-${{ github.ref }}-macos-amd64
     steps:
-      - name: hello-world
-        run: echo hello-world
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --release --locked
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/${{ matrix.artifact_name }}
+        asset_name: ${{ matrix.asset_name }}
+        tag: ${{ github.ref }}

@@ -23,11 +23,6 @@ install-local:
 build: fmt test
 	cd $(MAKEPATH); cargo build
 
-build-static: fmt test
-	@printf "Warning: gfold has deprecated this workflow.\n"
-	docker pull clux/muslrust
-	cd $(MAKEPATH); docker run -v $(MAKEPATH):/volume --rm -t clux/muslrust cargo build --release
-
 build-release: fmt test
 	cd $(MAKEPATH); cargo build --release
 
@@ -42,7 +37,7 @@ tree:
 
 tag:
 	cd $(MAKEPATH); git tag $(VERSION)
-	cd $(MAKEPATH); git push --tags origin master
+	cd $(MAKEPATH); git push --tags origin main
 
 fixme:
 	@cd $(MAKEPATH); grep -r \
