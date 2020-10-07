@@ -1,7 +1,7 @@
 # gfold
 
 [![GitHub](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square)](./LICENSE)
-[![Build Status](https://img.shields.io/github/workflow/status/nickgerace/gfold/gfold-actions/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
+[![Build Status](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
 
 ```gfold``` is a CLI application that helps you keep track of multiple Git repositories.
 
