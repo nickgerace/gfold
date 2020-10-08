@@ -38,11 +38,11 @@ Once you have it downloaded, you can add it to your ```PATH```.
 Here is an example on how to do that on macOS and Linux...
 
 ```bash
-chmod +x ./gfold
-sudo mv ./gfold /usr/local/bin/
+chmod +x gfold
+sudo mv gfold /usr/local/bin/
 ```
 
-*Note*: you may have to reload your shell in order to see ```gfold``` in your ```PATH```.
+You may have to reload your shell in order to see ```gfold``` in your ```PATH```.
 
 #### Advanced Management
 
@@ -52,9 +52,9 @@ Here is a full install workflow...
 ```bash
 wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-linux-gnu-amd64)
 mv gfold-linux-gnu-amd64 gfold-$VERSION
-chmod +x ./gfold-$VERSION
+chmod +x gfold-$VERSION
 sudo mkdir /usr/local/gfold/
-sudo mv ./gfold-$VERSION /usr/local/gfold/
+sudo mv gfold-$VERSION /usr/local/gfold/
 ln -s /usr/local/gfold/gfold-$VERSION /usr/local/bin/gfold
 ```
 
@@ -68,19 +68,19 @@ Special thanks to [orhun](https://github.com/orhun) for [maintaining](https://gi
 - [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
 - [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
 
-**Note**: many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
+Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
 
 ### 3) Cargo Install
 
 You can build from source with ```cargo``` by executing the following...
 
 ```bash
-cargo install --git https://github.com/nickgerace/gfold --tag 0.5.1
+cargo install --git https://github.com/nickgerace/gfold --tag 0.5.2
 ```
 
 ## Usage
 
-For all the ways on how to use this application, pass in the ```--help``` flag.
+For all the ways on how to use this application, pass in the ```-h```, or ```--help```, flag.
 
 ```bash
 gfold --help

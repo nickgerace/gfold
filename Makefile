@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.5.1
+VERSION:=0.5.2
 
 run:
 	@cd $(MAKEPATH); cargo run -- ..
