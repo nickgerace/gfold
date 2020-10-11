@@ -7,8 +7,8 @@
 
 use std::env;
 use std::path::PathBuf;
-use std::process;
 
+use eyre::Result;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -30,7 +30,7 @@ struct Opt {
 
 /// This file, ```main.rs```, serves as the primary driver for the ```gfold``` library.
 /// It is intended to be used as a command-line interface.
-fn main() {
+fn main() -> Result<()> {
     let mut path = env::current_dir().expect("failed to get CWD");
 
     let opt = Opt::from_args();
@@ -39,8 +39,6 @@ fn main() {
     };
     path = path.canonicalize().expect("failed to canonicalize path");
 
-    if let Err(error) = gfold::run(&path, opt.recursive, opt.skip_sort) {
-        eprintln!("Encountered fatal error: {}", error);
-        process::exit(1);
-    };
+    gfold::run(&path, opt.recursive, opt.skip_sort)?;
+    Ok(())
 }
