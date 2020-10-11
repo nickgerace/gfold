@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 The latest version contains all changes.
 
+## [0.6.0] - 2020-10-10
+
+### Added
+
+- Doc comments and ```cargo doc``` to ```release``` target from [@nickgerace](https://github.com/nickgerace).
+- ```eyre``` for simple backtrace reporting from [@nickgerace](https://github.com/nickgerace).
+- ```gfold-bin``` to AUR portion of README from [@nickgerace](https://github.com/nickgerace).
+- ```lib.rs``` as part of major refactor from [@nickgerace](https://github.com/nickgerace).
+
+### Changed
+
+- Pre-build Makefile targets to be consolidated from [@nickgerace](https://github.com/nickgerace).
+- Refactor source code to be driven by a library, helmed by ```lib.rs``` from [@nickgerace](https://github.com/nickgerace).
+
+### Removed
+
+- ```util.rs``` and ```gfold.rs``` as part of major refactor from [@nickgerace](https://github.com/nickgerace).
+
 ## [0.5.2] - 2020-10-08
 
 ### Added
