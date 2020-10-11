@@ -9,18 +9,19 @@
 extern crate prettytable;
 
 use std::cmp::Ordering;
-use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
 
+use eyre::Result;
+
 /// Creating a ```Results``` object requires using this ```struct``` as a pre-requisite.
-struct Config {
+pub struct Config {
     recursive: bool,
     skip_sort: bool,
 }
 
-/// This ```struct``` is a wrapper around the ```prettytable::Table``` object.
+/// This private ```struct``` is a wrapper around the ```prettytable::Table``` object.
 /// It exists to provide a label for the table.
 struct TableWrapper {
     path_string: String,
@@ -28,11 +29,11 @@ struct TableWrapper {
 }
 
 /// Contains all tables with results for each directory.
-struct Results(Vec<TableWrapper>);
+pub struct Results(Vec<TableWrapper>);
 
 impl Results {
     /// Create a new ```Results``` object with a given path and config.
-    fn new(path: &Path, config: &Config) -> Result<Results, Box<dyn Error>> {
+    pub fn new(path: &Path, config: &Config) -> Result<Results> {
         let mut results = Results(Vec::new());
         results.execute_in_directory(&config, path)?;
         if !&config.skip_sort {
@@ -42,8 +43,8 @@ impl Results {
     }
 
     /// Load results into the calling ```Results``` object via a given path and config.
-    /// This function may be called recursively.
-    fn execute_in_directory(&mut self, config: &Config, dir: &Path) -> Result<(), Box<dyn Error>> {
+    /// This private function may be called recursively.
+    fn execute_in_directory(&mut self, config: &Config, dir: &Path) -> Result<()> {
         // FIXME: find ways to add concurrent programming (tokio, async, etc.) to this section.
         let path_entries = fs::read_dir(dir)?;
         let mut repos = Vec::new();
@@ -72,7 +73,7 @@ impl Results {
 
     /// Sort the results alphabetically using ```sort_by_key```.
     /// This function will only perform the sort if there are at least two ```TableWrapper``` objects.
-    fn sort_results(&mut self) {
+    pub fn sort_results(&mut self) {
         if self.0.len() >= 2 {
             // FIXME: find a way to do this without "clone()".
             self.0.sort_by_key(|table| table.path_string.clone());
@@ -81,7 +82,7 @@ impl Results {
 
     /// Iterate through every table and print each to STDOUT.
     /// If there is only one table, this function avoids using a loop.
-    fn print_results(self) {
+    pub fn print_results(self) {
         match self.0.len().cmp(&1) {
             Ordering::Greater => {
                 for table_wrapper in self.0 {
@@ -100,6 +101,7 @@ impl Results {
 }
 
 /// Create a ```TableWrapper``` object from a given vector of paths (```Vec<PathBuf>```).
+/// This is a private helper function for ```execute_in_directory```.
 fn create_table_from_paths(repos: Vec<PathBuf>, path: &Path) -> Option<TableWrapper> {
     // For every path, we will create a mutable Table containing its results.
     let mut table = prettytable::Table::new();
@@ -181,7 +183,7 @@ fn create_table_from_paths(repos: Vec<PathBuf>, path: &Path) -> Option<TableWrap
 }
 
 /// This function is the primary driver for this file, ```lib.rs```.
-pub fn run(path: &Path, recursive: bool, skip_sort: bool) -> Result<(), Box<dyn Error>> {
+pub fn run(path: &Path, recursive: bool, skip_sort: bool) -> Result<()> {
     let config = Config {
         recursive,
         skip_sort,

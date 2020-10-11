@@ -49,12 +49,14 @@ fixme:
 		FIXME $(MAKEPATH)
 
 release:
-	@printf "Change version at the following locations...\n"
+	@printf "[1] Change version at the following locations...\n"
 	@printf "    Makefile: $(shell grep $(VERSION) $(MAKEPATH)/Makefile)\n"
 	@printf "    README.md: $(shell grep $(VERSION) $(MAKEPATH)/README.md)\n"
 	@printf "    CHANGELOG.md: $(shell grep $(VERSION) $(MAKEPATH)/CHANGELOG.md)\n"
 	@printf "    Cargo.toml: $(shell grep $(VERSION) $(MAKEPATH)/Cargo.toml)\n"
-	@printf "Uncomment the unreleased string in CHANGELOG.md...\n"
+	@printf "[2] Uncomment the unreleased string in CHANGELOG.md...\n"
 	@printf "    <!--The latest version contains all changes.-->\n"
-	@printf "Then, run the following command...\n"
+	@printf "[3] Run the following command to check documentation...\n"
+	@printf "    cargo doc --open\n"
+	@printf "[4] Then, run the following command...\n"
 	@printf "    time make build-release\n"
