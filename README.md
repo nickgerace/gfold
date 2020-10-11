@@ -116,13 +116,17 @@ It is tested for the latest versions of the following systems, but may work on m
 Please check out [CHANGELOG.md](./CHANGELOG.md) for more information.
 It follows the [Keep a Changelog](https://keepachangelog.com/) format.
 
+## Code of Conduct
+
+This repository follows and enforces the Rust programming language's [Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct).
+
 ## Additional Information
 
 - Author: [Nick Gerace](https://nickgerace.dev)
 - License: [Apache 2.0](./LICENSE)
 
-## Special Thanks
+## Special Thanks To...
 
-- [@yaahc](https://github.com/yaahc) (mentoring)
-- [@orhun](https://github.com/orhun) (maintaining [all three AUR packages](https://github.com/orhun/PKGBUILDs))
-- [@jrcichra](https://github.com/jrcichra) (adding multi-OS support to the original CI pipeline)
+- [@jrcichra](https://github.com/jrcichra) for adding multi-OS support to the original CI pipeline
+- [@orhun](https://github.com/orhun) for maintaining [all three AUR packages](https://github.com/orhun/PKGBUILDs)
+- [@yaahc](https://github.com/yaahc) for mentoring
