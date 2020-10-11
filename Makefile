@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.5.2
+VERSION:=0.6.0
 
 all: build
 
@@ -50,13 +50,14 @@ fixme:
 
 release:
 	@printf "[1] Change version at the following locations...\n"
-	@printf "    Makefile: $(shell grep $(VERSION) $(MAKEPATH)/Makefile)\n"
-	@printf "    README.md: $(shell grep $(VERSION) $(MAKEPATH)/README.md)\n"
-	@printf "    CHANGELOG.md: $(shell grep $(VERSION) $(MAKEPATH)/CHANGELOG.md)\n"
-	@printf "    Cargo.toml: $(shell grep $(VERSION) $(MAKEPATH)/Cargo.toml)\n"
+	@printf "    Makefile:\n        $(shell grep $(VERSION) $(MAKEPATH)/Makefile)\n"
+	@printf "    README.md:\n        $(shell grep $(VERSION) $(MAKEPATH)/README.md)\n"
+	@printf "    CHANGELOG.md:\n        $(shell grep $(VERSION) $(MAKEPATH)/CHANGELOG.md)\n"
+	@printf "    Cargo.toml:\n        $(shell grep $(VERSION) $(MAKEPATH)/Cargo.toml)\n"
 	@printf "[2] Uncomment the unreleased string in CHANGELOG.md...\n"
 	@printf "    <!--The latest version contains all changes.-->\n"
 	@printf "[3] Run the following command to check documentation...\n"
 	@printf "    cargo doc --open\n"
 	@printf "[4] Then, run the following command...\n"
 	@printf "    time make build-release\n"
+
