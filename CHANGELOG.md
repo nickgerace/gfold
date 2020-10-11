@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub issue template from [@nickgerace](https://github.com/nickgerace).
 - GitHub pull request template from [@nickgerace](https://github.com/nickgerace).
 
+### Changed
+
+- LICENSE to be extended through 20201 from [@nickgerace](https://github.com/nickgerace).
+
 ## [0.6.0] - 2020-10-10
 
 ### Added
