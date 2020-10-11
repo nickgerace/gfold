@@ -8,6 +8,8 @@ MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
 VERSION:=0.5.2
 
+all: build
+
 run:
 	@cd $(MAKEPATH); cargo run -- ..
 
@@ -20,16 +22,15 @@ install:
 install-local:
 	cargo install --path $(MAKEPATH)
 
-build: fmt test
+build: pre-build
 	cd $(MAKEPATH); cargo build
 
-build-release: fmt test
+build-release: pre-build
 	cd $(MAKEPATH); cargo build --release
 
-fmt:
+pre-build:
 	cd $(MAKEPATH); cargo fmt
-
-test:
+	cd $(MAKEPATH); cargo clippy
 	cd $(MAKEPATH); cargo test
 
 tree:
