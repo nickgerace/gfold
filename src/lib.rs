@@ -112,74 +112,62 @@ fn create_table_from_paths(repos: Vec<PathBuf>, path: &Path) -> Option<TableWrap
             .build(),
     );
 
-    // FIXME: handle all panic and fatal scenarios in this loop.
+    // FIXME: maximize error recovery in this loop.
     for repo in repos {
-        let repo_obj = git2::Repository::open(&repo).expect("failed to open");
+        let repo_obj = git2::Repository::open(&repo).ok()?;
 
         // This match cascade combats the error: remote 'origin' does not exist. If we
         // encounter this specific error, then we "continue" to the next iteration.
+        // FIXME: in case deeper recoverable errors are desired, use the match arm...
+        // Err(error) if error.class() == git2::ErrorClass::Config => continue,
         let origin = match repo_obj.find_remote("origin") {
             Ok(origin) => origin,
-            Err(error) if error.class() == git2::ErrorClass::Config => continue,
-            Err(error) => panic!("{}", error),
+            Err(_) => continue,
         };
         let url = match origin.url() {
             Some(url) => url,
             None => "none",
         };
-        let head = repo_obj.head().expect("failed get head");
+
+        let head = repo_obj.head().ok()?;
         let branch = match head.shorthand() {
-            Some(head) => head,
+            Some(branch) => branch,
+            None => "none",
+        };
+
+        let str_name = match Path::new(&repo).strip_prefix(path).ok()?.to_str() {
+            Some(x) => x,
             None => "none",
         };
 
         // Special thanks to @yaahc_ for the original recommendation to use a "match guard" here.
         // The code has evolved since the original implementation, but the core idea still stands!
         let mut opts = git2::StatusOptions::new();
-        let statuses = match repo_obj.statuses(Some(&mut opts)) {
-            Ok(statuses) => Ok(Some(statuses)),
+        match repo_obj.statuses(Some(&mut opts)) {
+            Ok(statuses) if statuses.is_empty() => {
+                table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
+            }
+            Ok(_) => table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url]),
             Err(error)
                 if error.code() == git2::ErrorCode::BareRepo
                     && error.class() == git2::ErrorClass::Repository =>
             {
-                Ok(None)
+                table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url])
             }
-            Err(error) => Err(error),
-        };
-
-        let formatted_name = Path::new(&repo)
-            .strip_prefix(path)
-            .expect("failed to format name from Path object");
-        let str_name = match formatted_name.to_str() {
-            Some(x) => x,
-            None => "none",
-        };
-
-        match statuses {
-            Ok(statuses_contents) => match statuses_contents {
-                Some(statuses_contents) if statuses_contents.is_empty() => {
-                    table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
-                }
-                Some(_) => table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url]),
-                None => table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url]),
-            },
             Err(_) => table.add_row(row![Flb->str_name, Frl->"error", Fl->branch, Fl->url]),
         };
     }
 
     // After looping over all the paths, check if the table contains any rows. We perform this
-    // check because we only want results for directories that contain Git repositories. Push
+    // check because we only want results for directories that contain Git repositories. Return
     // the resulting TableWrapper object after creating a heap-allocated string for the path name.
-    if table.is_empty() {
-        return None;
+    match table.is_empty() {
+        true => None,
+        false => Some(TableWrapper {
+            path_string: path.to_str()?.to_string(),
+            table,
+        }),
     }
-    let path_string = path
-        .to_str()
-        .expect("could not convert &Path object to &str object");
-    Some(TableWrapper {
-        path_string: path_string.to_string(),
-        table,
-    })
 }
 
 /// This function is the primary driver for this file, ```lib.rs```.
