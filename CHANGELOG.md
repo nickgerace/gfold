@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-<!-- The latest version contains all changes. -->
+
+The latest version contains all changes.
+
+## [0.6.1] - 2020-10-12
 
 ### Added
 
@@ -16,7 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- LICENSE to be extended through 20201 from [@nickgerace](https://github.com/nickgerace).
+- LICENSE to be extended through 2021 from [@nickgerace](https://github.com/nickgerace).
+- Match blocks in ```lib.rs``` to be consolidated from [@nickgerace](https://github.com/nickgerace).
+- Nearly all contents of ```lib.rs``` to return errors back to the calling function in ```main.rs``` from [@nickgerace](https://github.com/nickgerace).
+
+### Removed
+
+- Duplicate code related to the match block consolidation from [@nickgerace](https://github.com/nickgerace).
 
 ## [0.6.0] - 2020-10-10
 

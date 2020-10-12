@@ -50,7 +50,7 @@ You can use symbolic links to swap between versions, and manage multiple at a ti
 Here is a full install workflow example...
 
 ```bash
-VERSION=0.6.0
+VERSION=0.6.1
 PLATFORM=linux-gnu-amd64
 
 wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-$PLATFORM
@@ -79,7 +79,7 @@ Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/A
 You can build from source with ```cargo``` by executing the following...
 
 ```bash
-cargo install --git https://github.com/nickgerace/gfold --tag 0.6.0
+cargo install --git https://github.com/nickgerace/gfold --tag 0.6.1
 ```
 
 ## Usage
