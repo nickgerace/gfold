@@ -31,13 +31,13 @@ struct Opt {
 /// This file, ```main.rs```, serves as the primary driver for the ```gfold``` library.
 /// It is intended to be used as a command-line interface.
 fn main() -> Result<()> {
-    let mut path = env::current_dir().expect("failed to get CWD");
+    let mut path = env::current_dir()?;
 
     let opt = Opt::from_args();
     if let Some(provided_path) = opt.path {
         path.push(provided_path)
     };
-    path = path.canonicalize().expect("failed to canonicalize path");
+    path = path.canonicalize()?;
 
     gfold::run(&path, opt.recursive, opt.skip_sort)?;
     Ok(())
