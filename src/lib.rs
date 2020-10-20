@@ -17,6 +17,7 @@ use eyre::Result;
 
 /// Creating a ```Results``` object requires using this ```struct``` as a pre-requisite.
 pub struct Config {
+    no_color: bool,
     recursive: bool,
     skip_sort: bool,
 }
@@ -64,7 +65,7 @@ impl Results {
                 repos.sort();
             }
             // If a table was successfully created with the given repositories, add the table.
-            if let Some(table_wrapper) = create_table_from_paths(repos, &dir) {
+            if let Some(table_wrapper) = create_table_from_paths(repos, &dir, &config.no_color) {
                 self.0.push(table_wrapper);
             }
         }
@@ -102,7 +103,11 @@ impl Results {
 
 /// Create a ```TableWrapper``` object from a given vector of paths (```Vec<PathBuf>```).
 /// This is a private helper function for ```execute_in_directory```.
-fn create_table_from_paths(repos: Vec<PathBuf>, path: &Path) -> Option<TableWrapper> {
+fn create_table_from_paths(
+    repos: Vec<PathBuf>,
+    path: &Path,
+    no_color: &bool,
+) -> Option<TableWrapper> {
     // For every path, we will create a mutable Table containing its results.
     let mut table = prettytable::Table::new();
     table.set_format(
@@ -145,16 +150,36 @@ fn create_table_from_paths(repos: Vec<PathBuf>, path: &Path) -> Option<TableWrap
         let mut opts = git2::StatusOptions::new();
         match repo_obj.statuses(Some(&mut opts)) {
             Ok(statuses) if statuses.is_empty() => {
-                table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
+                if *no_color {
+                    table.add_row(row![Fl->str_name, Fl->"clean", Fl->branch, Fl->url])
+                } else {
+                    table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
+                }
             }
-            Ok(_) => table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url]),
+            Ok(_) => {
+                if *no_color {
+                    table.add_row(row![Fl->str_name, Fl->"unclean", Fl->branch, Fl->url])
+                } else {
+                    table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url])
+                }
+            }
             Err(error)
                 if error.code() == git2::ErrorCode::BareRepo
                     && error.class() == git2::ErrorClass::Repository =>
             {
-                table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url])
+                if *no_color {
+                    table.add_row(row![Fb->str_name, Fl->"bare", Fl->branch, Fl->url])
+                } else {
+                    table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url])
+                }
             }
-            Err(_) => table.add_row(row![Flb->str_name, Frl->"error", Fl->branch, Fl->url]),
+            Err(_) => {
+                if *no_color {
+                    table.add_row(row![Fb->str_name, Fl->"error", Fl->branch, Fl->url])
+                } else {
+                    table.add_row(row![Flb->str_name, Frl->"error", Fl->branch, Fl->url])
+                }
+            }
         };
     }
 
@@ -171,8 +196,9 @@ fn create_table_from_paths(repos: Vec<PathBuf>, path: &Path) -> Option<TableWrap
 }
 
 /// This function is the primary driver for this file, ```lib.rs```.
-pub fn run(path: &Path, recursive: bool, skip_sort: bool) -> Result<()> {
+pub fn run(path: &Path, no_color: bool, recursive: bool, skip_sort: bool) -> Result<()> {
     let config = Config {
+        no_color,
         recursive,
         skip_sort,
     };
@@ -189,27 +215,34 @@ mod tests {
     #[test]
     fn current_directory() {
         let current_dir = env::current_dir().expect("failed to get CWD");
-        assert_ne!(run(&current_dir, false, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, false).is_err(), true);
     }
 
     #[test]
     fn parent_directory() {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
-        assert_ne!(run(&current_dir, false, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, false).is_err(), true);
     }
 
     #[test]
     fn parent_directory_recursive() {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
-        assert_ne!(run(&current_dir, true, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, true, false).is_err(), true);
     }
 
     #[test]
     fn parent_directory_recursive_skip_sort() {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
-        assert_ne!(run(&current_dir, true, true).is_err(), true);
+        assert_ne!(run(&current_dir, false, true, true).is_err(), true);
+    }
+
+    #[test]
+    fn parent_directory_recursive_no_color() {
+        let mut current_dir = env::current_dir().expect("failed to get CWD");
+        current_dir.pop();
+        assert_ne!(run(&current_dir, true, true, false).is_err(), true);
     }
 }

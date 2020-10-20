@@ -20,6 +20,8 @@ By default, it displays relevant information for all repos in the current\n\
 working directory."
 )]
 struct Opt {
+    #[structopt(short, long, help = "Disable color output")]
+    no_color: bool,
     #[structopt(parse(from_os_str), help = "Target a different directory")]
     path: Option<PathBuf>,
     #[structopt(short, long, help = "Search recursively")]
@@ -39,6 +41,6 @@ fn main() -> Result<()> {
     };
     path = path.canonicalize()?;
 
-    gfold::run(&path, opt.recursive, opt.skip_sort)?;
+    gfold::run(&path, opt.no_color, opt.recursive, opt.skip_sort)?;
     Ok(())
 }
