@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.6.1
+VERSION:=0.6.2
 
 all: build
 
