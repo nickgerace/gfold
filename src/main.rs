@@ -20,7 +20,7 @@ By default, it displays relevant information for all repos in the current\n\
 working directory."
 )]
 struct Opt {
-    #[structopt(short, long, help = "Disable color output")]
+    #[structopt(long = "nc", help = "Disable color output")]
     no_color: bool,
     #[structopt(parse(from_os_str), help = "Target a different directory")]
     path: Option<PathBuf>,
