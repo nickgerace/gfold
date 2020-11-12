@@ -4,7 +4,7 @@
 [![Latest SemVer GitHub Tag](https://img.shields.io/github/v/tag/nickgerace/gfold?label=version&style=flat-square)](https://github.com/nickgerace/gfold/releases/latest)
 [![Build Status](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
 
-```gfold``` is a CLI application that helps you keep track of multiple Git repositories.
+`gfold` is a CLI application that helps you keep track of multiple Git repositories.
 
 ```bash
 user at hostname in ~/git
@@ -23,26 +23,68 @@ This app displays relevant information for multiple Git repositories in one, or 
 While this tool might seem limited in scope and purpose, that is by design.
 
 It prints each repository in alphabetical order, and pads each result based on the longest directory, branch, and status string.
-By default, ```gfold``` looks at every Git repository in the current working directory.
+By default, `gfold` looks at every Git repository in the current working directory.
 However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument.
 
 ## Installation
 
-There are multiple ways to install ```gfold```, but here are the currently recommended methods...
+There are multiple ways to install `gfold`, but here are some recommended methods...
 
-### 1. Download a GitHub Binary
+Installation Methods | `linux-gnu-amd64` | `macos-amd64` | `windows-amd64`
+--- | --- | --- | --
+Homebrew | x | x | -
+Arch User Repository (AUR) | x | - | -
+Cargo Install | x | x | x
+GitHub Release Binary | x | x | x
 
-Most likely, the easiest method of obtaining ```gfold``` is via the [latest GitHub release](https://github.com/nickgerace/gfold/releases/latest).
+### Homebrew
 
-Once you have it downloaded, you can add it to your ```PATH```.
+You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-gfold) for `gfold`.
+
+```bash
+brew install nickgerace/gfold/gfold
+```
+
+Alternatively, you can do...
+
+```bash
+brew tap nickgerace/gfold
+brew install gfold
+```
+
+Running `brew help` or `man brew` can help you use `brew` locally.
+You can check out [Homebrew's documentation](https://docs.brew.sh) as well.
+
+### Arch User Repository (AUR)
+
+This application is available for all Linux distributions that support installing packages from the AUR.
+
+- [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
+- [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary)
+- [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
+
+Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: `yay -S gfold`), in order to install their AUR packages.
+
+### Cargo Install
+
+You can build from source with `cargo` by executing the following...
+
+```bash
+cargo install --git https://github.com/nickgerace/gfold --tag <version>
+```
+
+### GitHub Release Binary
+
+You can obtain `gfold` via the [latest GitHub release](https://github.com/nickgerace/gfold/releases/latest).
+Once you have it downloaded, you can add it to your `PATH`.
 Here is an example on how to do that on macOS and Linux...
 
 ```bash
 chmod +x gfold
-sudo mv gfold /usr/local/bin/
+mv gfold /usr/local/bin/
 ```
 
-You may have to reload your shell in order to see ```gfold``` in your ```PATH```.
+You may have to reload your shell in order to see `gfold` in your `PATH`.
 
 #### Advanced Management
 
@@ -50,7 +92,7 @@ You can use symbolic links to swap between versions, and manage multiple at a ti
 Here is a full install workflow example...
 
 ```bash
-VERSION=0.6.2
+VERSION=<version>
 PLATFORM=linux-gnu-amd64
 
 wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-$PLATFORM
@@ -62,29 +104,11 @@ mv gfold-$VERSION /usr/local/gfold/
 ln -s /usr/local/gfold/gfold-$VERSION /usr/local/bin/gfold
 ```
 
-Now, you can add/remove versions of the binary from ```/usr/local/gfold/```, and change the symbolic link as needed.
-
-### 2. Arch User Repository (AUR)
-
-This application is available for all Linux distributions that support installing packages from the AUR.
-
-- [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
-- [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary)
-- [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
-
-Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: ```yay -S gfold```), in order to install their AUR packages.
-
-### 3. Cargo Install
-
-You can build from source with ```cargo``` by executing the following...
-
-```bash
-cargo install --git https://github.com/nickgerace/gfold --tag 0.6.2
-```
+Now, you can add/remove versions of the binary from `/usr/local/gfold/`, and change the symbolic link as needed.
 
 ## Usage
 
-For all the ways on how to use this application, pass in the ```-h```, or ```--help```, flag.
+For all the ways on how to use this application, pass in the `-h`, or `--help`, flag.
 
 ```bash
 gfold --help
@@ -104,12 +128,12 @@ gfold -r $HOME/path/to/multiple/repositories
 
 ## Compatibility
 
-```gfold```, and its external crates, support all three major desktop platforms.
+`gfold`, and its external crates, support all three major desktop platforms.
 It is tested for the latest versions of the following systems, but may work on more...
 
-- **Linux**: ```linux-gnu-amd64```
-- **macOS**: ```macos-amd64```
-- **Windows 10**: ```windows-amd64```
+- **Linux**: `linux-gnu-amd64`
+- **macOS**: `macos-amd64`
+- **Windows 10**: `windows-amd64`
 
 ## Changelog
 
