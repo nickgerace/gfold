@@ -51,7 +51,6 @@ fixme:
 release:
 	@printf "[1] Change version at the following locations...\n"
 	@printf "    Makefile:\n        $(shell grep $(VERSION) $(MAKEPATH)/Makefile)\n"
-	@printf "    README.md:\n        $(shell grep $(VERSION) $(MAKEPATH)/README.md)\n"
 	@printf "    CHANGELOG.md:\n        $(shell grep $(VERSION) $(MAKEPATH)/CHANGELOG.md)\n"
 	@printf "    Cargo.toml:\n        $(shell grep $(VERSION) $(MAKEPATH)/Cargo.toml)\n"
 	@printf "[2] Uncomment the unreleased string in CHANGELOG.md...\n"
