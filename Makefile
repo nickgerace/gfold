@@ -47,6 +47,7 @@ fixme:
 		--exclude-dir={target,.git} \
 		--exclude=Cargo.lock \
 		--exclude=CHANGELOG.md \
+		--exclude=Makefile \
 		--color=always \
 		FIXME $(MAKEPATH)
 

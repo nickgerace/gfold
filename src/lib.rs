@@ -17,25 +17,20 @@ use std::path::PathBuf;
 
 use eyre::Result;
 
-/// Creating a ```Results``` object requires using this ```struct``` as a pre-requisite.
 struct Config {
     no_color: bool,
     recursive: bool,
     skip_sort: bool,
 }
 
-/// This private ```struct``` is a wrapper around the ```prettytable::Table``` object.
-/// It exists to provide a label for the table.
 struct TableWrapper {
     path_string: String,
     table: prettytable::Table,
 }
 
-/// Contains all tables with results for each directory.
 struct Results(Vec<TableWrapper>);
 
 impl Results {
-    /// Create a new ```Results``` object with a given path and config.
     fn new(path: &Path, config: &Config) -> Result<Results> {
         let mut results = Results(Vec::new());
         results.execute_in_directory(&config, path)?;
@@ -45,8 +40,6 @@ impl Results {
         Ok(results)
     }
 
-    /// Load results into the calling ```Results``` object via a given path and config.
-    /// This private function may be called recursively.
     fn execute_in_directory(&mut self, config: &Config, dir: &Path) -> Result<()> {
         // FIXME: find ways to add concurrent programming (tokio, async, etc.) to this section.
         let path_entries = fs::read_dir(dir)?;
@@ -66,7 +59,6 @@ impl Results {
             if !&config.skip_sort {
                 repos.sort();
             }
-            // If a table was successfully created with the given repositories, add the table.
             if let Some(table_wrapper) = create_table_from_paths(repos, &dir, &config.no_color) {
                 self.0.push(table_wrapper);
             }
@@ -74,8 +66,6 @@ impl Results {
         Ok(())
     }
 
-    /// Sort the results alphabetically using ```sort_by_key```.
-    /// This function will only perform the sort if there are at least two ```TableWrapper``` objects.
     fn sort_results(&mut self) {
         if self.0.len() >= 2 {
             // FIXME: find a way to do this without "clone()".
@@ -83,8 +73,6 @@ impl Results {
         }
     }
 
-    /// Iterate through every table and print each to STDOUT.
-    /// If there is only one table, this function avoids using a loop.
     fn print_results(self) {
         match self.0.len().cmp(&1) {
             Ordering::Greater => {
@@ -103,14 +91,11 @@ impl Results {
     }
 }
 
-/// Create a ```TableWrapper``` object from a given vector of paths (```Vec<PathBuf>```).
-/// This is a private helper function for ```execute_in_directory```.
 fn create_table_from_paths(
     repos: Vec<PathBuf>,
     path: &Path,
     no_color: &bool,
 ) -> Option<TableWrapper> {
-    // For every path, we will create a mutable Table containing its results.
     let mut table = prettytable::Table::new();
     table.set_format(
         prettytable::format::FormatBuilder::new()
@@ -123,8 +108,6 @@ fn create_table_from_paths(
     for repo in repos {
         let repo_obj = git2::Repository::open(&repo).ok()?;
 
-        // This match cascade combats the error: remote 'origin' does not exist. If we
-        // encounter this specific error, then we "continue" to the next iteration.
         // FIXME: in case deeper recoverable errors are desired, use the match arm...
         // Err(error) if error.class() == git2::ErrorClass::Config => continue,
         let origin = match repo_obj.find_remote("origin") {
@@ -147,8 +130,6 @@ fn create_table_from_paths(
             None => "none",
         };
 
-        // Special thanks to @yaahc_ for the original recommendation to use a "match guard" here.
-        // The code has evolved since the original implementation, but the core idea still stands!
         let mut opts = git2::StatusOptions::new();
         match repo_obj.statuses(Some(&mut opts)) {
             Ok(statuses) if statuses.is_empty() => {
@@ -185,9 +166,6 @@ fn create_table_from_paths(
         };
     }
 
-    // After looping over all the paths, check if the table contains any rows. We perform this
-    // check because we only want results for directories that contain Git repositories. Return
-    // the resulting TableWrapper object after creating a heap-allocated string for the path name.
     match table.is_empty() {
         true => None,
         false => Some(TableWrapper {
@@ -197,7 +175,14 @@ fn create_table_from_paths(
     }
 }
 
-/// This function is the primary, backend driver for ```gfold```.
+/// This function is the primary, backend driver for `gfold`.
+///
+/// - `path`: the target path to find and parse Git repositories
+/// - `no_color`: disables color, bolding, etc.
+/// - `recursive`: recursively searches directories for Git repositories
+/// - `skip_sort`: skips sorting the repositories for output
+///
+/// When executed, results will be printed to STDOUT.
 pub fn run(path: &Path, no_color: bool, recursive: bool, skip_sort: bool) -> Result<()> {
     let config = Config {
         no_color,
@@ -228,23 +213,18 @@ mod tests {
     }
 
     #[test]
-    fn parent_directory_recursive() {
+    fn parent_directory_all_options() {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
-        assert_ne!(run(&current_dir, false, true, false).is_err(), true);
-    }
 
-    #[test]
-    fn parent_directory_recursive_skip_sort() {
-        let mut current_dir = env::current_dir().expect("failed to get CWD");
-        current_dir.pop();
-        assert_ne!(run(&current_dir, false, true, true).is_err(), true);
-    }
-
-    #[test]
-    fn parent_directory_recursive_no_color() {
-        let mut current_dir = env::current_dir().expect("failed to get CWD");
-        current_dir.pop();
+        assert_ne!(run(&current_dir, true, false, false).is_err(), true);
+        assert_ne!(run(&current_dir, true, false, true).is_err(), true);
         assert_ne!(run(&current_dir, true, true, false).is_err(), true);
+
+        assert_ne!(run(&current_dir, false, true, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, true, true).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, true).is_err(), true);
+
+        assert_ne!(run(&current_dir, true, true, true).is_err(), true);
     }
 }

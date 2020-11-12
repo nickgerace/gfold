@@ -30,8 +30,6 @@ struct Opt {
     skip_sort: bool,
 }
 
-/// This file, ```main.rs```, serves as the primary driver for the ```gfold``` library.
-/// It is intended to be used as a command-line interface.
 fn main() -> Result<()> {
     let mut path = env::current_dir()?;
 
