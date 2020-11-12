@@ -10,18 +10,6 @@ VERSION:=0.7.0
 
 all: build
 
-run:
-	@cd $(MAKEPATH); cargo run -- ..
-
-run-recursive:
-	@cd $(MAKEPATH); cargo run -- .. -r
-
-install:
-	cargo install --git https://github.com/nickgerace/gfold --tag $(VERSION)
-
-install-local:
-	cargo install --path $(MAKEPATH)
-
 build: pre-build
 	cd $(MAKEPATH); cargo build
 
