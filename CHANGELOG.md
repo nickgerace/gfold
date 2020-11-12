@@ -10,7 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Crates.io publishing requirements to `[package]` in `Cargo.toml`
 - Homebrew tap
+- Library description to `lib.rs`
 
 ### Changed
 
@@ -18,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - README mentions of specific version tags
 - README plaintext blocks to single quotes when mixed with formatted text
 - README to sort installation method by package managers first
+
+## Removed
+
+- Public structs and functions without only `run` (primary backend driver) remaining
 
 ## [0.6.2] - 2020-11-03
 
@@ -40,8 +46,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - LICENSE to be extended through 2021
-- Match blocks in ```lib.rs``` to be consolidated
-- Nearly all contents of ```lib.rs``` to return errors back to the calling function in ```main.rs```
+- Match blocks in `lib.rs` to be consolidated
+- Nearly all contents of `lib.rs` to return errors back to the calling function in `main.rs`
 
 ### Removed
 
@@ -51,19 +57,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Doc comments and ```cargo doc``` to ```release``` target
-- ```eyre``` for simple backtrace reporting
-- ```gfold-bin``` to AUR portion of README
-- ```lib.rs``` as part of major refactor
+- Doc comments and `cargo doc` to `release` target
+- `eyre` for simple backtrace reporting
+- `gfold-bin` to AUR portion of README
+- `lib.rs` as part of major refactor
 
 ### Changed
 
 - Pre-build Makefile targets to be consolidated
-- Refactor source code to be driven by a library, helmed by ```lib.rs```
+- Refactor source code to be driven by a library, helmed by `lib.rs`
 
 ### Removed
 
-- ```util.rs``` and ```gfold.rs``` as part of major refactor
+- `util.rs` and `gfold.rs` as part of major refactor
 
 ## [0.5.2] - 2020-10-08
 
@@ -110,13 +116,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - AUR PKGBUILD GitHub repository to README
 - Results and TableWrapper structs, and relevant functions,
 - Three methods for Results struct (printing/sorting/populating results)
-- Make targets for ```run-recursive``` and ```install-local```
+- Make targets for `run-recursive` and `install-local`
 
 ### Changed
 
-- Switch from ```walk_dir``` function to object-driven harness for execution
-- Move ```walk_dir``` function logic to ```Results``` method
-- Function ```is_git_repo``` to its own file
+- Switch from `walk_dir` function to object-driven harness for execution
+- Move `walk_dir` function logic to `Results` method
+- Function `is_git_repo` to its own file
 - Any unnecessary match block to use "expect" instead
 - Cargo install to use a specific tag
 - Version upgrade workflow to Makefile
