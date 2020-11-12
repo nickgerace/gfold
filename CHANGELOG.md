@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Dependency versioning to use carets
 - README mentions of specific version tags
 - README plaintext blocks to single quotes when mixed with formatted text
 - README to sort installation method by package managers first
