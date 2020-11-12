@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Crate to crates.io
 - Crates.io publishing requirements to `[package]` in `Cargo.toml`
 - Homebrew tap
 - Library description to `lib.rs`
