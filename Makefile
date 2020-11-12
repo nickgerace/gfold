@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.6.2
+VERSION:=0.7.0
 
 all: build
 
@@ -25,8 +25,7 @@ install-local:
 build: pre-build
 	cd $(MAKEPATH); cargo build
 
-build-release: pre-build
-	cd $(MAKEPATH); cargo publish --dry-run
+build-release: pre-build doc
 	cd $(MAKEPATH); cargo build --release
 
 pre-build:
@@ -57,8 +56,8 @@ release:
 	@printf "    Cargo.toml:\n        $(shell grep $(VERSION) $(MAKEPATH)/Cargo.toml)\n"
 	@printf "[2] Uncomment the unreleased string in CHANGELOG.md...\n"
 	@printf "    <!--The latest version contains all changes.-->\n"
-	@printf "[3] Run the following command to check documentation...\n"
-	@printf "    cargo doc --open\n"
-	@printf "[4] Then, run the following command...\n"
+	@printf "[3] Then, run the following command...\n"
 	@printf "    time make build-release\n"
+	@printf "[4] Before merging, ensure that publishing works.\n"
+	@printf "    cargo publish --dry-run\n"
 
