@@ -29,6 +29,7 @@ build-release: pre-build
 	cd $(MAKEPATH); cargo build --release
 
 pre-build:
+	cd $(MAKEPATH); cargo update
 	cd $(MAKEPATH); cargo fmt
 	cd $(MAKEPATH); cargo clippy
 	cd $(MAKEPATH); cargo test

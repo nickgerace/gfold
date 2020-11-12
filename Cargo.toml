@@ -5,7 +5,7 @@ authors = ["Nick Gerace <nickagerace@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-eyre = "0.6"
-structopt = "0.3"
-git2 = "0.13"
-prettytable-rs = "0.8"
+eyre = "^0.6"
+structopt = "^0.3"
+git2 = "^0.13"
+prettytable-rs = "^0.8"
