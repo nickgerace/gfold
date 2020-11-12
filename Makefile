@@ -34,8 +34,8 @@ pre-build:
 	cd $(MAKEPATH); cargo clippy
 	cd $(MAKEPATH); cargo test
 
-tree:
-	cd $(MAKEPATH); cargo tree
+doc:
+	cd $(MAKEPATH); cargo doc --open
 
 tag:
 	cd $(MAKEPATH); git tag $(VERSION)

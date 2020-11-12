@@ -5,6 +5,8 @@
  * License: Apache 2.0
  */
 
+//! This is a CLI tool to help keep track of your Git repositories.
+
 #[macro_use]
 extern crate prettytable;
 
@@ -16,7 +18,7 @@ use std::path::PathBuf;
 use eyre::Result;
 
 /// Creating a ```Results``` object requires using this ```struct``` as a pre-requisite.
-pub struct Config {
+struct Config {
     no_color: bool,
     recursive: bool,
     skip_sort: bool,
@@ -30,11 +32,11 @@ struct TableWrapper {
 }
 
 /// Contains all tables with results for each directory.
-pub struct Results(Vec<TableWrapper>);
+struct Results(Vec<TableWrapper>);
 
 impl Results {
     /// Create a new ```Results``` object with a given path and config.
-    pub fn new(path: &Path, config: &Config) -> Result<Results> {
+    fn new(path: &Path, config: &Config) -> Result<Results> {
         let mut results = Results(Vec::new());
         results.execute_in_directory(&config, path)?;
         if !&config.skip_sort {
@@ -74,7 +76,7 @@ impl Results {
 
     /// Sort the results alphabetically using ```sort_by_key```.
     /// This function will only perform the sort if there are at least two ```TableWrapper``` objects.
-    pub fn sort_results(&mut self) {
+    fn sort_results(&mut self) {
         if self.0.len() >= 2 {
             // FIXME: find a way to do this without "clone()".
             self.0.sort_by_key(|table| table.path_string.clone());
@@ -83,7 +85,7 @@ impl Results {
 
     /// Iterate through every table and print each to STDOUT.
     /// If there is only one table, this function avoids using a loop.
-    pub fn print_results(self) {
+    fn print_results(self) {
         match self.0.len().cmp(&1) {
             Ordering::Greater => {
                 for table_wrapper in self.0 {
@@ -195,7 +197,7 @@ fn create_table_from_paths(
     }
 }
 
-/// This function is the primary driver for this file, ```lib.rs```.
+/// This function is the primary, backend driver for ```gfold```.
 pub fn run(path: &Path, no_color: bool, recursive: bool, skip_sort: bool) -> Result<()> {
     let config = Config {
         no_color,
