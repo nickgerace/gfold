@@ -37,9 +37,10 @@ pre-build:
 doc:
 	cd $(MAKEPATH); cargo doc --open
 
-tag:
+tag-release:
 	cd $(MAKEPATH); git tag $(VERSION)
 	cd $(MAKEPATH); git push --tags origin main
+	cd $(MAKEPATH); cargo publish
 
 fixme:
 	@cd $(MAKEPATH); grep -r \
@@ -60,4 +61,11 @@ release:
 	@printf "    time make build-release\n"
 	@printf "[4] Before merging, ensure that publishing works.\n"
 	@printf "    cargo publish --dry-run\n"
+
+post-release:
+	@printf "[1] Run the following command...\n"
+	@printf "    time make tag-release\n"
+	@printf "[2] Edit the GitHub release page for the new release.\n"
+	@printf "[3] Check crates.io: https://crates.io/crates/gfold\n"
+	@printf "[4] Update Homebrew tap version: https://github.com/nickgerace/homebrew-gfold\n"
 
