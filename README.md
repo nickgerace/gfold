@@ -2,6 +2,7 @@
 
 [![GitHub](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square)](./LICENSE)
 [![Latest SemVer GitHub Tag](https://img.shields.io/github/v/tag/nickgerace/gfold?label=version&style=flat-square)](https://github.com/nickgerace/gfold/releases/latest)
+[![Crates.io](https://img.shields.io/crates/v/gfold?style=flat-square)](https://crates.io/crates/gfold)
 [![Build Status](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
 
 `gfold` is a CLI application that helps you keep track of multiple Git repositories.
@@ -67,10 +68,10 @@ Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/A
 
 ### Cargo Install
 
-You can build from source with `cargo` by executing the following...
+You can install from [crates.io](https://crates.io/crates/gfold) by executing...
 
 ```bash
-cargo install --git https://github.com/nickgerace/gfold --tag <version>
+cargo install gfold
 ```
 
 ### GitHub Release Binary
@@ -92,9 +93,6 @@ You can use symbolic links to swap between versions, and manage multiple at a ti
 Here is a full install workflow example...
 
 ```bash
-VERSION=<version>
-PLATFORM=linux-gnu-amd64
-
 wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-$PLATFORM
 mv gfold-$PLATFORM gfold-$VERSION
 chmod +x gfold-$VERSION

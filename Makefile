@@ -26,6 +26,7 @@ build: pre-build
 	cd $(MAKEPATH); cargo build
 
 build-release: pre-build
+	cd $(MAKEPATH); cargo publish --dry-run
 	cd $(MAKEPATH); cargo build --release
 
 pre-build:
