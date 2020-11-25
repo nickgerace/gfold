@@ -22,6 +22,9 @@ pre-build:
 	cd $(MAKEPATH); cargo clippy
 	cd $(MAKEPATH); cargo test
 
+debug:
+	cd $(MAKEPATH); RUST_LOG=debug cargo run -- ..
+
 doc:
 	cd $(MAKEPATH); cargo doc --open
 

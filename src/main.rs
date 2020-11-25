@@ -31,9 +31,10 @@ struct Opt {
 }
 
 fn main() -> Result<()> {
-    let mut path = env::current_dir()?;
+    env_logger::init();
 
     let opt = Opt::from_args();
+    let mut path = env::current_dir()?;
     if let Some(provided_path) = opt.path {
         path.push(provided_path)
     };
