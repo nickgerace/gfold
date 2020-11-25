@@ -10,12 +10,12 @@
 ```bash
 user at hostname in ~/git
 % gfold
-great-journey      unclean  main      git@github.com:truth/great-journey.git
-installation-zero  bare     main      https://github.com/the-ark/installation-zero.git
-sierra             clean    dev       https://github.com/forward-unto-dawn/sierra.git
-spark              clean    issue343  git@github.com:guilty/spark.git
-tartarus           unclean  delta     git@github.com:covenant/tartarus.git
-voi                clean    main      https://github.com/earth/voi.git
+great-journey      unclean   main      git@github.com:truth/great-journey.git
+installation-zero  bare      main      https://github.com/the-ark/installation-zero.git
+sierra             unpushed  dev       https://github.com/forward-unto-dawn/sierra.git
+spark              clean     issue343  git@github.com:guilty/spark.git
+tartarus           unclean   delta     git@github.com:covenant/tartarus.git
+voi                clean     main      https://github.com/earth/voi.git
 ```
 
 ## Description and Motivation

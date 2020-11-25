@@ -16,7 +16,9 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use eyre::Result;
+use log::debug;
 
+#[derive(Debug)]
 struct Config {
     no_color: bool,
     recursive: bool,
@@ -106,6 +108,7 @@ fn create_table_from_paths(
 
     // FIXME: maximize error recovery in this loop.
     for repo in repos {
+        debug!("Creating row from path: {:#?}", repo);
         let repo_obj = git2::Repository::open(&repo).ok()?;
 
         // FIXME: in case deeper recoverable errors are desired, use the match arm...
@@ -130,40 +133,46 @@ fn create_table_from_paths(
             None => "none",
         };
 
-        let mut opts = git2::StatusOptions::new();
-        match repo_obj.statuses(Some(&mut opts)) {
-            Ok(statuses) if statuses.is_empty() => {
-                if *no_color {
-                    table.add_row(row![Fl->str_name, Fl->"clean", Fl->branch, Fl->url])
-                } else {
-                    table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
-                }
+        if repo_obj.is_bare() {
+            if *no_color {
+                table.add_row(row![Fl->str_name, Fl->"bare", Fl->branch, Fl->url]);
+            } else {
+                table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url]);
             }
-            Ok(_) => {
-                if *no_color {
-                    table.add_row(row![Fl->str_name, Fl->"unclean", Fl->branch, Fl->url])
-                } else {
-                    table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url])
+        } else {
+            let mut opts = git2::StatusOptions::new();
+            match repo_obj.statuses(Some(&mut opts)) {
+                Ok(statuses) if statuses.is_empty() => {
+                    if is_unpushed(&repo_obj, &head).ok()? {
+                        if *no_color {
+                            table.add_row(row![Fl->str_name, Fl->"unpushed", Fl->branch, Fl->url])
+                        } else {
+                            table.add_row(row![Flb->str_name, Fcl->"unpushed", Fl->branch, Fl->url])
+                        }
+                    } else {
+                        if *no_color {
+                            table.add_row(row![Fl->str_name, Fl->"clean", Fl->branch, Fl->url])
+                        } else {
+                            table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
+                        }
+                    }
                 }
-            }
-            Err(error)
-                if error.code() == git2::ErrorCode::BareRepo
-                    && error.class() == git2::ErrorClass::Repository =>
-            {
-                if *no_color {
-                    table.add_row(row![Fb->str_name, Fl->"bare", Fl->branch, Fl->url])
-                } else {
-                    table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url])
+                Ok(_) => {
+                    if *no_color {
+                        table.add_row(row![Fl->str_name, Fl->"unclean", Fl->branch, Fl->url])
+                    } else {
+                        table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url])
+                    }
                 }
-            }
-            Err(_) => {
-                if *no_color {
-                    table.add_row(row![Fb->str_name, Fl->"error", Fl->branch, Fl->url])
-                } else {
-                    table.add_row(row![Flb->str_name, Frl->"error", Fl->branch, Fl->url])
+                Err(_) => {
+                    if *no_color {
+                        table.add_row(row![Fl->str_name, Fl->"error", Fl->branch, Fl->url])
+                    } else {
+                        table.add_row(row![Flb->str_name, Frl->"error", Fl->branch, Fl->url])
+                    }
                 }
-            }
-        };
+            };
+        }
     }
 
     match table.is_empty() {
@@ -172,6 +181,22 @@ fn create_table_from_paths(
             path_string: path.to_str()?.to_string(),
             table,
         }),
+    }
+}
+
+// FIXME: add an -o/--offline flag if this function is changed to connect to the remote.
+fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> Result<bool> {
+    let local = head.peel_to_commit()?;
+    debug!("Local commit: {:#?}", local.id());
+
+    let upstream = repo
+        .resolve_reference_from_short_name("origin")?
+        .peel_to_commit()?;
+    debug!("Origin commit: {:#?}", upstream.id());
+
+    match repo.graph_ahead_behind(local.id(), upstream.id())? {
+        ahead if ahead.0 > 0 => Ok(true),
+        _ => Ok(false),
     }
 }
 
@@ -189,6 +214,9 @@ pub fn run(path: &Path, no_color: bool, recursive: bool, skip_sort: bool) -> Res
         recursive,
         skip_sort,
     };
+    debug!("Running with path: {:#?}", path);
+    debug!("Running with config: {:#?}", &config);
+
     let results = Results::new(path, &config)?;
     results.print_results();
     Ok(())
