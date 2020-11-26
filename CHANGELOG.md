@@ -13,11 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Debugging calls for general usage and the new unpushed commit code
 - Derive debug to the `Config` struct
 - Lightweight logging stack with `env_logger` and `log`
+- Two files: `driver.rs` and `util.rs`
 - Unpushed commit status functionality and output
 
 ### Changed
 
 - Bare repository detection to use upstream function
+- Library contents into `driver.rs` and `util.rs` through a major refactor
 
 ## [0.7.1] - 2020-11-18
 
