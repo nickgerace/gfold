@@ -6,7 +6,7 @@
 
 MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NAME:=gfold
-VERSION:=0.7.1
+VERSION:=0.8.0
 
 all: build
 
@@ -51,7 +51,10 @@ release:
 	@printf "    <!--The latest version contains all changes.-->\n"
 	@printf "[3] Then, run the following command...\n"
 	@printf "    time make build-release\n"
-	@printf "[4] Before merging, ensure that publishing works.\n"
+	@printf "[4] Create a commit with the following message...\n"
+	@printf "    Update to x.x.x\n"
+	@printf "    Update to x.x.x and change all relevant files with the new semver.\n"
+	@printf "[5] Before merging, ensure that publishing works.\n"
 	@printf "    cargo publish --dry-run\n"
 
 post-release:
