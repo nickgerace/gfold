@@ -12,6 +12,14 @@ use std::path::{Path, PathBuf};
 use eyre::Result;
 use log::debug;
 
+enum Condition {
+    Bare,
+    Clean,
+    Error,
+    Unclean,
+    Unpushed,
+}
+
 pub fn create_table_from_paths(
     repos: Vec<PathBuf>,
     path: &Path,
@@ -47,49 +55,53 @@ pub fn create_table_from_paths(
             None => "none",
         };
 
-        let str_name = match Path::new(&repo).strip_prefix(path).ok()?.to_str() {
+        let name = match Path::new(&repo).strip_prefix(path).ok()?.to_str() {
             Some(x) => x,
             None => "none",
         };
 
+        let condition;
         if repo_obj.is_bare() {
-            if *no_color {
-                table.add_row(row![Fl->str_name, Fl->"bare", Fl->branch, Fl->url]);
-            } else {
-                table.add_row(row![Flb->str_name, Frl->"bare", Fl->branch, Fl->url]);
-            }
+            condition = Condition::Bare;
         } else {
             let mut opts = git2::StatusOptions::new();
-            match repo_obj.statuses(Some(&mut opts)) {
+            condition = match repo_obj.statuses(Some(&mut opts)) {
                 Ok(statuses) if statuses.is_empty() => {
                     if is_unpushed(&repo_obj, &head).ok()? {
-                        if *no_color {
-                            table.add_row(row![Fl->str_name, Fl->"unpushed", Fl->branch, Fl->url])
-                        } else {
-                            table.add_row(row![Flb->str_name, Fcl->"unpushed", Fl->branch, Fl->url])
-                        }
-                    } else if *no_color {
-                        table.add_row(row![Fl->str_name, Fl->"clean", Fl->branch, Fl->url])
+                        Condition::Unpushed
                     } else {
-                        table.add_row(row![Flb->str_name, Fgl->"clean", Fl->branch, Fl->url])
+                        Condition::Clean
                     }
                 }
-                Ok(_) => {
-                    if *no_color {
-                        table.add_row(row![Fl->str_name, Fl->"unclean", Fl->branch, Fl->url])
-                    } else {
-                        table.add_row(row![Flb->str_name, Fyl->"unclean", Fl->branch, Fl->url])
-                    }
-                }
-                Err(_) => {
-                    if *no_color {
-                        table.add_row(row![Fl->str_name, Fl->"error", Fl->branch, Fl->url])
-                    } else {
-                        table.add_row(row![Flb->str_name, Frl->"error", Fl->branch, Fl->url])
-                    }
-                }
+                Ok(_) => Condition::Unclean,
+                Err(_) => Condition::Error,
             };
         }
+
+        match condition {
+            Condition::Bare if *no_color => {
+                table.add_row(row![Fl->name, Fl->"bare", Fl->branch, Fl->url])
+            }
+            Condition::Bare => table.add_row(row![Flb->name, Frl->"bare", Fl->branch, Fl->url]),
+            Condition::Clean if *no_color => {
+                table.add_row(row![Fl->name, Fl->"clean", Fl->branch, Fl->url])
+            }
+            Condition::Clean => table.add_row(row![Flb->name, Fgl->"clean", Fl->branch, Fl->url]),
+            Condition::Unclean if *no_color => {
+                table.add_row(row![Fl->name, Fl->"unclean", Fl->branch, Fl->url])
+            }
+            Condition::Unclean => {
+                table.add_row(row![Flb->name, Fyl->"unclean", Fl->branch, Fl->url])
+            }
+            Condition::Unpushed if *no_color => {
+                table.add_row(row![Fl->name, Fl->"unpushed", Fl->branch, Fl->url])
+            }
+            Condition::Unpushed => {
+                table.add_row(row![Flb->name, Fcl->"unpushed", Fl->branch, Fl->url])
+            }
+            _ if *no_color => table.add_row(row![Fl->name, Fl->"error", Fl->branch, Fl->url]),
+            _ => table.add_row(row![Flb->name, Frl->"error", Fl->branch, Fl->url]),
+        };
     }
 
     match table.is_empty() {
@@ -105,6 +117,9 @@ fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> Result<bool> 
     let local = head.peel_to_commit()?;
     debug!("Local commit: {:#?}", local.id());
 
+    // FIXME: there is a bug where the "origin" resolved here is from the main remote branch, and
+    // not the remote of the local branch being tracked. We may need to check if a remote exists
+    // for the local branch with this fix.
     let upstream = repo
         .resolve_reference_from_short_name("origin")?
         .peel_to_commit()?;
