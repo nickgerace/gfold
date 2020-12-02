@@ -23,7 +23,7 @@ pre-build:
 	cd $(MAKEPATH); cargo test
 
 debug:
-	cd $(MAKEPATH); RUST_LOG=debug cargo run -- ..
+	cd $(MAKEPATH); cargo run -- .. --debug
 
 doc:
 	cd $(MAKEPATH); cargo doc --open

@@ -11,10 +11,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Added
 
 - Condition enum for adding rows to final table
+- Debug flag
 
 ## Changed
 
+- Bare repository checking to original behavior
 - `util.rs` results generation to include Condition enum
+
+## Removed
+
+- Carets from `Cargo.toml` to maintain stability
+- Unpush functionality temporarily
 
 ## [0.8.0] - 2020-11-26
 

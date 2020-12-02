@@ -16,7 +16,6 @@ extern crate prettytable;
 use std::path::Path;
 
 use eyre::Result;
-use log::debug;
 
 /// This function is the primary, backend driver for `gfold`.
 ///
@@ -32,9 +31,6 @@ pub fn run(path: &Path, no_color: bool, recursive: bool, skip_sort: bool) -> Res
         recursive,
         skip_sort,
     };
-    debug!("Running with path: {:#?}", path);
-    debug!("Running with config: {:#?}", &config);
-
     let results = driver::Results::new(path, &config)?;
     results.print_results();
     Ok(())
