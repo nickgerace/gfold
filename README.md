@@ -133,15 +133,6 @@ It is tested for the latest versions of the following systems, but may work on m
 - **macOS**: `macos-amd64`
 - **Windows 10**: `windows-amd64`
 
-## Issues, Pull Requests, and Contributing
-
-Please follow the issue template when filing an issue.
-If making a pull request, the requirements for merging are...
-
-1. An issue must be linked, whether it is a new one or an existing one.
-2. The pull request branch needs to be rebased with `nickgerace/gfold` on `main`.
-3. Pull request commits need to be squashed (there may be exceptions to this on a case-by-case basis).
-
 ## Changelog
 
 Please check out [CHANGELOG.md](./CHANGELOG.md) for more information.
