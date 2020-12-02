@@ -17,3 +17,6 @@ assignees: nickgerace
 
 ### Are you using a pre-built binary? If not, how did you obtain `gfold`?
 <!--answer-here-->
+
+### Paste the output of `gfold --version`.
+<!--answer-here-->
