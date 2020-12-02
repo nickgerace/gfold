@@ -12,9 +12,9 @@ keywords = ["git", "cli"]
 categories = ["command-line-utilities", "command-line-interface"]
 
 [dependencies]
-env_logger = "^0.8"
-eyre = "^0.6"
-git2 = "^0.13"
-log = "^0.4"
-prettytable-rs = "^0.8"
-structopt = "^0.3"
+env_logger = "0.8"
+eyre = "0.6"
+git2 = "0.13"
+log = "0.4"
+prettytable-rs = "0.8"
+structopt = "0.3"

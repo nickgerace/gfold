@@ -12,12 +12,12 @@ use std::path::{Path, PathBuf};
 use eyre::Result;
 use log::debug;
 
+#[derive(Debug)]
 enum Condition {
     Bare,
     Clean,
     Error,
     Unclean,
-    Unpushed,
 }
 
 pub fn create_table_from_paths(
@@ -36,47 +36,58 @@ pub fn create_table_from_paths(
     // FIXME: maximize error recovery in this loop.
     for repo in repos {
         debug!("Creating row from path: {:#?}", repo);
-        let repo_obj = git2::Repository::open(&repo).ok()?;
+        let repo_obj = match git2::Repository::open(&repo) {
+            Ok(repo) => repo,
+            Err(_) => {
+                debug!("Could not open Git repository. Continuing to next repository...");
+                continue;
+            }
+        };
 
         // FIXME: in case deeper recoverable errors are desired, use the match arm...
         // Err(error) if error.class() == git2::ErrorClass::Config => continue,
         let origin = match repo_obj.find_remote("origin") {
             Ok(origin) => origin,
-            Err(_) => continue,
+            Err(_) => {
+                debug!("Could not find remote origin. Continuing to next repository...");
+                continue;
+            }
         };
         let url = match origin.url() {
             Some(url) => url,
             None => "none",
         };
+        debug!("[+] url: {:#?}", url);
 
         let head = repo_obj.head().ok()?;
         let branch = match head.shorthand() {
             Some(branch) => branch,
             None => "none",
         };
+        debug!("[+] branch: {:#?}", branch);
 
         let name = match Path::new(&repo).strip_prefix(path).ok()?.to_str() {
-            Some(x) => x,
+            Some(name) => name,
             None => "none",
         };
+        debug!("[+] name: {:#?}", name);
 
-        let condition;
-        if repo_obj.is_bare() {
-            condition = Condition::Bare;
-        } else {
-            let mut opts = git2::StatusOptions::new();
-            condition = match repo_obj.statuses(Some(&mut opts)) {
-                Ok(statuses) if statuses.is_empty() => {
-                    if is_unpushed(&repo_obj, &head).ok()? {
-                        Condition::Unpushed
-                    } else {
-                        Condition::Clean
-                    }
-                }
-                Ok(_) => Condition::Unclean,
-                Err(_) => Condition::Error,
-            };
-        }
+        // FIXME: add back function after being fixed.
+        debug!("[+] unpushed: {:#?}", is_unpushed(&repo_obj, &head).ok()?);
+
+        // FIXME: test using the "is_bare()" method for a repository object.
+        let mut opts = git2::StatusOptions::new();
+        let condition = match repo_obj.statuses(Some(&mut opts)) {
+            Ok(statuses) if statuses.is_empty() => Condition::Clean,
+            Ok(_) => Condition::Unclean,
+            Err(error)
+                if error.code() == git2::ErrorCode::BareRepo
+                    && error.class() == git2::ErrorClass::Repository =>
+            {
+                Condition::Bare
+            }
+            Err(_) => Condition::Error,
+        };
 
         match condition {
             Condition::Bare if *no_color => {
@@ -93,17 +104,13 @@ pub fn create_table_from_paths(
             Condition::Unclean => {
                 table.add_row(row![Flb->name, Fyl->"unclean", Fl->branch, Fl->url])
             }
-            Condition::Unpushed if *no_color => {
-                table.add_row(row![Fl->name, Fl->"unpushed", Fl->branch, Fl->url])
-            }
-            Condition::Unpushed => {
-                table.add_row(row![Flb->name, Fcl->"unpushed", Fl->branch, Fl->url])
-            }
             _ if *no_color => table.add_row(row![Fl->name, Fl->"error", Fl->branch, Fl->url]),
             _ => table.add_row(row![Flb->name, Frl->"error", Fl->branch, Fl->url]),
         };
+        debug!("[+] condition: {:#?}", condition);
     }
 
+    debug!("Generated {:#?} rows for table object", table.len());
     match table.is_empty() {
         true => None,
         false => Some(driver::TableWrapper {
@@ -113,20 +120,27 @@ pub fn create_table_from_paths(
     }
 }
 
+// FIXME: this function does not currently work because "clean", non-main branches can be considered "unpushed".
 fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> Result<bool> {
     let local = head.peel_to_commit()?;
-    debug!("Local commit: {:#?}", local.id());
+    debug!("[+] local commit: {:#?}", local.id());
 
-    // FIXME: there is a bug where the "origin" resolved here is from the main remote branch, and
-    // not the remote of the local branch being tracked. We may need to check if a remote exists
-    // for the local branch with this fix.
     let upstream = repo
         .resolve_reference_from_short_name("origin")?
         .peel_to_commit()?;
-    debug!("Origin commit: {:#?}", upstream.id());
+    debug!("[+] origin commit: {:#?}", upstream.id());
 
     match repo.graph_ahead_behind(local.id(), upstream.id())? {
         ahead if ahead.0 > 0 => Ok(true),
         _ => Ok(false),
     }
 }
+
+/*
+Condition::Unpushed if *no_color => {
+    table.add_row(row![Fl->name, Fl->"unpushed", Fl->branch, Fl->url])
+}
+Condition::Unpushed => {
+    table.add_row(row![Flb->name, Fcl->"unpushed", Fl->branch, Fl->url])
+}
+*/

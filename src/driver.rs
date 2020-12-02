@@ -12,6 +12,7 @@ use std::fs;
 use std::path::Path;
 
 use eyre::Result;
+use log::debug;
 
 #[derive(Debug)]
 pub struct Config {
@@ -29,6 +30,8 @@ pub struct Results(Vec<TableWrapper>);
 
 impl Results {
     pub fn new(path: &Path, config: &Config) -> Result<Results> {
+        debug!("Running with config: {:#?}", &config);
+        debug!("Running in path: {:#?}", &path);
         let mut results = Results(Vec::new());
         results.execute_in_directory(&config, path)?;
         if !&config.skip_sort {
@@ -38,6 +41,7 @@ impl Results {
     }
 
     pub fn print_results(self) {
+        debug!("Printing results with {} tables...", self.0.len());
         match self.0.len().cmp(&1) {
             Ordering::Greater => {
                 for table_wrapper in self.0 {
@@ -65,10 +69,13 @@ impl Results {
                 if git2::Repository::open(subpath).is_ok() {
                     repos.push(subpath.to_owned());
                 } else if config.recursive {
+                    debug!("Recursive execution into directory: {:#?}", &subpath);
                     self.execute_in_directory(&config, &subpath)?;
                 }
             }
         }
+
+        debug!("Git repositories found: {:#?}", repos);
         if !repos.is_empty() {
             if !&config.skip_sort {
                 repos.sort();
@@ -83,6 +90,7 @@ impl Results {
     }
 
     fn sort_results(&mut self) {
+        debug!("Sorting {:#?} tables...", self.0.len());
         if self.0.len() >= 2 {
             // FIXME: find a way to do this without "clone()".
             self.0.sort_by_key(|table| table.path_string.clone());
