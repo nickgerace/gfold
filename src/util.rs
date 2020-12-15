@@ -9,7 +9,6 @@ use crate::driver;
 
 use std::path::{Path, PathBuf};
 
-use eyre::Result;
 use log::debug;
 
 #[derive(Debug)]
@@ -18,6 +17,7 @@ enum Condition {
     Clean,
     Error,
     Unclean,
+    Unpushed,
 }
 
 pub fn create_table_from_paths(
@@ -72,13 +72,16 @@ pub fn create_table_from_paths(
         };
         debug!("[+] name: {:#?}", name);
 
-        // FIXME: add back function after being fixed.
-        debug!("[+] unpushed: {:#?}", is_unpushed(&repo_obj, &head).ok()?);
-
         // FIXME: test using the "is_bare()" method for a repository object.
         let mut opts = git2::StatusOptions::new();
         let condition = match repo_obj.statuses(Some(&mut opts)) {
-            Ok(statuses) if statuses.is_empty() => Condition::Clean,
+            Ok(statuses) if statuses.is_empty() => {
+                if is_unpushed(&repo_obj, &head) {
+                    Condition::Unpushed
+                } else {
+                    Condition::Clean
+                }
+            }
             Ok(_) => Condition::Unclean,
             Err(error)
                 if error.code() == git2::ErrorCode::BareRepo
@@ -104,6 +107,12 @@ pub fn create_table_from_paths(
             Condition::Unclean => {
                 table.add_row(row![Flb->name, Fyl->"unclean", Fl->branch, Fl->url])
             }
+            Condition::Unpushed if *no_color => {
+                table.add_row(row![Fl->name, Fl->"unpushed", Fl->branch, Fl->url])
+            }
+            Condition::Unpushed => {
+                table.add_row(row![Flb->name, Fcl->"unpushed", Fl->branch, Fl->url])
+            }
             _ if *no_color => table.add_row(row![Fl->name, Fl->"error", Fl->branch, Fl->url]),
             _ => table.add_row(row![Flb->name, Frl->"error", Fl->branch, Fl->url]),
         };
@@ -120,27 +129,31 @@ pub fn create_table_from_paths(
     }
 }
 
-// FIXME: this function does not currently work because "clean", non-main branches can be considered "unpushed".
-fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> Result<bool> {
-    let local = head.peel_to_commit()?;
+// FIXME: this function may not currently work because "clean", non-main branches can be considered "unpushed".
+fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> bool {
+    let local = match head.peel_to_commit() {
+        Ok(local) => local,
+        Err(e) => {
+            debug!("[-] error: {}", e);
+            return false;
+        }
+    };
     debug!("[+] local commit: {:#?}", local.id());
 
-    let upstream = repo
-        .resolve_reference_from_short_name("origin")?
-        .peel_to_commit()?;
+    let upstream = match repo.resolve_reference_from_short_name("origin") {
+        Ok(reference) => match reference.peel_to_commit() {
+            Ok(upstream) => upstream,
+            Err(e) => {
+                debug!("[-] error: {}", e);
+                return false;
+            }
+        },
+        Err(e) => {
+            debug!("[-] error: {}", e);
+            return false;
+        }
+    };
     debug!("[+] origin commit: {:#?}", upstream.id());
 
-    match repo.graph_ahead_behind(local.id(), upstream.id())? {
-        ahead if ahead.0 > 0 => Ok(true),
-        _ => Ok(false),
-    }
+    matches!(repo.graph_ahead_behind(local.id(), upstream.id()), Ok(ahead) if ahead.0 > 0)
 }
-
-/*
-Condition::Unpushed if *no_color => {
-    table.add_row(row![Fl->name, Fl->"unpushed", Fl->branch, Fl->url])
-}
-Condition::Unpushed => {
-    table.add_row(row![Flb->name, Fcl->"unpushed", Fl->branch, Fl->url])
-}
-*/

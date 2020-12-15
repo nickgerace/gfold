@@ -52,9 +52,7 @@ impl Results {
             Ordering::Equal => {
                 self.0[0].table.printstd();
             }
-            Ordering::Less => {
-                println!("There are no results to display.");
-            }
+            _ => {}
         };
     }
 
