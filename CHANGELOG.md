@@ -6,36 +6,39 @@ All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-<!-- The latest version contains all changes. -->
 
-## Added
+The latest version contains all changes.
+
+## [0.8.2] - 2020-12-14
+
+### Added
 
 - `gfold --version` to issue template
 - Unpush functionality (again)
 
-## Changed
+### Changed
 
 - Unpush function to only return boolean
 
-## Removed
+### Removed
 
 - Contributing section from README to reduce requirements
 - Empty results message since it was potentially misleading
 
 ## [0.8.1] - 2020-12-01
 
-## Added
+### Added
 
 - Condition enum for adding rows to final table
 - Debug flag
 - Many debug statements for the new debug flag
 
-## Changed
+### Changed
 
 - Bare repository checking to original behavior
 - `util.rs` results generation to include Condition enum
 
-## Removed
+### Removed
 
 - Carets from `Cargo.toml` to maintain stability
 - Unpush functionality temporarily
@@ -85,7 +88,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - README plaintext blocks to single quotes when mixed with formatted text
 - README to sort installation method by package managers first
 
-## Removed
+### Removed
 
 - Public structs and functions without only `run` (primary backend driver) remaining
 
