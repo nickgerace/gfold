@@ -11,10 +11,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## Added
 
 - `gfold --version` to issue template
+- Unpush functionality (again)
+
+## Changed
+
+- Unpush function to only return boolean
 
 ## Removed
 
 - Contributing section from README to reduce requirements
+- Empty results message since it was potentially misleading
 
 ## [0.8.1] - 2020-12-01
 
