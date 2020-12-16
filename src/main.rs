@@ -22,6 +22,8 @@ working directory."
 struct Opt {
     #[structopt(short, long, help = "Set to debug mode")]
     debug: bool,
+    #[structopt(short, long, help = "Toggle to disable checking for unpushed commits")]
+    disable_unpushed_check: bool,
     #[structopt(long = "nc", help = "Disable color output")]
     no_color: bool,
     #[structopt(parse(from_os_str), help = "Target a different directory")]
@@ -46,6 +48,12 @@ fn main() -> Result<()> {
     };
     path = path.canonicalize()?;
 
-    gfold::run(&path, opt.no_color, opt.recursive, opt.skip_sort)?;
+    gfold::run(
+        &path,
+        opt.disable_unpushed_check,
+        opt.no_color,
+        opt.recursive,
+        opt.skip_sort,
+    )?;
     Ok(())
 }

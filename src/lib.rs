@@ -25,8 +25,15 @@ use eyre::Result;
 /// - `skip_sort`: skips sorting the repositories for output
 ///
 /// When executed, results will be printed to STDOUT.
-pub fn run(path: &Path, no_color: bool, recursive: bool, skip_sort: bool) -> Result<()> {
+pub fn run(
+    path: &Path,
+    disable_unpushed_check: bool,
+    no_color: bool,
+    recursive: bool,
+    skip_sort: bool,
+) -> Result<()> {
     let config = driver::Config {
+        disable_unpushed_check,
         no_color,
         recursive,
         skip_sort,
@@ -44,14 +51,14 @@ mod tests {
     #[test]
     fn current_directory() {
         let current_dir = env::current_dir().expect("failed to get CWD");
-        assert_ne!(run(&current_dir, false, false, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, false, false).is_err(), true);
     }
 
     #[test]
     fn parent_directory() {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
-        assert_ne!(run(&current_dir, false, false, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, false, false).is_err(), true);
     }
 
     #[test]
@@ -59,14 +66,14 @@ mod tests {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
 
-        assert_ne!(run(&current_dir, true, false, false).is_err(), true);
-        assert_ne!(run(&current_dir, true, false, true).is_err(), true);
-        assert_ne!(run(&current_dir, true, true, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, true, false, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, true, false, true).is_err(), true);
+        assert_ne!(run(&current_dir, false, true, true, false).is_err(), true);
 
-        assert_ne!(run(&current_dir, false, true, false).is_err(), true);
-        assert_ne!(run(&current_dir, false, true, true).is_err(), true);
-        assert_ne!(run(&current_dir, false, false, true).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, true, false).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, true, true).is_err(), true);
+        assert_ne!(run(&current_dir, false, false, false, true).is_err(), true);
 
-        assert_ne!(run(&current_dir, true, true, true).is_err(), true);
+        assert_ne!(run(&current_dir, false, true, true, true).is_err(), true);
     }
 }
