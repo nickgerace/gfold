@@ -16,6 +16,7 @@ use log::debug;
 
 #[derive(Debug)]
 pub struct Config {
+    pub disable_unpushed_check: bool,
     pub no_color: bool,
     pub recursive: bool,
     pub skip_sort: bool,
@@ -78,9 +79,12 @@ impl Results {
             if !&config.skip_sort {
                 repos.sort();
             }
-            if let Some(table_wrapper) =
-                util::create_table_from_paths(repos, &dir, &config.no_color)
-            {
+            if let Some(table_wrapper) = util::create_table_from_paths(
+                repos,
+                &dir,
+                &config.disable_unpushed_check,
+                &config.no_color,
+            ) {
                 self.0.push(table_wrapper);
             }
         }

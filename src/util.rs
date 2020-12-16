@@ -23,6 +23,7 @@ enum Condition {
 pub fn create_table_from_paths(
     repos: Vec<PathBuf>,
     path: &Path,
+    disable_unpushed_check: &bool,
     no_color: &bool,
 ) -> Option<driver::TableWrapper> {
     let mut table = prettytable::Table::new();
@@ -76,7 +77,7 @@ pub fn create_table_from_paths(
         let mut opts = git2::StatusOptions::new();
         let condition = match repo_obj.statuses(Some(&mut opts)) {
             Ok(statuses) if statuses.is_empty() => {
-                if is_unpushed(&repo_obj, &head) {
+                if !disable_unpushed_check && is_unpushed(&repo_obj, &head) {
                     Condition::Unpushed
                 } else {
                     Condition::Clean
@@ -139,15 +140,23 @@ fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> bool {
         }
     };
     debug!("[+] local commit: {:#?}", local.id());
+    if let Some(name) = head.name() {
+        debug!("[+] local ref: {}", name);
+    }
 
     let upstream = match repo.resolve_reference_from_short_name("origin") {
-        Ok(reference) => match reference.peel_to_commit() {
-            Ok(upstream) => upstream,
-            Err(e) => {
-                debug!("[-] error: {}", e);
-                return false;
+        Ok(reference) => {
+            if let Some(name) = reference.name() {
+                debug!("[+] origin ref: {}", name);
             }
-        },
+            match reference.peel_to_commit() {
+                Ok(upstream) => upstream,
+                Err(e) => {
+                    debug!("[-] error: {}", e);
+                    return false;
+                }
+            }
+        }
         Err(e) => {
             debug!("[-] error: {}", e);
             return false;
