@@ -17,7 +17,7 @@ jobs:
             asset_name: gfold-windows-amd64
           - os: macos-latest
             artifact_name: gfold
-            asset_name: gfold-macos-amd64
+            asset_name: gfold-darwin-amd64
     steps:
     - uses: actions/checkout@v2
     - name: Build

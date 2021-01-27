@@ -5,10 +5,9 @@
  * License: Apache 2.0
  */
 
+use eyre::Result;
 use std::env;
 use std::path::PathBuf;
-
-use eyre::Result;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -22,8 +21,12 @@ working directory."
 struct Opt {
     #[structopt(short, long, help = "Set to debug mode")]
     debug: bool,
-    #[structopt(short, long, help = "Toggle to disable checking for unpushed commits")]
-    disable_unpushed_check: bool,
+    #[structopt(
+        short,
+        long,
+        help = "Toggle to enable checking for unpushed commits (experimental)"
+    )]
+    enable_unpushed_check: bool,
     #[structopt(long = "nc", help = "Disable color output")]
     no_color: bool,
     #[structopt(parse(from_os_str), help = "Target a different directory")]
@@ -50,7 +53,7 @@ fn main() -> Result<()> {
 
     gfold::run(
         &path,
-        opt.disable_unpushed_check,
+        opt.enable_unpushed_check,
         opt.no_color,
         opt.recursive,
         opt.skip_sort,
