@@ -6,7 +6,10 @@ All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-<!-- The latest version contains all changes. -->
+
+The latest version contains all changes.
+
+## [0.8.4] - 2021-01-26
 
 ### Added
 
@@ -15,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- All CRLF files to LF
 - Condense tests into loops where possible
 - Label `unpush_check` as an experimental feature
 - `macos-amd64` to `darwin-amd64`
