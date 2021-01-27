@@ -6,10 +6,8 @@
  */
 
 use crate::driver;
-
-use std::path::{Path, PathBuf};
-
 use log::debug;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 enum Condition {
@@ -23,7 +21,7 @@ enum Condition {
 pub fn create_table_from_paths(
     repos: Vec<PathBuf>,
     path: &Path,
-    disable_unpushed_check: &bool,
+    enable_unpushed_check: &bool,
     no_color: &bool,
 ) -> Option<driver::TableWrapper> {
     let mut table = prettytable::Table::new();
@@ -54,30 +52,25 @@ pub fn create_table_from_paths(
                 continue;
             }
         };
-        let url = match origin.url() {
-            Some(url) => url,
-            None => "none",
-        };
+        let url = origin.url().unwrap_or("none");
         debug!("[+] url: {:#?}", url);
 
         let head = repo_obj.head().ok()?;
-        let branch = match head.shorthand() {
-            Some(branch) => branch,
-            None => "none",
-        };
+        let branch = head.shorthand().unwrap_or("none");
         debug!("[+] branch: {:#?}", branch);
 
-        let name = match Path::new(&repo).strip_prefix(path).ok()?.to_str() {
-            Some(name) => name,
-            None => "none",
-        };
+        let name = Path::new(&repo)
+            .strip_prefix(path)
+            .ok()?
+            .to_str()
+            .unwrap_or("none");
         debug!("[+] name: {:#?}", name);
 
         // FIXME: test using the "is_bare()" method for a repository object.
         let mut opts = git2::StatusOptions::new();
         let condition = match repo_obj.statuses(Some(&mut opts)) {
             Ok(statuses) if statuses.is_empty() => {
-                if !disable_unpushed_check && is_unpushed(&repo_obj, &head) {
+                if *enable_unpushed_check && is_unpushed(&repo_obj, &head) {
                     Condition::Unpushed
                 } else {
                     Condition::Clean

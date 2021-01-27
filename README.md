@@ -31,7 +31,7 @@ However, if you would like to target another directory, you can pass that path (
 
 There are multiple ways to install `gfold`, but here are some recommended methods...
 
-Installation Methods | `linux-gnu-amd64` | `macos-amd64` | `windows-amd64`
+Installation Methods | `linux-gnu-amd64` | `darwin-amd64` | `windows-amd64`
 --- | --- | --- | --
 Homebrew | x | x | -
 Arch User Repository (AUR) | x | - | -
@@ -64,7 +64,12 @@ This application is available for all Linux distributions that support installin
 - [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary)
 - [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
 
-Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) (example: `yay -S gfold`), in order to install their AUR packages.
+Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru), in order to install their AUR packages.
+
+```bash
+yay -S gfold
+paru -S gfold
+```
 
 ### Cargo Install
 
@@ -130,7 +135,7 @@ gfold -r $HOME/path/to/multiple/repositories
 It is tested for the latest versions of the following systems, but may work on more...
 
 - **Linux**: `linux-gnu-amd64`
-- **macOS**: `macos-amd64`
+- **macOS**: `darwin-amd64`
 - **Windows 10**: `windows-amd64`
 
 ## Changelog
