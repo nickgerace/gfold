@@ -1,10 +1,3 @@
-/*
- * gfold
- * https://github.com/nickgerace/gfold
- * Author: Nick Gerace
- * License: Apache 2.0
- */
-
 //! This is a CLI tool to help keep track of your Git repositories.
 
 #[macro_use]

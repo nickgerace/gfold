@@ -1,10 +1,3 @@
-/*
- * gfold
- * https://github.com/nickgerace/gfold
- * Author: Nick Gerace
- * License: Apache 2.0
- */
-
 use crate::util;
 use eyre::Result;
 use log::debug;

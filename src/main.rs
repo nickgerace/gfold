@@ -1,10 +1,3 @@
-/*
- * gfold
- * https://github.com/nickgerace/gfold
- * Author: Nick Gerace
- * License: Apache 2.0
- */
-
 use eyre::Result;
 use std::env;
 use std::path::PathBuf;
