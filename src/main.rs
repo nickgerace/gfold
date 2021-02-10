@@ -1,6 +1,7 @@
-use eyre::Result;
 use std::env;
 use std::path::PathBuf;
+
+use eyre::Result;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -20,6 +21,8 @@ struct Opt {
         help = "Toggle to enable checking for unpushed commits (experimental)"
     )]
     enable_unpushed_check: bool,
+    #[structopt(short, long, help = "Include standard directories in the result")]
+    include_non_repos: bool,
     #[structopt(long = "nc", help = "Disable color output")]
     no_color: bool,
     #[structopt(parse(from_os_str), help = "Target a different directory")]
@@ -47,6 +50,7 @@ fn main() -> Result<()> {
     gfold::run(
         &path,
         opt.enable_unpushed_check,
+        opt.include_non_repos,
         opt.no_color,
         opt.recursive,
         opt.skip_sort,
