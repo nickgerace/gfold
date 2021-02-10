@@ -1,6 +1,8 @@
-use crate::driver;
-use log::debug;
 use std::path::{Path, PathBuf};
+
+use log::{debug, warn};
+
+use crate::driver;
 
 #[derive(Debug)]
 enum Condition {
@@ -13,6 +15,7 @@ enum Condition {
 
 pub fn create_table_from_paths(
     repos: Vec<PathBuf>,
+    non_repos: Vec<PathBuf>,
     path: &Path,
     enable_unpushed_check: &bool,
     no_color: &bool,
@@ -52,13 +55,6 @@ pub fn create_table_from_paths(
         let branch = head.shorthand().unwrap_or("none");
         debug!("[+] branch: {:#?}", branch);
 
-        let name = Path::new(&repo)
-            .strip_prefix(path)
-            .ok()?
-            .to_str()
-            .unwrap_or("none");
-        debug!("[+] name: {:#?}", name);
-
         // FIXME: test using the "is_bare()" method for a repository object.
         let mut opts = git2::StatusOptions::new();
         let condition = match repo_obj.statuses(Some(&mut opts)) {
@@ -79,31 +75,52 @@ pub fn create_table_from_paths(
             Err(_) => Condition::Error,
         };
 
+        // This match block's formatting is aimed at readability (frequent usage of "{}").
         match condition {
             Condition::Bare if *no_color => {
-                table.add_row(row![Fl->name, Fl->"bare", Fl->branch, Fl->url])
+                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"bare", Fl->branch, Fl->url])
             }
-            Condition::Bare => table.add_row(row![Flb->name, Frl->"bare", Fl->branch, Fl->url]),
+            Condition::Bare => {
+                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Frl->"bare", Fl->branch, Fl->url])
+            }
             Condition::Clean if *no_color => {
-                table.add_row(row![Fl->name, Fl->"clean", Fl->branch, Fl->url])
+                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"clean", Fl->branch, Fl->url])
             }
-            Condition::Clean => table.add_row(row![Flb->name, Fgl->"clean", Fl->branch, Fl->url]),
+            Condition::Clean => {
+                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Fgl->"clean", Fl->branch, Fl->url])
+            }
             Condition::Unclean if *no_color => {
-                table.add_row(row![Fl->name, Fl->"unclean", Fl->branch, Fl->url])
+                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"unclean", Fl->branch, Fl->url])
             }
             Condition::Unclean => {
-                table.add_row(row![Flb->name, Fyl->"unclean", Fl->branch, Fl->url])
+                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Fyl->"unclean", Fl->branch, Fl->url])
             }
             Condition::Unpushed if *no_color => {
-                table.add_row(row![Fl->name, Fl->"unpushed", Fl->branch, Fl->url])
+                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"unpushed", Fl->branch, Fl->url])
             }
             Condition::Unpushed => {
-                table.add_row(row![Flb->name, Fcl->"unpushed", Fl->branch, Fl->url])
+                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Fcl->"unpushed", Fl->branch, Fl->url])
             }
-            _ if *no_color => table.add_row(row![Fl->name, Fl->"error", Fl->branch, Fl->url]),
-            _ => table.add_row(row![Flb->name, Frl->"error", Fl->branch, Fl->url]),
+            _ if *no_color => {
+                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"error", Fl->branch, Fl->url])
+            }
+            _ => {
+                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Frl->"error", Fl->branch, Fl->url])
+            }
         };
         debug!("[+] condition: {:#?}", condition);
+    }
+
+    for non_repo in non_repos {
+        if *no_color {
+            table.add_row(
+                row![Fl->get_short_name_for_directory(&non_repo, path), Fl->"dir", Fl->"-", Fl->"-"],
+            );
+        } else {
+            table.add_row(
+                row![Flb->get_short_name_for_directory(&non_repo, path), Fcl->"dir", Fl->"-", Fl->"-"],
+            );
+        }
     }
 
     debug!("Generated {:#?} rows for table object", table.len());
@@ -114,6 +131,18 @@ pub fn create_table_from_paths(
             table,
         }),
     }
+}
+
+pub fn get_short_name_for_directory(child: &PathBuf, parent: &Path) -> String {
+    let temp_dir = child.clone();
+    let path = match Path::new(&temp_dir).strip_prefix(parent) {
+        Ok(o) => o,
+        Err(e) => {
+            warn!("Encountered error: {:#?}", e);
+            return "none".to_string();
+        }
+    };
+    path.to_str().unwrap_or("none").to_owned()
 }
 
 // FIXME: this function may not currently work because "clean", non-main branches can be considered "unpushed".

@@ -1,13 +1,16 @@
-use crate::util;
-use eyre::Result;
-use log::debug;
 use std::cmp::Ordering;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+
+use eyre::Result;
+use log::debug;
+
+use crate::util;
 
 #[derive(Debug)]
 pub struct Config {
     pub enable_unpushed_check: bool,
+    pub include_non_repos: bool,
     pub no_color: bool,
     pub recursive: bool,
     pub skip_sort: bool,
@@ -51,27 +54,41 @@ impl Results {
     fn execute_in_directory(&mut self, config: &Config, dir: &Path) -> Result<()> {
         // FIXME: find ways to add concurrent programming (tokio, async, etc.) to this section.
         let path_entries = fs::read_dir(dir)?;
-        let mut repos = Vec::new();
+        let mut repos: Vec<PathBuf> = Vec::new();
+        let mut non_repos: Vec<PathBuf> = Vec::new();
 
         for entry in path_entries {
             let subpath = &entry?.path();
-            if subpath.is_dir() {
+
+            // Ensure that the directory is not hidden.
+            if subpath.is_dir()
+                && !util::get_short_name_for_directory(subpath, dir).starts_with(".")
+            {
                 if git2::Repository::open(subpath).is_ok() {
                     repos.push(subpath.to_owned());
-                } else if config.recursive {
-                    debug!("Recursive execution into directory: {:#?}", &subpath);
-                    self.execute_in_directory(&config, &subpath)?;
+                } else {
+                    if config.include_non_repos {
+                        non_repos.push(subpath.to_owned());
+                    }
+                    if config.recursive {
+                        debug!("Recursive execution into directory: {:#?}", &subpath);
+                        self.execute_in_directory(&config, &subpath)?;
+                    }
                 }
             }
         }
 
         debug!("Git repositories found: {:#?}", repos);
+        if config.include_non_repos {
+            debug!("Standard directories found: {:#?}", non_repos);
+        }
         if !repos.is_empty() {
             if !&config.skip_sort {
                 repos.sort();
             }
             if let Some(table_wrapper) = util::create_table_from_paths(
                 repos,
+                non_repos,
                 &dir,
                 &config.enable_unpushed_check,
                 &config.no_color,
