@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use log::{debug, warn};
+use prettytable::{Cell, Row};
 
 use crate::driver;
 
@@ -19,6 +20,7 @@ pub fn create_table_from_paths(
     path: &Path,
     enable_unpushed_check: &bool,
     no_color: &bool,
+    show_email: &bool,
 ) -> Option<driver::TableWrapper> {
     let mut table = prettytable::Table::new();
     table.set_format(
@@ -75,52 +77,48 @@ pub fn create_table_from_paths(
             Err(_) => Condition::Error,
         };
 
-        // This match block's formatting is aimed at readability (frequent usage of "{}").
+        let name = get_short_name_for_directory(&repo, path);
+        let create_row = |status_spec: &str, status: &str| -> prettytable::Row {
+            let mut cells = vec![
+                Cell::new(name.as_str()).style_spec(if *no_color { "Fl" } else { "Flb" }),
+                Cell::new(status).style_spec(if *no_color { "Fl" } else { status_spec }),
+                Cell::new(branch).style_spec("Fl"),
+                Cell::new(url).style_spec("Fl"),
+            ];
+            if *show_email {
+                cells.insert(
+                    cells.len(),
+                    Cell::new(get_email(&repo).as_str()).style_spec("Fl"),
+                );
+            }
+            Row::new(cells)
+        };
+
         match condition {
-            Condition::Bare if *no_color => {
-                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"bare", Fl->branch, Fl->url])
-            }
-            Condition::Bare => {
-                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Frl->"bare", Fl->branch, Fl->url])
-            }
-            Condition::Clean if *no_color => {
-                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"clean", Fl->branch, Fl->url])
-            }
-            Condition::Clean => {
-                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Fgl->"clean", Fl->branch, Fl->url])
-            }
-            Condition::Unclean if *no_color => {
-                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"unclean", Fl->branch, Fl->url])
-            }
-            Condition::Unclean => {
-                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Fyl->"unclean", Fl->branch, Fl->url])
-            }
-            Condition::Unpushed if *no_color => {
-                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"unpushed", Fl->branch, Fl->url])
-            }
-            Condition::Unpushed => {
-                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Fcl->"unpushed", Fl->branch, Fl->url])
-            }
-            _ if *no_color => {
-                table.add_row(row![Fl->get_short_name_for_directory(&repo, path), Fl->"error", Fl->branch, Fl->url])
-            }
-            _ => {
-                table.add_row(row![Flb->get_short_name_for_directory(&repo, path), Frl->"error", Fl->branch, Fl->url])
-            }
+            Condition::Bare => table.add_row(create_row("Frl", "bare")),
+            Condition::Clean => table.add_row(create_row("Fgl", "clean")),
+            Condition::Unclean => table.add_row(create_row("Fyl", "unclean")),
+            Condition::Unpushed => table.add_row(create_row("Fcl", "unpushed")),
+            _ => table.add_row(create_row("Frl", "error")),
         };
         debug!("[+] condition: {:#?}", condition);
     }
 
+    // D.R.Y. is important, but the "non_repos" loop would not benefit from the closure used by
+    // the "repos" loop. The "repos" loop's closure leverages variables in the loop's scope,
+    // whereas the "non_repos" loop does not create any local variables beyond the row's cells.
     for non_repo in non_repos {
-        if *no_color {
-            table.add_row(
-                row![Fl->get_short_name_for_directory(&non_repo, path), Fl->"dir", Fl->"-", Fl->"-"],
-            );
-        } else {
-            table.add_row(
-                row![Flb->get_short_name_for_directory(&non_repo, path), Fcl->"dir", Fl->"-", Fl->"-"],
-            );
+        let mut cells = vec![
+            Cell::new(get_short_name_for_directory(&non_repo, path).as_str())
+                .style_spec(if *no_color { "Fl" } else { "Flb" }),
+            Cell::new("dir").style_spec(if *no_color { "Fl" } else { "Fml" }),
+            Cell::new("-").style_spec("Fl"),
+            Cell::new("-").style_spec("Fl"),
+        ];
+        if *show_email {
+            cells.insert(cells.len(), Cell::new("-").style_spec("Fl"));
         }
+        table.add_row(Row::new(cells));
     }
 
     debug!("Generated {:#?} rows for table object", table.len());
@@ -180,4 +178,59 @@ fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> bool {
     debug!("[+] origin commit: {:#?}", upstream.id());
 
     matches!(repo.graph_ahead_behind(local.id(), upstream.id()), Ok(ahead) if ahead.0 > 0)
+}
+
+fn get_email(repo_path: &PathBuf) -> String {
+    let func = |cfg: git2::Config| -> Option<String> {
+        let entries = match cfg.entries(None) {
+            Ok(o) => o,
+            Err(e) => {
+                debug!("Encountered error. Returning none: {:#?}", e);
+                return None;
+            }
+        };
+        for entry in &entries {
+            let entry = match entry {
+                Ok(o) => o,
+                Err(e) => {
+                    warn!("Encountered error: {:#?}", e);
+                    continue;
+                }
+            };
+            let key = match entry.name() {
+                Some(s) => s,
+                None => continue,
+            };
+            if key == "user.email" {
+                let c = entry.value();
+                match c {
+                    Some(s) => return Some(s.to_string()),
+                    None => continue,
+                }
+            }
+        }
+        None
+    };
+
+    match git2::Config::open(&repo_path.join(".git").join("config")) {
+        Ok(o) => match func(o) {
+            Some(value) => return value,
+            None => debug!("Email not found. Trying default config..."),
+        },
+        Err(e) => debug!(
+            "Encountered error accessing config in .git/config for {:#?}: {:#?}",
+            &repo_path, e
+        ),
+    };
+    match git2::Config::open_default() {
+        Ok(o) => match func(o) {
+            Some(value) => return value,
+            None => debug!("Email not found in neither the default config nor the local config."),
+        },
+        Err(e) => debug!(
+            "Encountered error accessing default git config for {:#?}: {:#?}",
+            &repo_path, e
+        ),
+    };
+    "-".to_string()
 }

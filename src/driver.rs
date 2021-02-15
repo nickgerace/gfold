@@ -3,7 +3,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use eyre::Result;
-use log::debug;
+use log::{debug, warn};
 
 use crate::util;
 
@@ -13,6 +13,7 @@ pub struct Config {
     pub include_non_repos: bool,
     pub no_color: bool,
     pub recursive: bool,
+    pub show_email: bool,
     pub skip_sort: bool,
 }
 
@@ -60,19 +61,29 @@ impl Results {
         for entry in path_entries {
             let subpath = &entry?.path();
 
-            // Ensure that the directory is not hidden.
+            // Ensure that our subpath is a directory and that it is not hidden.
             if subpath.is_dir()
-                && !util::get_short_name_for_directory(subpath, dir).starts_with(".")
+                && !util::get_short_name_for_directory(subpath, dir).starts_with('.')
             {
-                if git2::Repository::open(subpath).is_ok() {
-                    repos.push(subpath.to_owned());
-                } else {
-                    if config.include_non_repos {
-                        non_repos.push(subpath.to_owned());
-                    }
-                    if config.recursive {
-                        debug!("Recursive execution into directory: {:#?}", &subpath);
-                        self.execute_in_directory(&config, &subpath)?;
+                match git2::Repository::open(subpath) {
+                    Ok(_) => repos.push(subpath.to_owned()),
+                    Err(e) => {
+                        debug!(
+                            "Tried to open {:#?} as git repository: {:#?}",
+                            subpath,
+                            e.message()
+                        );
+                        if config.include_non_repos {
+                            non_repos.push(subpath.to_owned());
+                        }
+                        if config.recursive {
+                            if let Err(e) = self.execute_in_directory(&config, &subpath) {
+                                warn!(
+                                    "Encountered error during recursive walk into {:#?}: {:#?}",
+                                    &subpath, e
+                                );
+                            }
+                        }
                     }
                 }
             }
@@ -92,6 +103,7 @@ impl Results {
                 &dir,
                 &config.enable_unpushed_check,
                 &config.no_color,
+                &config.show_email,
             ) {
                 self.0.push(table_wrapper);
             }
