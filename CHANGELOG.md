@@ -10,15 +10,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Email display feature
 - Include standard directory feature
+- Shorthand flag for all features without one
 
 ### Changed
 
 - Directory walking to skip hidden directories
+- Repository opening check to log error in debug mode rather than panic
 
 ### Removed
 
 - File header comments
+- Prettytable macros
 
 ## [0.8.4] - 2021-01-26
 

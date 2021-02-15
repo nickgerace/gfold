@@ -20,7 +20,7 @@ pre-build:
 	cd $(MAKEPATH); cargo update
 	cd $(MAKEPATH); cargo fmt
 	cd $(MAKEPATH); cargo clippy
-	cd $(MAKEPATH); cargo test
+	cd $(MAKEPATH); cargo test -- --nocapture
 
 debug:
 	cd $(MAKEPATH); cargo run -- .. --debug

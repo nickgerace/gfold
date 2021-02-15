@@ -23,12 +23,18 @@ struct Opt {
     enable_unpushed_check: bool,
     #[structopt(short, long, help = "Include standard directories in the result")]
     include_non_repos: bool,
-    #[structopt(long = "nc", help = "Disable color output")]
+    #[structopt(short = "q", long = "nc", help = "Disable color output")]
     no_color: bool,
     #[structopt(parse(from_os_str), help = "Target a different directory")]
     path: Option<PathBuf>,
     #[structopt(short, long, help = "Search recursively")]
     recursive: bool,
+    #[structopt(
+        short = "m",
+        long = "show-email",
+        help = "Toggle to show git config user.email"
+    )]
+    show_email: bool,
     #[structopt(short, long, help = "Toggle to skip sorting")]
     skip_sort: bool,
 }
@@ -53,6 +59,7 @@ fn main() -> Result<()> {
         opt.include_non_repos,
         opt.no_color,
         opt.recursive,
+        opt.show_email,
         opt.skip_sort,
     )?;
     Ok(())
