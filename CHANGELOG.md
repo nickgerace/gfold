@@ -7,7 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Added
+
+- RELEASE file for releasing `gfold`
+
+### Changed
+
+- README installation section to be condensed
+- LICENSE to not use copyright dates or name (reduce maintenance)
+
+### Removed
+
+- Makefile in order to be cross-platform-friendly
 
 ## [0.9.0] - 2021-02-15
 

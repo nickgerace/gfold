@@ -29,41 +29,13 @@ However, if you would like to target another directory, you can pass that path (
 
 ## Installation
 
-There are multiple ways to install `gfold`, but here are some recommended methods...
-
-Installation Methods | `linux-gnu-amd64` | `darwin-amd64` | `windows-amd64`
---- | --- | --- | --
-Homebrew | x | x | -
-Arch User Repository (AUR) | x | - | -
-Cargo Install | x | x | x
-GitHub Release Binary | x | x | x
-
-### Homebrew
-
-You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-gfold) for `gfold`.
+You can use **[macOS Homebrew](https://brew.sh)** or **[Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)** to install the [tap](https://github.com/nickgerace/homebrew-gfold).
 
 ```bash
 brew install nickgerace/gfold/gfold
 ```
 
-Alternatively, you can do...
-
-```bash
-brew tap nickgerace/gfold
-brew install gfold
-```
-
-Running `brew help` or `man brew` can help you use `brew` locally.
-You can check out [Homebrew's documentation](https://docs.brew.sh) as well.
-
-### Arch User Repository (AUR)
-
-This application is available for all Linux distributions that support installing packages from the AUR.
-
-- [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source)
-- [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary)
-- [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package)
-
+If using a **Linux distribution that supports installing packages from the AUR**, you can install from three packages: [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source), [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary), and [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package).
 Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru), in order to install their AUR packages.
 
 ```bash
@@ -71,31 +43,30 @@ yay -S gfold
 paru -S gfold
 ```
 
-### Cargo Install
-
-You can install from [crates.io](https://crates.io/crates/gfold) by executing...
+You can install the [crate](https://crates.io/crates/gfold) on any platform with **[cargo](https://crates.io)**.
 
 ```bash
 cargo install gfold
 ```
 
-### GitHub Release Binary
+Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
 
-You can obtain `gfold` via the [latest GitHub release](https://github.com/nickgerace/gfold/releases/latest).
+```sh
+cargo install cargo-update
+cargo install-update -a
+```
+
+You can obtain `gfold` via the **[latest GitHub release](https://github.com/nickgerace/gfold/releases/latest)**.
 Once you have it downloaded, you can add it to your `PATH`.
-Here is an example on how to do that on macOS and Linux...
+You may have to reload your shell in order to see `gfold` in your `PATH`.
 
 ```bash
 chmod +x gfold
 mv gfold /usr/local/bin/
 ```
 
-You may have to reload your shell in order to see `gfold` in your `PATH`.
-
-#### Advanced Management
-
 You can use symbolic links to swap between versions, and manage multiple at a time.
-Here is a full install workflow example...
+With this workflow, you can add/remove versions of the binary from `/usr/local/gfold/`, and change the symbolic link as needed.
 
 ```bash
 wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-$PLATFORM
@@ -106,8 +77,6 @@ mkdir /usr/local/gfold/
 mv gfold-$VERSION /usr/local/gfold/
 ln -s /usr/local/gfold/gfold-$VERSION /usr/local/bin/gfold
 ```
-
-Now, you can add/remove versions of the binary from `/usr/local/gfold/`, and change the symbolic link as needed.
 
 ## Usage
 
