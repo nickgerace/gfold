@@ -1,20 +1,20 @@
 [package]
 name = "gfold"
-version = "0.9.1"
+version = "1.0.0"
 license = "Apache-2.0"
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 description = "CLI tool to help keep track of your Git repositories."
 homepage = "https://nickgerace.dev"
 repository = "https://github.com/nickgerace/gfold/"
-readme = "README.md"
+readme = "../README.md"
 edition = "2018"
 keywords = ["git", "cli"]
 categories = ["command-line-utilities", "command-line-interface"]
 
 [dependencies]
-env_logger = "0.8"
-eyre = "0.6"
-git2 = "0.13"
-log = "0.4"
-prettytable-rs = "0.8"
-structopt = "0.3"
+env_logger = "^0.8"
+eyre = "^0.6"
+git2 = "^0.13"
+log = "^0.4"
+prettytable-rs = "^0.8"
+structopt = "^0.3"
