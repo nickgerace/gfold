@@ -79,7 +79,7 @@ If you do not know where `gfld` was installed, you can use `which gfld` on compa
 brew install nickgerace/gfold/gfold
 ```
 
-**You can use a Linux distribution that supports installing packages from the AUR** to install: [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source), [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary), and/or [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package).
+**You can use a Linux distribution that supports installing packages from the AUR** to install: [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source) and/or [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package).
 Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru), in order to install their AUR packages.
 
 ```sh
@@ -93,27 +93,6 @@ Consult the `gfld` section above on how to keep the crate up to date with `cargo
 ```sh
 cargo install gfold
 ```
-
-**You can obtain `gfold` via the [latest GitHub release](https://github.com/nickgerace/gfold/releases/latest)**.
-Once you have it downloaded, you can add it to your `PATH`.
-You may have to reload your shell in order to see `gfold` in your `PATH`.
-
-```sh
-chmod +x gfold
-mv gfold /usr/local/bin/
-```
-
-> You can use symbolic links to swap between versions, and manage multiple at a time.
-> With this workflow, you can add/remove versions of the binary from `/usr/local/gfold/`, and change the symbolic link as needed.
->
-> ```sh
-> wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-$PLATFORM
-> mv gfold-$PLATFORM gfold-$VERSION
-> chmod +x gfold-$VERSION
-> mkdir /usr/local/gfold/
-> mv gfold-$VERSION /usr/local/gfold/
-> ln -s /usr/local/gfold/gfold-$VERSION /usr/local/bin/gfold
-> ```
 
 ## Usage
 
@@ -163,6 +142,6 @@ This repository follows and enforces the Rust programming language's [Code of Co
 
 ## Special Thanks To...
 
-- [@jrcichra](https://github.com/jrcichra) for adding multi-OS support to the original CI pipeline
-- [@orhun](https://github.com/orhun) for maintaining [all three AUR packages](https://github.com/orhun/PKGBUILDs) for `gfold`
+- [@jrcichra](https://github.com/jrcichra) for adding multi-OS support to the original, early-stage CI pipeline
+- [@orhun](https://github.com/orhun) for maintaining [all AUR packages](https://github.com/orhun/PKGBUILDs) for `gfold`
 - [@yaahc](https://github.com/yaahc) for mentoring during an early refactor

@@ -24,6 +24,11 @@ The latest version contains all changes.
 - The repository to be split into two crates: `gfold` and `gfld`
 - Unnecessary `PathBuf` usages to `Path` when possible in `util.rs`
 
+### Removed
+
+- Release workflow for GitHub actions (now, it is "merge only")
+- Uploaded binaries due to lack of checksums and maintenance
+
 ## [0.9.1] - 2021-03-16
 
 ### Added
