@@ -7,7 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Added
+
+- A brand new, minimal CLI: `gfld`
+- `DEVELOPING.md` for instructions on building `gfld`
+
+### Changed
+
+- Documentation to include `gfld`
+- GitHub issue template to include `gfld` information
+- GitHub PR CI to only build for Linux while keeping macOS and Windows for release CI
+- The repository to be split into two crates: `gfold` and `gfld`
+- Unnecessary `PathBuf` usages to `Path` when possible in `util.rs`
 
 ## [0.9.1] - 2021-03-16
 
