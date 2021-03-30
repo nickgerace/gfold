@@ -31,4 +31,5 @@ jobs:
       - name: Run cargo build
         uses: actions-rs/cargo@v1
         with:
-          command: build --locked
+          command: build
+          args: --locked
