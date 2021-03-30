@@ -5,9 +5,9 @@
 [![Crates.io](https://img.shields.io/crates/v/gfold?style=flat-square)](https://crates.io/crates/gfold)
 [![Build Status](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
 
-`gfold` is a CLI application that helps you keep track of multiple Git repositories.
+`gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
-```bash
+```sh
 user at hostname in ~/git
 % gfold
 great-journey      unclean   main      git@github.com:truth/great-journey.git
@@ -27,68 +27,99 @@ It prints each repository in alphabetical order, and pads each result based on t
 By default, `gfold` looks at every Git repository in the current working directory.
 However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument.
 
+## Should I use `gfold` or `gfld`?
+
+[![Crates.io](https://img.shields.io/crates/v/gfld?style=flat-square)](https://crates.io/crates/gfld)
+
+`gfld` is the new, minimal version of `gfold`.
+It contains only one configurable option (an optional, single command-line argument for the target path) and is much smaller than the original application in size.
+
+It is intended for fans of the original application who want a near-configurationaless usability and a smaller footprint on their systems.
+It does *not* promise faster runtime performance, but it delivers on the two former goals.
+
+There are two major behavioral differences from the original application: only recursive search is available (similar to `gfold -r`), and all results are combined into one table (inspired by `kubectl get pods -A`).
+
 ## Installation
 
-You can use **[macOS Homebrew](https://brew.sh)** or **[Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)** to install the [tap](https://github.com/nickgerace/homebrew-gfold).
+This repository contains two applications: `gfold`, the primary, fully-featured version, and `gfld`, the minimal version.
+There is only one recommended method for installing the latter, and the original version has multiple methods for installation.
+Thus, this section starts with the minimal version.
 
-```bash
+### Installing `gfld`
+
+Currently, the only recommended method to install `gfld` is by using **[cargo](https://crates.io)** to install the [crate](https://crates.io/crates/gfld).
+Fortunately, the minimal application should work on nearly every major platform.
+
+```sh
+cargo install gfld
+```
+
+After installation, you can make the binary even smaller.
+The following commands were tested on Linux and macOS systems:
+
+```sh
+strip path/to/gfld
+du -h path/to/gfld | cut -f -1
+```
+
+If you do not know where `gfld` was installed, you can use `which gfld` on compatible platforms or check your `cargo install` settings.
+
+> Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
+>
+> ```sh
+> cargo install cargo-update
+> cargo install-update -a
+> ```
+
+### Installing `gfold`
+
+**You can use [macOS Homebrew](https://brew.sh) or [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)** to install the [tap](https://github.com/nickgerace/homebrew-gfold).
+
+```sh
 brew install nickgerace/gfold/gfold
 ```
 
-If using a **Linux distribution that supports installing packages from the AUR**, you can install from three packages: [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source), [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary), and [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package).
+**You can use a Linux distribution that supports installing packages from the AUR** to install: [gfold](https://aur.archlinux.org/packages/gfold/) (builds from source), [gfold-bin](https://aur.archlinux.org/packages/gfold-bin/) (uses the GitHub release binary), and/or [gfold-git](https://aur.archlinux.org/packages/gfold-git/) (VCS/development package).
 Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru), in order to install their AUR packages.
 
-```bash
+```sh
 yay -S gfold
 paru -S gfold
 ```
 
-You can install the [crate](https://crates.io/crates/gfold) on any platform with **[cargo](https://crates.io)**.
+**You can use [cargo](https://crates.io)** to install the [crate](https://crates.io/crates/gfold) on almost any platform.
+Consult the `gfld` section above on how to keep the crate up to date with `cargo-update`.
 
-```bash
+```sh
 cargo install gfold
 ```
 
-Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
-
-```sh
-cargo install cargo-update
-cargo install-update -a
-```
-
-You can obtain `gfold` via the **[latest GitHub release](https://github.com/nickgerace/gfold/releases/latest)**.
+**You can obtain `gfold` via the [latest GitHub release](https://github.com/nickgerace/gfold/releases/latest)**.
 Once you have it downloaded, you can add it to your `PATH`.
 You may have to reload your shell in order to see `gfold` in your `PATH`.
 
-```bash
+```sh
 chmod +x gfold
 mv gfold /usr/local/bin/
 ```
 
-You can use symbolic links to swap between versions, and manage multiple at a time.
-With this workflow, you can add/remove versions of the binary from `/usr/local/gfold/`, and change the symbolic link as needed.
-
-```bash
-wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-$PLATFORM
-mv gfold-$PLATFORM gfold-$VERSION
-chmod +x gfold-$VERSION
-
-mkdir /usr/local/gfold/
-mv gfold-$VERSION /usr/local/gfold/
-ln -s /usr/local/gfold/gfold-$VERSION /usr/local/bin/gfold
-```
+> You can use symbolic links to swap between versions, and manage multiple at a time.
+> With this workflow, you can add/remove versions of the binary from `/usr/local/gfold/`, and change the symbolic link as needed.
+>
+> ```sh
+> wget https://github.com/nickgerace/gfold/releases/download/$VERSION/gfold-$PLATFORM
+> mv gfold-$PLATFORM gfold-$VERSION
+> chmod +x gfold-$VERSION
+> mkdir /usr/local/gfold/
+> mv gfold-$VERSION /usr/local/gfold/
+> ln -s /usr/local/gfold/gfold-$VERSION /usr/local/bin/gfold
+> ```
 
 ## Usage
 
-For all the ways on how to use this application, pass in the `-h`, or `--help`, flag.
+For `gfold`: pass in the `-h`, or `--help`, flag to see all the options for using this application.
 
-```bash
-gfold --help
-```
-
-Here are some example invocations...
-
-```bash
+```sh
 gfold
 gfold ..
 gfold $HOME
@@ -98,19 +129,28 @@ gfold ~/path/to/multiple/repositories/ -r
 gfold -r $HOME/path/to/multiple/repositories
 ```
 
+For `gfld`: you can pass in the `-h`, or `--help` too.
+However, there is only one method of configuration: an optional, single command-line argument for the target path.
+This is a result of the minimal application's design.
+
+```sh
+gfld
+gfld ..
+gfld $HOME
+gfld /this/is/an/absolute/path
+gfld ../../this/is/a/relative/path
+```
+
 ## Compatibility
 
-`gfold`, and its external crates, support all three major desktop platforms.
-It is tested for the latest versions of the following systems, but may work on more...
+Both applications are intended to be ran on *any* tier one Rust target.
+Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
-- **Linux**: `linux-gnu-amd64`
-- **macOS**: `darwin-amd64`
-- **Windows 10**: `windows-amd64`
+## Other Documentation
 
-## Changelog
-
-Please check out [CHANGELOG.md](./CHANGELOG.md) for more information.
-It follows the [Keep a Changelog](https://keepachangelog.com/) format.
+- **[CHANGELOG.md](./CHANGELOG.md):** follows the [Keep a Changelog](https://keepachangelog.com/) format
+- **[DEVELOPING.md](./DEVELOPING.md):** developer tips, tricks, and notes
+- **[RELEASE.md](./RELEASE.md):** release process notes
 
 ## Code of Conduct
 
@@ -124,5 +164,5 @@ This repository follows and enforces the Rust programming language's [Code of Co
 ## Special Thanks To...
 
 - [@jrcichra](https://github.com/jrcichra) for adding multi-OS support to the original CI pipeline
-- [@orhun](https://github.com/orhun) for maintaining [all three AUR packages](https://github.com/orhun/PKGBUILDs)
-- [@yaahc](https://github.com/yaahc) for mentoring
+- [@orhun](https://github.com/orhun) for maintaining [all three AUR packages](https://github.com/orhun/PKGBUILDs) for `gfold`
+- [@yaahc](https://github.com/yaahc) for mentoring during an early refactor

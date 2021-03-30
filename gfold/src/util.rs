@@ -131,8 +131,8 @@ pub fn create_table_from_paths(
     }
 }
 
-pub fn get_short_name_for_directory(child: &PathBuf, parent: &Path) -> String {
-    let temp_dir = child.clone();
+pub fn get_short_name_for_directory(child: &Path, parent: &Path) -> String {
+    let temp_dir = child.to_path_buf();
     let path = match Path::new(&temp_dir).strip_prefix(parent) {
         Ok(o) => o,
         Err(e) => {
@@ -180,7 +180,7 @@ fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> bool {
     matches!(repo.graph_ahead_behind(local.id(), upstream.id()), Ok(ahead) if ahead.0 > 0)
 }
 
-fn get_email(repo_path: &PathBuf) -> String {
+fn get_email(repo_path: &Path) -> String {
     let func = |cfg: git2::Config| -> Option<String> {
         let entries = match cfg.entries(None) {
             Ok(o) => o,
