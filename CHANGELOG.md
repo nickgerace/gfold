@@ -7,7 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Added
+
+- `Cargo.lock` to the workspace to fix AUR builds
 
 ## [1.0.0] - 2021-03-29
 

@@ -1,10 +1,6 @@
-# Ignore for the entire repository.
 **/target/
 **/*.rs.bk
 **/.vs/*
 **/.vscode/*
 **/.DS_Store
 **/.idea/
-
-# Only ignore for the workspace; keep for the sub-crates.
-Cargo.lock
