@@ -51,14 +51,9 @@ Check `crates.io` and `docs.rs` afterwards:
 - [gfold crate](https://crates.io/crates/gfold)
 - [gfld crate](https://crates.io/crates/gfld) 
 
-## Updating the Tap (`gfold` only)
+## Updating the Homebrew Taps
 
-Update the formula for the [tap](https://github.com/nickgerace/homebrew-gfold).
+Update the formula for each tap.
 
-## Edit the Release (`gfold` only)
-
-Check the release description and edit as necessary.
-
-```sh
-https://github.com/nickgerace/gfold/releases/tag/<new-tag>
-```
+- [gfold tap](https://github.com/nickgerace/homebrew-gfold).
+- ~~gfld tap~~ *(coming soon)*

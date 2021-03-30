@@ -1,6 +1,6 @@
 [package]
 name = "gfold"
-version = "1.0.0"
+version = "1.0.1"
 license = "Apache-2.0"
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 description = "CLI tool to help keep track of your Git repositories."
