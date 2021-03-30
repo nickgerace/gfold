@@ -7,12 +7,8 @@ Currently, both `gfold` and `gfld` share the same semver, which is not ideal, bu
 
 Run each step in both subcrates.
 
-1. Change the version in `Cargo.toml` to the `<new-tag>` for both `gfold` and `gfld`.
-1. Run the commands below this list and verify that everything looks/works as expected.
-1. Change the version in `CHANGELOG.md` and uncomment the line, `<!--The latest version contains all changes.-->`.
-1. Create a commit with the following message: `Update to <new-tag>`. Do not push (or merge) the commit.
-1. Test the publishing workflow within each crate: `cargo publish --dry-run`.
-1. Push (or merge) the preparation commit.
+- Change the version in `Cargo.toml` to the `<new-tag>` for both `gfold` and `gfld`.
+- Run the commands and verify that everything looks/works as expected:
 
 ```sh
 cargo update
@@ -22,6 +18,17 @@ cargo test -- --nocapture
 cargo doc --open
 cargo build --release
 ```
+
+- Change the version in `CHANGELOG.md` and uncomment the line, `<!--The latest version contains all changes.-->`.
+- Create a commit with the following message: `Update to <new-tag>`. Do not push (or merge) the commit.
+- Test the publishing workflow within each crate:
+
+```sh
+( cd gfold; cargo publish --dry-run )
+( cd gfld; cargo publish --dry-run )
+```
+
+Finally, push (or merge) the preparation commit.
 
 ## Tagging and Publishing
 
