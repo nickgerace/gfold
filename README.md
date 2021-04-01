@@ -58,8 +58,9 @@ After installation, you can make the binary even smaller.
 The following commands were tested on Linux and macOS systems:
 
 ```sh
-strip path/to/gfld
-du -h path/to/gfld | cut -f -1
+GFLD_PATH=$(which gfld)
+strip $GFLD_PATH
+du -h $GFLD_PATH | cut -f -1
 ```
 
 If you do not know where `gfld` was installed, you can use `which gfld` on compatible platforms or check your `cargo install` settings.
