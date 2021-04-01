@@ -1,7 +1,7 @@
 //! This is the minimal version of `gfold`, a CLI tool to help keep track of your Git repositories.
 
 use std::error::Error;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use git2::{ErrorClass, ErrorCode, Repository, StatusOptions};
 use log::debug;
@@ -18,7 +18,6 @@ struct Outcome {
 /// This function is the primary driver for `gfld`.
 pub fn run(path: &Path) -> Result<(), Box<dyn Error>> {
     let mut vec = Vec::new();
-    let shorthand = PathBuf::from(path.file_name().ok_or("Path terminates in '..'")?);
     let mut max_name: usize = 0;
     let mut max_status: usize = 0;
     let mut max_branch: usize = 0;
@@ -80,8 +79,7 @@ pub fn run(path: &Path) -> Result<(), Box<dyn Error>> {
                     continue;
                 }
             };
-            let name = shorthand.join(&child);
-            let name = name.to_str().unwrap_or("none");
+            let name = child.to_str().unwrap_or("none");
 
             if name.len() > max_name {
                 max_name = name.len();
