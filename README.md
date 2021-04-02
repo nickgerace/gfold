@@ -45,6 +45,17 @@ This repository contains two applications: `gfold`, the primary, fully-featured 
 There is only one recommended method for installing the latter, and the original version has multiple methods for installation.
 Thus, this section starts with the minimal version.
 
+**For all installation steps:** it is highly recommended to run `strip` against the binary on compatible systems to reduce executable size.
+The following commands were tested on Linux and macOS systems:
+
+```sh
+TEMP=$(which gfold) # or replace "gfold" with "gfld"
+strip $TEMP
+du -h $TEMP | cut -f -1
+```
+
+If you do not know where either application was installed, you can use the `which` command on compatible platforms or check your `cargo install` settings.
+
 ### Installing `gfld`
 
 Currently, the only recommended method to install `gfld` is by using **[cargo](https://crates.io)** to install the [crate](https://crates.io/crates/gfld).
@@ -53,17 +64,6 @@ Fortunately, the minimal application should work on nearly every major platform.
 ```sh
 cargo install gfld
 ```
-
-After installation, you can make the binary even smaller.
-The following commands were tested on Linux and macOS systems:
-
-```sh
-GFLD_PATH=$(which gfld)
-strip $GFLD_PATH
-du -h $GFLD_PATH | cut -f -1
-```
-
-If you do not know where `gfld` was installed, you can use `which gfld` on compatible platforms or check your `cargo install` settings.
 
 > Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
 >

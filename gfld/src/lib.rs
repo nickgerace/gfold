@@ -1,11 +1,14 @@
 //! This is the minimal version of `gfold`, a CLI tool to help keep track of your Git repositories.
 
 use std::error::Error;
+use std::ffi::OsStr;
 use std::path::Path;
 
 use git2::{ErrorClass, ErrorCode, Repository, StatusOptions};
 use log::debug;
 use walkdir::WalkDir;
+
+const UNKNOWN: &str = "unknown";
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
 struct Outcome {
@@ -72,14 +75,21 @@ pub fn run(path: &Path) -> Result<(), Box<dyn Error>> {
                 Err(_) => "error",
             };
 
-            let child = match entry.strip_prefix(&path) {
-                Ok(o) => o,
+            let name = match entry.strip_prefix(&path) {
+                Ok(o) => match o.to_str() {
+                    Some(s) if s.is_empty() => path
+                        .file_name()
+                        .unwrap_or_else(|| OsStr::new(UNKNOWN))
+                        .to_str()
+                        .unwrap_or(UNKNOWN),
+                    Some(s) => s,
+                    None => "none",
+                },
                 Err(e) => {
                     debug!("{}", e);
-                    continue;
+                    UNKNOWN
                 }
             };
-            let name = child.to_str().unwrap_or("none");
 
             if name.len() > max_name {
                 max_name = name.len();
@@ -103,10 +113,12 @@ pub fn run(path: &Path) -> Result<(), Box<dyn Error>> {
         }
     }
 
-    // Imperceptible time savings without this sort.
+    // Imperceptible time savings without either of these sorts. We want to sort by the first
+    // field in "Outcome", and then by the status.
     vec.sort_unstable();
+    vec.sort_unstable_by_key(|k| k.status.clone());
 
-    // Need to insert after the sort is finished.
+    // Need to insert header after the sort is finished.
     vec.insert(
         0,
         Outcome {
