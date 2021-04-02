@@ -220,7 +220,7 @@ dependencies = [
 
 [[package]]
 name = "gfld"
-version = "1.0.2"
+version = "1.0.3"
 dependencies = [
  "git2",
  "log",
@@ -229,7 +229,7 @@ dependencies = [
 
 [[package]]
 name = "gfold"
-version = "1.0.2"
+version = "1.0.3"
 dependencies = [
  "env_logger",
  "eyre",
