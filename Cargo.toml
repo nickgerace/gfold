@@ -1,2 +1,14 @@
 [workspace]
 members = ["gfold", "gfld"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+
+# These applications should not panic often and only read from the filesystem.
+# Thus, setting "RUST_LOG=debug" and running again is relatively safe.
+panic = "abort"
+
+# There noticeable speed difference from level 3 to 'z' or 's'.
+# We need this speed for the user experience.
+opt-level = 3

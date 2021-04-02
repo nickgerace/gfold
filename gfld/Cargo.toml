@@ -11,14 +11,7 @@ edition = "2018"
 keywords = ["git", "cli"]
 categories = ["command-line-utilities", "command-line-interface"]
 
-# This release optimizations minimally impact runtime performance and minimize executable size.
-[profile.release]
-panic = 'abort'
-codegen-units = 1
-lto = true
-opt-level = 'z'
-
 [dependencies]
-git2 = { version = "^0.13", default-features = false }
-log = { version = "^0.4", default-features = false }
+git2 = { version = "^0", default-features = false }
+log = { version = "^0", default-features = false }
 walkdir = { version = "^2", default-features = false }
