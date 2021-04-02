@@ -12,8 +12,8 @@ Run each step in both subcrates.
 
 ```sh
 cargo update
-cargo fmt
-cargo clippy
+cargo fmt --all -- --check
+cargo clippy -- -D warnings
 cargo test -- --nocapture
 cargo doc --open
 cargo build --release

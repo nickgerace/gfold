@@ -17,4 +17,4 @@ du -h target/release/gfld | cut -f -1
 time target/release/gfld $TEMP_TARGET
 ```
 
-*Note: you can change `TEMP_TARGET` to a directory you'd like to target.*
+> You can change `TEMP_TARGET` to a directory you'd like to target.

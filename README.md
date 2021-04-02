@@ -46,13 +46,15 @@ There is only one recommended method for installing the latter, and the original
 Thus, this section starts with the minimal version.
 
 **For all installation steps:** it is highly recommended to run `strip` against the binary on compatible systems to reduce executable size.
-The following commands were tested on Linux and macOS systems:
+The following script was tested on macOS and Linux systems:
 
 ```sh
-TEMP=$(which gfold) # or replace "gfold" with "gfld"
-strip $TEMP
-du -h $TEMP | cut -f -1
+for i in $(command -v gfold) $(command -v gfld); do
+    [ "$i" != "" ] && strip $i && du -h $i | cut -f -1
+done
 ```
+
+> The above script will work with either application installed, both installed, or neither installed.
 
 If you do not know where either application was installed, you can use the `which` command on compatible platforms or check your `cargo install` settings.
 
