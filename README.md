@@ -50,7 +50,7 @@ The following script was tested on macOS and Linux systems:
 
 ```sh
 for i in $(command -v gfold) $(command -v gfld); do
-    [ "$i" != "" ] && strip $i && du -h $i | cut -f -1
+    [ "$i" != "" ] && strip $i && du -h $i
 done
 ```
 
