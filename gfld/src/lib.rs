@@ -10,7 +10,7 @@ use walkdir::WalkDir;
 
 const UNKNOWN: &str = "unknown";
 
-#[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Eq, PartialEq, Ord, PartialOrd)]
 struct Outcome {
     name: String,
     status: String,
@@ -114,9 +114,10 @@ pub fn run(path: &Path) -> Result<(), Box<dyn Error>> {
     }
 
     // Imperceptible time savings without either of these sorts. We want to sort by the first
-    // field in "Outcome", and then by the status.
-    vec.sort_unstable();
-    vec.sort_unstable_by_key(|k| k.status.clone());
+    // field in "Outcome", and then by the status. Our first sort can be unstable, but our second
+    // has to be stable to retain the original order.
+    vec.sort_unstable_by_key(|k| k.name.clone());
+    vec.sort_by_key(|k| k.status.clone());
 
     // Need to insert header after the sort is finished.
     vec.insert(
@@ -130,7 +131,7 @@ pub fn run(path: &Path) -> Result<(), Box<dyn Error>> {
     );
 
     // Despite using "println!" N times, this loop has minimal impact on runtime performance.
-    for outcome in vec {
+    for outcome in &vec {
         println!(
             "{:<width_name$}  {:<width_status$}  {:<width_branch$}  {:<width_source$}",
             outcome.name,
