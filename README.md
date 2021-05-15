@@ -18,6 +18,11 @@ tartarus           unclean   delta     git@github.com:covenant/tartarus.git
 voi                clean     main      https://github.com/earth/voi.git
 ```
 
+## Version 2.0.0 is in progress!
+
+`gfold v2` will bring the best parts of `gfold v1` and `gfld v1` together into one CLI application.
+Stay subscribed to this repostiory to learn more.
+
 ## Description and Motivation
 
 This app displays relevant information for multiple Git repositories in one, or multiple, directories.
