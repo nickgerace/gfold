@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 The latest version contains all changes.
 
+## [1.1.0] - 2021-05-15
+
 ### Added
 
 - Shallow search flag to disable recursive search (accessible via `-s/--shallow`)
