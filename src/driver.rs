@@ -1,5 +1,5 @@
-//! This module contains the types required for using `gfold::run`.
-use crate::{internal_types, util};
+//! This module contains the types required for generating results for `gfold`.
+use crate::{driver_internal::TableWrapper, util};
 use anyhow::Result;
 use log::{debug, warn};
 use std::{
@@ -8,7 +8,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-/// A bedrock type that is a required parameter for `gfold::run`.
+/// A bedrock type that is a required parameter when creating a new `Driver`.
 #[derive(Debug)]
 pub struct Config {
     /// Enable checking for unpushed commits (experimental).
@@ -26,22 +26,22 @@ pub struct Config {
 }
 
 /// Creating this object with a given `Config` will generate results that can be printed to `STDOUT`.
-pub struct Results(Vec<internal_types::TableWrapper>);
+pub struct Driver(Vec<TableWrapper>);
 
-impl Results {
-    /// Generate `Results` with a given configuration.
-    pub fn new(path: &Path, config: &Config) -> Result<Results> {
+impl Driver {
+    /// Constructing a `Driver` will generate results with a given `&Path` and `&Config`.
+    pub fn new(path: &Path, config: &Config) -> Result<Driver> {
         debug!("Running with config: {:#?}", &config);
         debug!("Running in path: {:#?}", &path);
-        let mut results = Results(Vec::new());
-        results.execute_in_directory(&config, path)?;
+        let mut driver = Driver(Vec::new());
+        driver.execute_in_directory(&config, path)?;
         if !&config.skip_sort {
-            results.sort_results();
+            driver.sort_results();
         }
-        Ok(results)
+        Ok(driver)
     }
 
-    /// Print results to STDOUT after generation.
+    /// Print results to `STDOUT` after generation.
     pub fn print_results(self) {
         debug!("Printing results with {} tables...", self.0.len());
         match self.0.len().cmp(&1) {

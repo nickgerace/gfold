@@ -1,4 +1,4 @@
-use crate::internal_types;
+use crate::driver_internal::TableWrapper;
 use log::{debug, warn};
 use prettytable::{Cell, Row};
 use std::path::{Path, PathBuf};
@@ -19,7 +19,7 @@ pub fn create_table_from_paths(
     enable_unpushed_check: &bool,
     no_color: &bool,
     show_email: &bool,
-) -> Option<internal_types::TableWrapper> {
+) -> Option<TableWrapper> {
     let mut table = prettytable::Table::new();
     table.set_format(
         prettytable::format::FormatBuilder::new()
@@ -125,7 +125,7 @@ pub fn create_table_from_paths(
     debug!("Generated {:#?} rows for table object", table.len());
     match table.is_empty() {
         true => None,
-        false => Some(internal_types::TableWrapper {
+        false => Some(TableWrapper {
             path_string: path.to_str()?.to_string(),
             table,
         }),

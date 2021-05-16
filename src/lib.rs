@@ -1,18 +1,7 @@
 //! This library drives [`gfold`](https://github.com/nickgerace/gfold), a CLI tool to help keep track of your Git repositories.
-use anyhow::Result;
-use std::path::Path;
-
 pub mod driver;
-mod internal_types;
+mod driver_internal;
 mod util;
-
-/// This function is the primary, backend driver for `gfold`.
-///
-/// When executed, a `Results` object will be returned. Using its `print_results()` method will
-/// print results to STDOUT.
-pub fn run(path: &Path, config: driver::Config) -> Result<driver::Results> {
-    driver::Results::new(path, &config)
-}
 
 #[cfg(test)]
 mod tests {
@@ -23,9 +12,9 @@ mod tests {
     fn current_directory() {
         let current_dir = env::current_dir().expect("failed to get CWD");
         assert_ne!(
-            run(
+            driver::Driver::new(
                 &current_dir,
-                driver::Config {
+                &driver::Config {
                     enable_unpushed_check: false,
                     include_non_repos: false,
                     no_color: false,
@@ -44,9 +33,9 @@ mod tests {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
         assert_ne!(
-            run(
+            driver::Driver::new(
                 &current_dir,
-                driver::Config {
+                &driver::Config {
                     enable_unpushed_check: false,
                     include_non_repos: false,
                     no_color: false,
@@ -72,9 +61,9 @@ mod tests {
                         for skip_sort in vec![true, false] {
                             println!("[test:{} / include_non_repos:{} / no_color:{} / shallow:{} / show_email:{} / skip_sort:{}]", count, include_non_repos, no_color, shallow, show_email, skip_sort);
                             assert_ne!(
-                                run(
+                                driver::Driver::new(
                                     &current_dir,
-                                    driver::Config {
+                                    &driver::Config {
                                         enable_unpushed_check: false,
                                         include_non_repos,
                                         no_color,

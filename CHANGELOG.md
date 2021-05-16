@@ -7,7 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Removed
+
+- Middleware `run` function in `lib.rs` since it's unecessary and unintuitive
+  - Before, you used a type from the `driver` module as a parameter for `run`
+  - Now, you only use types from `driver`
 
 ## [1.1.1] - 2021-05-16
 

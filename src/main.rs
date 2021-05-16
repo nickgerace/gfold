@@ -50,9 +50,9 @@ fn main() -> Result<()> {
         path.push(provided_path)
     };
 
-    gfold::run(
+    gfold::driver::Driver::new(
         &path.canonicalize()?,
-        gfold::driver::Config {
+        &gfold::driver::Config {
             enable_unpushed_check: opt.enable_unpushed_check,
             include_non_repos: opt.include_non_repos,
             no_color: opt.no_color,
