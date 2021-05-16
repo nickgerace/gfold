@@ -1,41 +1,17 @@
-//! This is a CLI tool to help keep track of your Git repositories.
+//! This library drives [`gfold`](https://github.com/nickgerace/gfold), a CLI tool to help keep track of your Git repositories.
 use anyhow::Result;
 use std::path::Path;
 
-mod driver;
+pub mod driver;
+mod internal_types;
 mod util;
 
 /// This function is the primary, backend driver for `gfold`.
 ///
-/// - `enable_unpushed_check`: enable checking for unpushed commits (experimental)
-/// - `include_non_repos`: include standard directories in the result
-/// - `no_color`: disables color, bolding, etc.
-/// - `path`: the target path to find and parse Git repositories
-/// - `shallow`: only search for Git respositories in the target directory
-/// - `show_email`: displays git config user.email
-/// - `skip_sort`: skips sorting the repositories for output
-///
-/// When executed, results will be printed to STDOUT.
-pub fn run(
-    path: &Path,
-    enable_unpushed_check: bool,
-    include_non_repos: bool,
-    no_color: bool,
-    shallow: bool,
-    show_email: bool,
-    skip_sort: bool,
-) -> Result<()> {
-    let config = driver::Config {
-        enable_unpushed_check,
-        include_non_repos,
-        no_color,
-        shallow,
-        show_email,
-        skip_sort,
-    };
-    let results = driver::Results::new(path, &config)?;
-    results.print_results();
-    Ok(())
+/// When executed, a `Results` object will be returned. Using its `print_results()` method will
+/// print results to STDOUT.
+pub fn run(path: &Path, config: driver::Config) -> Result<driver::Results> {
+    driver::Results::new(path, &config)
 }
 
 #[cfg(test)]
@@ -47,7 +23,18 @@ mod tests {
     fn current_directory() {
         let current_dir = env::current_dir().expect("failed to get CWD");
         assert_ne!(
-            run(&current_dir, false, false, false, false, false, false).is_err(),
+            run(
+                &current_dir,
+                driver::Config {
+                    enable_unpushed_check: false,
+                    include_non_repos: false,
+                    no_color: false,
+                    shallow: false,
+                    show_email: false,
+                    skip_sort: false,
+                }
+            )
+            .is_err(),
             true
         );
     }
@@ -57,7 +44,18 @@ mod tests {
         let mut current_dir = env::current_dir().expect("failed to get CWD");
         current_dir.pop();
         assert_ne!(
-            run(&current_dir, false, false, false, false, false, false).is_err(),
+            run(
+                &current_dir,
+                driver::Config {
+                    enable_unpushed_check: false,
+                    include_non_repos: false,
+                    no_color: false,
+                    shallow: false,
+                    show_email: false,
+                    skip_sort: false,
+                }
+            )
+            .is_err(),
             true
         );
     }
@@ -76,12 +74,14 @@ mod tests {
                             assert_ne!(
                                 run(
                                     &current_dir,
-                                    false,
-                                    include_non_repos,
-                                    no_color,
-                                    shallow,
-                                    show_email,
-                                    skip_sort
+                                    driver::Config {
+                                        enable_unpushed_check: false,
+                                        include_non_repos,
+                                        no_color,
+                                        shallow,
+                                        show_email,
+                                        skip_sort,
+                                    }
                                 )
                                 .is_err(),
                                 true
