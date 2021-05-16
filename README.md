@@ -28,13 +28,6 @@ It prints each repository in alphabetical order, and pads each result based on t
 By default, `gfold` looks at every Git repository via traversal from the current working directory.
 However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument.
 
-## Where is `gfld`?
-
-`gfld` was an experimental, minimal version of `gfold`.
-It was intended to potentially replace `gfold`, but has since been removed.
-All optimizations and lessons learned from the project have since been integrated into `gfold`.
-Check out the [removal issue to learn more](https://github.com/nickgerace/gfold/issues/110).
-
 ## Installation
 
 **You can use [macOS Homebrew](https://brew.sh) or [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)** to install the [tap](https://github.com/nickgerace/homebrew-gfold).
@@ -96,6 +89,13 @@ gfold ../../this/is/a/relative/path
 
 `gfold` is intended to be ran on *any* tier one Rust target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
+
+## Where is `gfld`?
+
+`gfld` was an experimental, minimal version of `gfold`.
+It was intended to potentially replace `gfold`, but has since been removed.
+All optimizations and lessons learned from the project have since been integrated into `gfold`.
+Check out the [removal issue to learn more](https://github.com/nickgerace/gfold/issues/110).
 
 ## Other Documentation
 
