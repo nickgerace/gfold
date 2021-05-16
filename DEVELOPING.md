@@ -1,20 +1,22 @@
 # Developing
 
-This document contains all tips, tricks and notes related to developing `gfold` and `gfld`.
+This document contains all tips, tricks and notes related to developing `gfold`.
 
-## Building `gfld`
+## Building
 
-Since `gfld` is the minimal version of `gfold`, we need to slim it down for general testing and usage.
 On a compatible platform, execute the following commands:
 
 ```sh
-TEMP_TARGET=$(pwd)
-cargo fmt --all -- --check
-cargo clippy -- -D warnings
-cargo build --bin gfld --release
-strip target/release/gfld
-du -h target/release/gfld | cut -f -1
-time target/release/gfld $TEMP_TARGET
+TEMP_TARGET=$HOME
+cargo update
+cargo +nightly fmt
+cargo clippy
+cargo test
+cargo build --release
+du -h target/release/gfold | cut -f -1
+strip target/release/gfold
+du -h target/release/gfold | cut -f -1
+time target/release/gfold $TEMP_TARGET
 ```
 
 > You can change `TEMP_TARGET` to a directory you'd like to target.

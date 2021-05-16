@@ -9,6 +9,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 The latest version contains all changes.
 
+### Added
+
+- Shallow search flag to disable recursive search (accessible via `-s/--shallow`)
+
+### Changed
+
+- Binary size to be ~60% of the size of `gfold 1.0.4`
+  - Primarily, this was achieved by removing unused default features from imported crates
+  - Runtime speed is the same, better, or more consistent
+- Default search behavior to be recursive rather than shallow
+- Short flag for `--skip-sort` from `-s` to `-x`
+- Workspace implementation to a single crate (similar to before `gfld`)
+
+### Removed
+
+- `gfld`, the lightweight version of `gfold` due the following reasons:
+  - its over ~105% average slower runtime speed (despite it being ~40% of the size)
+  - printing to STDOUT was not consistent in subcommand scenarios
+- Recursive flag since `gfold` uses recursive search by default
+
 ## [1.0.4] - 2021-04-04
 
 ### Changed
