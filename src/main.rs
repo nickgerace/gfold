@@ -1,7 +1,5 @@
-use std::env;
-use std::path::PathBuf;
-
-use eyre::Result;
+use anyhow::Result;
+use std::{env, path::PathBuf};
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -27,15 +25,15 @@ struct Opt {
     no_color: bool,
     #[structopt(parse(from_os_str), help = "Target a different directory")]
     path: Option<PathBuf>,
-    #[structopt(short, long, help = "Search recursively")]
-    recursive: bool,
+    #[structopt(short, long, help = "Only search in the target directory")]
+    shallow: bool,
     #[structopt(
         short = "m",
         long = "show-email",
         help = "Toggle to show git config user.email"
     )]
     show_email: bool,
-    #[structopt(short, long, help = "Toggle to skip sorting")]
+    #[structopt(short = "x", long, help = "Toggle to skip sorting")]
     skip_sort: bool,
 }
 
@@ -58,7 +56,7 @@ fn main() -> Result<()> {
         opt.enable_unpushed_check,
         opt.include_non_repos,
         opt.no_color,
-        opt.recursive,
+        opt.shallow,
         opt.show_email,
         opt.skip_sort,
     )?;

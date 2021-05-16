@@ -1,7 +1,6 @@
 //! This is a CLI tool to help keep track of your Git repositories.
+use anyhow::Result;
 use std::path::Path;
-
-use eyre::Result;
 
 mod driver;
 mod util;
@@ -12,7 +11,7 @@ mod util;
 /// - `include_non_repos`: include standard directories in the result
 /// - `no_color`: disables color, bolding, etc.
 /// - `path`: the target path to find and parse Git repositories
-/// - `recursive`: recursively searches directories for Git repositories
+/// - `shallow`: only search for Git respositories in the target directory
 /// - `show_email`: displays git config user.email
 /// - `skip_sort`: skips sorting the repositories for output
 ///
@@ -22,7 +21,7 @@ pub fn run(
     enable_unpushed_check: bool,
     include_non_repos: bool,
     no_color: bool,
-    recursive: bool,
+    shallow: bool,
     show_email: bool,
     skip_sort: bool,
 ) -> Result<()> {
@@ -30,7 +29,7 @@ pub fn run(
         enable_unpushed_check,
         include_non_repos,
         no_color,
-        recursive,
+        shallow,
         show_email,
         skip_sort,
     };
@@ -70,17 +69,17 @@ mod tests {
         let mut count = 1;
         for include_non_repos in vec![true, false] {
             for no_color in vec![true, false] {
-                for recursive in vec![true, false] {
+                for shallow in vec![true, false] {
                     for show_email in vec![true, false] {
                         for skip_sort in vec![true, false] {
-                            println!("[test:{} / include_non_repos:{} / no_color:{} / recursive:{} / show_email:{} / skip_sort:{}]", count, include_non_repos, no_color, recursive, show_email, skip_sort);
+                            println!("[test:{} / include_non_repos:{} / no_color:{} / shallow:{} / show_email:{} / skip_sort:{}]", count, include_non_repos, no_color, shallow, show_email, skip_sort);
                             assert_ne!(
                                 run(
                                     &current_dir,
                                     false,
                                     include_non_repos,
                                     no_color,
-                                    recursive,
+                                    shallow,
                                     show_email,
                                     skip_sort
                                 )

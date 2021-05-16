@@ -1,18 +1,18 @@
-use std::cmp::Ordering;
-use std::fs;
-use std::path::{Path, PathBuf};
-
-use eyre::Result;
-use log::{debug, warn};
-
 use crate::util;
+use anyhow::Result;
+use log::{debug, warn};
+use std::{
+    cmp::Ordering,
+    fs,
+    path::{Path, PathBuf},
+};
 
 #[derive(Debug)]
 pub struct Config {
     pub enable_unpushed_check: bool,
     pub include_non_repos: bool,
     pub no_color: bool,
-    pub recursive: bool,
+    pub shallow: bool,
     pub show_email: bool,
     pub skip_sort: bool,
 }
@@ -52,35 +52,35 @@ impl Results {
         };
     }
 
+    // Sequential exeuction has benchmarked faster than concurrent implementations.
     fn execute_in_directory(&mut self, config: &Config, dir: &Path) -> Result<()> {
-        // FIXME: find ways to add concurrent programming (tokio, async, etc.) to this section.
-        let path_entries = fs::read_dir(dir)?;
         let mut repos: Vec<PathBuf> = Vec::new();
         let mut non_repos: Vec<PathBuf> = Vec::new();
 
-        for entry in path_entries {
-            let subpath = &entry?.path();
-
-            // Ensure that our subpath is a directory and that it is not hidden.
-            if subpath.is_dir()
-                && !util::get_short_name_for_directory(subpath, dir).starts_with('.')
-            {
-                match git2::Repository::open(subpath) {
-                    Ok(_) => repos.push(subpath.to_owned()),
+        for entry in (fs::read_dir(dir)?).flatten() {
+            let file_name_buf = entry.file_name();
+            let file_name = match file_name_buf.to_str() {
+                Some(o) => o,
+                None => continue,
+            };
+            if !file_name.starts_with('.') && entry.file_type()?.is_dir() {
+                let entry_path = entry.path();
+                match git2::Repository::open(&entry_path) {
+                    Ok(_) => repos.push(entry_path),
                     Err(e) => {
                         debug!(
                             "Tried to open {:#?} as git repository: {:#?}",
-                            subpath,
+                            entry_path,
                             e.message()
                         );
                         if config.include_non_repos {
-                            non_repos.push(subpath.to_owned());
+                            non_repos.push(entry_path.clone());
                         }
-                        if config.recursive {
-                            if let Err(e) = self.execute_in_directory(&config, &subpath) {
+                        if !config.shallow {
+                            if let Err(e) = self.execute_in_directory(&config, &entry_path) {
                                 warn!(
                                     "Encountered error during recursive walk into {:#?}: {:#?}",
-                                    &subpath, e
+                                    &entry_path, e
                                 );
                             }
                         }

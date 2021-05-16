@@ -1,9 +1,7 @@
-use std::path::{Path, PathBuf};
-
+use crate::driver;
 use log::{debug, warn};
 use prettytable::{Cell, Row};
-
-use crate::driver;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 enum Condition {
@@ -77,10 +75,10 @@ pub fn create_table_from_paths(
             Err(_) => Condition::Error,
         };
 
-        let name = get_short_name_for_directory(&repo, path);
+        let name = repo.as_path().file_name()?.to_str()?;
         let create_row = |status_spec: &str, status: &str| -> prettytable::Row {
             let mut cells = vec![
-                Cell::new(name.as_str()).style_spec(if *no_color { "Fl" } else { "Flb" }),
+                Cell::new(name).style_spec(if *no_color { "Fl" } else { "Flb" }),
                 Cell::new(status).style_spec(if *no_color { "Fl" } else { status_spec }),
                 Cell::new(branch).style_spec("Fl"),
                 Cell::new(url).style_spec("Fl"),
@@ -109,8 +107,11 @@ pub fn create_table_from_paths(
     // whereas the "non_repos" loop does not create any local variables beyond the row's cells.
     for non_repo in non_repos {
         let mut cells = vec![
-            Cell::new(get_short_name_for_directory(&non_repo, path).as_str())
-                .style_spec(if *no_color { "Fl" } else { "Flb" }),
+            Cell::new(non_repo.as_path().file_name()?.to_str()?).style_spec(if *no_color {
+                "Fl"
+            } else {
+                "Flb"
+            }),
             Cell::new("dir").style_spec(if *no_color { "Fl" } else { "Fml" }),
             Cell::new("-").style_spec("Fl"),
             Cell::new("-").style_spec("Fl"),
@@ -129,18 +130,6 @@ pub fn create_table_from_paths(
             table,
         }),
     }
-}
-
-pub fn get_short_name_for_directory(child: &Path, parent: &Path) -> String {
-    let temp_dir = child.to_path_buf();
-    let path = match Path::new(&temp_dir).strip_prefix(parent) {
-        Ok(o) => o,
-        Err(e) => {
-            warn!("Encountered error: {:#?}", e);
-            return "none".to_string();
-        }
-    };
-    path.to_str().unwrap_or("none").to_owned()
 }
 
 // FIXME: this function may not currently work because "clean", non-main branches can be considered "unpushed".

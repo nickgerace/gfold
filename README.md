@@ -18,68 +18,23 @@ tartarus           unclean   delta     git@github.com:covenant/tartarus.git
 voi                clean     main      https://github.com/earth/voi.git
 ```
 
-## Version 2.0.0 is in progress!
-
-`gfold v2` will bring the best parts of `gfold v1` and `gfld v1` together into one CLI application.
-Stay subscribed to this repostiory to learn more.
-
 ## Description and Motivation
 
 This app displays relevant information for multiple Git repositories in one, or multiple, directories.
 While this tool might seem limited in scope and purpose, that is by design.
 
 It prints each repository in alphabetical order, and pads each result based on the longest directory, branch, and status string.
-By default, `gfold` looks at every Git repository in the current working directory.
+By default, `gfold` looks at every Git repository via traversal from the current working directory.
 However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument.
 
-## Should I use `gfold` or `gfld`?
+## Where is `gfld`?
 
-[![Crates.io](https://img.shields.io/crates/v/gfld?style=flat-square)](https://crates.io/crates/gfld)
-
-`gfld` is the new, minimal version of `gfold`.
-It contains only one configurable option (an optional, single command-line argument for the target path) and is much smaller than the original application in size.
-
-It is intended for fans of the original application who want a near-configurationaless usability and a smaller footprint on their systems.
-It does *not* promise faster runtime performance, but it delivers on the two former goals.
-
-There are two major behavioral differences from the original application: only recursive search is available (similar to `gfold -r`), and all results are combined into one table (inspired by `kubectl get pods -A`).
+`gfld` was an experimental, minimal version of `gfold`.
+It was intended to potentially replace `gfold`, but has since been removed.
+All optimizations and lessons learned from the project have since been integrated into `gfold`.
+Check out the [removal issue to learn more](https://github.com/nickgerace/gfold/issues/110).
 
 ## Installation
-
-This repository contains two applications: `gfold`, the primary, fully-featured version, and `gfld`, the minimal version.
-There is only one recommended method for installing the latter, and the original version has multiple methods for installation.
-Thus, this section starts with the minimal version.
-
-**For all installation steps:** it is highly recommended to run `strip` against the binary on compatible systems to reduce executable size.
-The following script was tested on macOS and Linux systems:
-
-```sh
-for i in $(command -v gfold) $(command -v gfld); do
-    [ "$i" != "" ] && strip $i && du -h $i
-done
-```
-
-> The above script will work with either application installed, both installed, or neither installed.
-
-If you do not know where either application was installed, you can use the `which` command on compatible platforms or check your `cargo install` settings.
-
-### Installing `gfld`
-
-Currently, the only recommended method to install `gfld` is by using **[cargo](https://crates.io)** to install the [crate](https://crates.io/crates/gfld).
-Fortunately, the minimal application should work on nearly every major platform.
-
-```sh
-cargo install gfld
-```
-
-> Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
->
-> ```sh
-> cargo install cargo-update
-> cargo install-update -a
-> ```
-
-### Installing `gfold`
 
 **You can use [macOS Homebrew](https://brew.sh) or [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)** to install the [tap](https://github.com/nickgerace/homebrew-gfold).
 
@@ -96,15 +51,37 @@ paru -S gfold
 ```
 
 **You can use [cargo](https://crates.io)** to install the [crate](https://crates.io/crates/gfold) on almost any platform.
-Consult the `gfld` section above on how to keep the crate up to date with `cargo-update`.
 
 ```sh
 cargo install gfold
 ```
 
+> Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
+>
+> ```sh
+> cargo install cargo-update
+> cargo install-update -a
+> ```
+
+### Post-Installation
+
+It is highly recommended to run `strip` against the binary on compatible systems to reduce executable size.
+The following script was tested on macOS and Linux systems:
+
+```sh
+GFOLD=$(command -v gfold) && [ "$GFOLD" != "" ] && du -h $GFOLD && strip $GFOLD && du -h $GFOLD
+```
+
+> The above script will execute silently if `gfold` is not installed.
+
+If you do not know where `gfold` was installated to, you can try the following:
+
+1. Use the `which` command on compatible platforms (so long as `gfold` is in your `PATH`)
+2. Check your `cargo install` settings (if you installed with `cargo install`)
+
 ## Usage
 
-For `gfold`: pass in the `-h`, or `--help`, flag to see all the options for using this application.
+Pass in the `-h`, or `--help`, flag to see all the options for using this application.
 
 ```sh
 gfold
@@ -112,25 +89,11 @@ gfold ..
 gfold $HOME
 gfold /this/is/an/absolute/path
 gfold ../../this/is/a/relative/path
-gfold ~/path/to/multiple/repositories/ -r
-gfold -r $HOME/path/to/multiple/repositories
-```
-
-For `gfld`: you can pass in the `-h`, or `--help` too.
-However, there is only one method of configuration: an optional, single command-line argument for the target path.
-This is a result of the minimal application's design.
-
-```sh
-gfld
-gfld ..
-gfld $HOME
-gfld /this/is/an/absolute/path
-gfld ../../this/is/a/relative/path
 ```
 
 ## Compatibility
 
-Both applications are intended to be ran on *any* tier one Rust target.
+`gfold` is intended to be ran on *any* tier one Rust target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
 ## Other Documentation
@@ -151,5 +114,5 @@ This repository follows and enforces the Rust programming language's [Code of Co
 ## Special Thanks To...
 
 - [@jrcichra](https://github.com/jrcichra) for adding multi-OS support to the original, early-stage CI pipeline
-- [@orhun](https://github.com/orhun) for maintaining [all AUR packages](https://github.com/orhun/PKGBUILDs) for `gfold`
+- [@orhun](https://github.com/orhun) for maintaining [all AUR packages](https://github.com/orhun/PKGBUILDs)
 - [@yaahc](https://github.com/yaahc) for mentoring during an early refactor

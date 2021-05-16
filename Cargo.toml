@@ -1,8 +1,30 @@
-[workspace]
-members = ["gfold", "gfld"]
+[package]
+authors = ["Nick Gerace <nickagerace@gmail.com>"]
+categories = ["command-line-utilities", "command-line-interface"]
+description = "CLI tool to help keep track of your Git repositories."
+edition = "2018"
+homepage = "https://nickgerace.dev"
+keywords = ["git", "cli"]
+license = "Apache-2.0"
+name = "gfold"
+readme = "README.md"
+repository = "https://github.com/nickgerace/gfold/"
+version = "1.0.4"
+
+[dependencies]
+env_logger = { version = "^0", default-features = false }
+git2 = { version = "^0", default-features = false }
+log = { version = "^0", default-features = false }
+prettytable-rs = { version = "^0", default-features = false }
+structopt = { version = "^0", default-features = false }
+
+# We need the default features from the following crate(s):
+anyhow = "^1"
 
 [profile.release]
 codegen-units = 1
+
+# Instruct linker to optimize at the link stage.
 lto = true
 
 # These applications should not panic often and only read from the filesystem.

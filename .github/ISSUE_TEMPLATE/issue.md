@@ -3,13 +3,9 @@ name: issue
 about: Describe the issue
 title: ''
 labels: ''
-assignees: nickgerace
 ---
 
-### Describe the issue.
-<!--answer-here-->
-
-### Is this about `gfold`, `gfld`, or both?
+### Describe the issue:
 <!--answer-here-->
 
 ### Is this a bug report, feature request, or another type of issue?
@@ -21,5 +17,5 @@ assignees: nickgerace
 ### How did you obtain the application?
 <!--answer-here-->
 
-### Paste the output of the relevant application(s) with `-h`.
+### Paste the output of `gfold --help`:
 <!--answer-here-->
