@@ -1,4 +1,5 @@
-use crate::util;
+//! This module contains the types required for using `gfold::run`.
+use crate::{internal_types, util};
 use anyhow::Result;
 use log::{debug, warn};
 use std::{
@@ -7,24 +8,28 @@ use std::{
     path::{Path, PathBuf},
 };
 
+/// A bedrock type that is a required parameter for `gfold::run`.
 #[derive(Debug)]
 pub struct Config {
+    /// Enable checking for unpushed commits (experimental).
     pub enable_unpushed_check: bool,
+    /// Include standard directories in the result.
     pub include_non_repos: bool,
+    /// Disables color, bolding, etc.
     pub no_color: bool,
+    /// The target path to find and parse Git repositories.
     pub shallow: bool,
+    /// Displays the email address corresponding to the local Git config (same as `git config user.email`).
     pub show_email: bool,
+    /// Skips sorting the repositories for output
     pub skip_sort: bool,
 }
 
-pub struct TableWrapper {
-    pub path_string: String,
-    pub table: prettytable::Table,
-}
-
-pub struct Results(Vec<TableWrapper>);
+/// Creating this object with a given `Config` will generate results that can be printed to `STDOUT`.
+pub struct Results(Vec<internal_types::TableWrapper>);
 
 impl Results {
+    /// Generate `Results` with a given configuration.
     pub fn new(path: &Path, config: &Config) -> Result<Results> {
         debug!("Running with config: {:#?}", &config);
         debug!("Running in path: {:#?}", &path);
@@ -36,6 +41,7 @@ impl Results {
         Ok(results)
     }
 
+    /// Print results to STDOUT after generation.
     pub fn print_results(self) {
         debug!("Printing results with {} tables...", self.0.len());
         match self.0.len().cmp(&1) {

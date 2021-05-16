@@ -49,16 +49,18 @@ fn main() -> Result<()> {
     if let Some(provided_path) = opt.path {
         path.push(provided_path)
     };
-    path = path.canonicalize()?;
 
     gfold::run(
-        &path,
-        opt.enable_unpushed_check,
-        opt.include_non_repos,
-        opt.no_color,
-        opt.shallow,
-        opt.show_email,
-        opt.skip_sort,
-    )?;
+        &path.canonicalize()?,
+        gfold::driver::Config {
+            enable_unpushed_check: opt.enable_unpushed_check,
+            include_non_repos: opt.include_non_repos,
+            no_color: opt.no_color,
+            shallow: opt.shallow,
+            show_email: opt.show_email,
+            skip_sort: opt.skip_sort,
+        },
+    )?
+    .print_results();
     Ok(())
 }

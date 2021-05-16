@@ -7,7 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Changed
+
+- Config management to be done by applications consuming the library (moved out of `lib.rs`)
+- Driver module to be public
+- Printing to STDOUT to be done by applications consuming the library (moved out of `lib.rs`)
+- `TableWrapper` type to be a private, internal type
 
 ## [1.1.0] - 2021-05-15
 
