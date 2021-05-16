@@ -9,7 +9,7 @@ license = "Apache-2.0"
 name = "gfold"
 readme = "README.md"
 repository = "https://github.com/nickgerace/gfold/"
-version = "1.1.1"
+version = "1.2.0"
 
 [dependencies]
 env_logger = { version = "^0", default-features = false }
