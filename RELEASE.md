@@ -41,7 +41,8 @@ git push --tags origin main
 cargo publish
 ```
 
-- [ ] Check the [crate](https://crates.io/crates/gfold) on `crates.io` and `docs.rs` afterwards.
+- [ ] Check the [crate](https://crates.io/crates/gfold) on `crates.io`.
+- [ ] Check the [docs](https://docs.rs/gfold) on `docs.rs`.
 
 ## Updating the Homebrew Tap
 
