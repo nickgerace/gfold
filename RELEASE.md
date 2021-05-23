@@ -18,7 +18,7 @@ cargo build --release
 
 - [ ] Change the version in `CHANGELOG.md` and uncomment the line, `<!--The latest version contains all changes.-->`.
 - [ ] Create a commit with the following message: `Update to <new-tag>`. Do not push (or merge) the commit.
-- [ ] Test the publishing workflow within each crate:
+- [ ] Test the publishing workflow:
 
 ```sh
 cargo publish --dry-run
