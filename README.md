@@ -9,7 +9,6 @@
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
 ```sh
-user at hostname in ~/git
 % gfold
 great-journey      unclean   main      git@github.com:truth/great-journey.git
 installation-zero  bare      main      https://github.com/the-ark/installation-zero.git
@@ -60,18 +59,12 @@ cargo install gfold
 ### Post-Installation
 
 It is highly recommended to run `strip` against the binary on compatible systems to reduce executable size.
-The following script was tested on macOS and Linux systems:
 
 ```sh
-GFOLD=$(command -v gfold) && [ "$GFOLD" != "" ] && du -h $GFOLD && strip $GFOLD && du -h $GFOLD
+TEMP=$(command -v gfold) && du -h $TEMP && strip $TEMP && du -h $TEMP
 ```
 
-> The above script will execute silently if `gfold` is not installed.
-
-If you do not know where `gfold` was installated to, you can try the following:
-
-1. Use the `which` command on compatible platforms (so long as `gfold` is in your `PATH`)
-2. Check your `cargo install` settings (if you installed with `cargo install`)
+> The above script will exit with a non-zero exit code if `gfold` is not installed and/or is not in your `PATH`.
 
 ## Usage
 
@@ -107,12 +100,12 @@ Check out the [removal issue to learn more](https://github.com/nickgerace/gfold/
 
 This repository follows and enforces the Rust programming language's [Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct).
 
-## Additional Information
 
-- Author: [Nick Gerace](https://nickgerace.dev)
-- License: [Apache 2.0](./LICENSE)
+## Maintainers
 
-## Special Thanks To...
+- [@nickgerace](https://nickgerace.dev)
+
+## Special Thanks
 
 - [@jrcichra](https://github.com/jrcichra) for adding multi-OS support to the original, early-stage CI pipeline
 - [@orhun](https://github.com/orhun) for maintaining [all AUR packages](https://github.com/orhun/PKGBUILDs)
