@@ -1,7 +1,8 @@
 //! This module contains the types required for generating results for `gfold`.
 use crate::{driver_internal::TableWrapper, util};
+use ansi_term::Style;
 use anyhow::Result;
-use log::{debug, warn};
+use log::{debug, error, warn};
 use std::{
     cmp::Ordering,
     fs,
@@ -43,12 +44,27 @@ impl Driver {
 
     /// Print results to `STDOUT` after generation.
     pub fn print_results(self) {
+        #[cfg(windows)]
+        ansi_term::enable_ansi_support();
+
         debug!("Printing results with {} tables...", self.0.len());
         match self.0.len().cmp(&1) {
             Ordering::Greater => {
+                let last = match self.0.last() {
+                    Some(s) => s.path_string.clone(),
+                    None => {
+                        error!(
+                            "Last object not found for table vector. Continuing with empty string."
+                        );
+                        String::from("")
+                    }
+                };
                 for table_wrapper in self.0 {
-                    println!("\n{}", table_wrapper.path_string);
+                    println!("{}", Style::new().bold().paint(&table_wrapper.path_string));
                     table_wrapper.table.printstd();
+                    if table_wrapper.path_string != last {
+                        println!();
+                    }
                 }
             }
             Ordering::Equal => {

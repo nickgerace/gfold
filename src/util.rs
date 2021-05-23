@@ -49,11 +49,11 @@ pub fn create_table_from_paths(
             }
         };
         let url = origin.url().unwrap_or("none");
-        debug!("[+] url: {:#?}", url);
+        debug!("> url: {:#?}", url);
 
         let head = repo_obj.head().ok()?;
         let branch = head.shorthand().unwrap_or("none");
-        debug!("[+] branch: {:#?}", branch);
+        debug!("> branch: {:#?}", branch);
 
         // FIXME: test using the "is_bare()" method for a repository object.
         let mut opts = git2::StatusOptions::new();
@@ -78,7 +78,7 @@ pub fn create_table_from_paths(
         let name = repo.as_path().file_name()?.to_str()?;
         let create_row = |status_spec: &str, status: &str| -> prettytable::Row {
             let mut cells = vec![
-                Cell::new(name).style_spec(if *no_color { "Fl" } else { "Flb" }),
+                Cell::new(name).style_spec("Fl"),
                 Cell::new(status).style_spec(if *no_color { "Fl" } else { status_spec }),
                 Cell::new(branch).style_spec("Fl"),
                 Cell::new(url).style_spec("Fl"),
@@ -99,7 +99,7 @@ pub fn create_table_from_paths(
             Condition::Unpushed => table.add_row(create_row("Fcl", "unpushed")),
             _ => table.add_row(create_row("Frl", "error")),
         };
-        debug!("[+] condition: {:#?}", condition);
+        debug!("> condition: {:#?}", condition);
     }
 
     // D.R.Y. is important, but the "non_repos" loop would not benefit from the closure used by
@@ -107,11 +107,7 @@ pub fn create_table_from_paths(
     // whereas the "non_repos" loop does not create any local variables beyond the row's cells.
     for non_repo in non_repos {
         let mut cells = vec![
-            Cell::new(non_repo.as_path().file_name()?.to_str()?).style_spec(if *no_color {
-                "Fl"
-            } else {
-                "Flb"
-            }),
+            Cell::new(non_repo.as_path().file_name()?.to_str()?).style_spec("Fl"),
             Cell::new("dir").style_spec(if *no_color { "Fl" } else { "Fml" }),
             Cell::new("-").style_spec("Fl"),
             Cell::new("-").style_spec("Fl"),
@@ -137,34 +133,34 @@ fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> bool {
     let local = match head.peel_to_commit() {
         Ok(local) => local,
         Err(e) => {
-            debug!("[-] error: {}", e);
+            debug!("> error: {}", e);
             return false;
         }
     };
-    debug!("[+] local commit: {:#?}", local.id());
+    debug!("> local commit: {:#?}", local.id());
     if let Some(name) = head.name() {
-        debug!("[+] local ref: {}", name);
+        debug!("> local ref: {}", name);
     }
 
     let upstream = match repo.resolve_reference_from_short_name("origin") {
         Ok(reference) => {
             if let Some(name) = reference.name() {
-                debug!("[+] origin ref: {}", name);
+                debug!("> origin ref: {}", name);
             }
             match reference.peel_to_commit() {
                 Ok(upstream) => upstream,
                 Err(e) => {
-                    debug!("[-] error: {}", e);
+                    debug!("> error: {}", e);
                     return false;
                 }
             }
         }
         Err(e) => {
-            debug!("[-] error: {}", e);
+            debug!("> error: {}", e);
             return false;
         }
     };
-    debug!("[+] origin commit: {:#?}", upstream.id());
+    debug!("> origin commit: {:#?}", upstream.id());
 
     matches!(repo.graph_ahead_behind(local.id(), upstream.id()), Ok(ahead) if ahead.0 > 0)
 }
