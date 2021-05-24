@@ -14,7 +14,7 @@ mod tests {
         assert_ne!(
             driver::Driver::new(
                 &current_dir,
-                &driver::Config {
+                driver::Config {
                     enable_unpushed_check: false,
                     include_non_repos: false,
                     no_color: false,
@@ -35,7 +35,7 @@ mod tests {
         assert_ne!(
             driver::Driver::new(
                 &current_dir,
-                &driver::Config {
+                driver::Config {
                     enable_unpushed_check: false,
                     include_non_repos: false,
                     no_color: false,
@@ -63,7 +63,7 @@ mod tests {
                             assert_ne!(
                                 driver::Driver::new(
                                     &current_dir,
-                                    &driver::Config {
+                                    driver::Config {
                                         enable_unpushed_check: false,
                                         include_non_repos,
                                         no_color,
