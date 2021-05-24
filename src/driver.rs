@@ -27,16 +27,22 @@ pub struct Config {
 }
 
 /// Creating this object with a given `Config` will generate results that can be printed to `STDOUT`.
-pub struct Driver(Vec<TableWrapper>);
+pub struct Driver {
+    tables: Vec<TableWrapper>,
+    config: Config,
+}
 
 impl Driver {
     /// Constructing a `Driver` will generate results with a given `&Path` and `&Config`.
-    pub fn new(path: &Path, config: &Config) -> Result<Driver> {
+    pub fn new(path: &Path, config: Config) -> Result<Driver> {
         debug!("Running with config: {:#?}", &config);
         debug!("Running in path: {:#?}", &path);
-        let mut driver = Driver(Vec::new());
-        driver.execute_in_directory(&config, path)?;
-        if !&config.skip_sort {
+        let mut driver = Driver {
+            tables: Vec::new(),
+            config,
+        };
+        driver.execute_in_directory(path)?;
+        if !driver.config.skip_sort {
             driver.sort_results();
         }
         Ok(driver)
@@ -45,12 +51,14 @@ impl Driver {
     /// Print results to `STDOUT` after generation.
     pub fn print_results(self) {
         #[cfg(windows)]
-        ansi_term::enable_ansi_support();
+        if !self.config.no_color {
+            ansi_term::enable_ansi_support();
+        }
 
-        debug!("Printing results with {} tables...", self.0.len());
-        match self.0.len().cmp(&1) {
+        debug!("Printing results with {} tables...", self.tables.len());
+        match self.tables.len().cmp(&1) {
             Ordering::Greater => {
-                let last = match self.0.last() {
+                let last = match self.tables.last() {
                     Some(s) => s.path_string.clone(),
                     None => {
                         error!(
@@ -59,8 +67,13 @@ impl Driver {
                         String::from("")
                     }
                 };
-                for table_wrapper in self.0 {
-                    println!("{}", Style::new().bold().paint(&table_wrapper.path_string));
+                for table_wrapper in self.tables {
+                    match self.config.no_color {
+                        false => {
+                            println!("{}", Style::new().bold().paint(&table_wrapper.path_string))
+                        }
+                        true => println!("{}", &table_wrapper.path_string),
+                    }
                     table_wrapper.table.printstd();
                     if table_wrapper.path_string != last {
                         println!();
@@ -68,14 +81,14 @@ impl Driver {
                 }
             }
             Ordering::Equal => {
-                self.0[0].table.printstd();
+                self.tables[0].table.printstd();
             }
             _ => {}
         };
     }
 
     // Sequential exeuction has benchmarked faster than concurrent implementations.
-    fn execute_in_directory(&mut self, config: &Config, dir: &Path) -> Result<()> {
+    fn execute_in_directory(&mut self, dir: &Path) -> Result<()> {
         let mut repos: Vec<PathBuf> = Vec::new();
         let mut non_repos: Vec<PathBuf> = Vec::new();
 
@@ -95,11 +108,11 @@ impl Driver {
                             entry_path,
                             e.message()
                         );
-                        if config.include_non_repos {
+                        if self.config.include_non_repos {
                             non_repos.push(entry_path.clone());
                         }
-                        if !config.shallow {
-                            if let Err(e) = self.execute_in_directory(&config, &entry_path) {
+                        if !self.config.shallow {
+                            if let Err(e) = self.execute_in_directory(&entry_path) {
                                 warn!(
                                     "Encountered error during recursive walk into {:#?}: {:#?}",
                                     &entry_path, e
@@ -112,32 +125,32 @@ impl Driver {
         }
 
         debug!("Git repositories found: {:#?}", repos);
-        if config.include_non_repos {
+        if self.config.include_non_repos {
             debug!("Standard directories found: {:#?}", non_repos);
         }
         if !repos.is_empty() {
-            if !&config.skip_sort {
+            if !self.config.skip_sort {
                 repos.sort();
             }
             if let Some(table_wrapper) = util::create_table_from_paths(
                 repos,
                 non_repos,
                 &dir,
-                &config.enable_unpushed_check,
-                &config.no_color,
-                &config.show_email,
+                &self.config.enable_unpushed_check,
+                &self.config.no_color,
+                &self.config.show_email,
             ) {
-                self.0.push(table_wrapper);
+                self.tables.push(table_wrapper);
             }
         }
         Ok(())
     }
 
     fn sort_results(&mut self) {
-        debug!("Sorting {:#?} tables...", self.0.len());
-        if self.0.len() >= 2 {
-            // FIXME: find a way to do this without "clone()".
-            self.0.sort_by_key(|table| table.path_string.clone());
+        debug!("Sorting {:#?} tables...", self.tables.len());
+        if self.tables.len() >= 2 {
+            // FIXME: find a way to do this without cloning.
+            self.tables.sort_by_key(|table| table.path_string.clone());
         }
     }
 }
