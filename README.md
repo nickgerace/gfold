@@ -10,12 +10,12 @@
 
 ```sh
 % gfold
-astrid         unclean   main       git@github.com:db/astrid.git
-fev            bare      main       https://github.com/institute/fev.git
-gb             unpushed  dev        https://github.com/hrothgar/gb.git
-liberty-prime  clean     issue2287  git@github.com:bos/liberty-prime.git
-neloth         unclean   patch      git@github.com:telvanni/neloth.git
-synth          clean     main       https://github.com/railroad/synth.git
+astrid  unclean   main       git@github.com:db/astrid.git
+fev     bare      main       https://github.com/institute/fev.git
+gb      unpushed  dev        https://github.com/hrothgar/gb.git
+neloth  unclean   patch      git@github.com:telvanni/neloth.git
+pam     clean     main       https://github.com/onc/pam.git
+prime   clean     issue2287  git@github.com:bos/prime.git
 ```
 
 ## Description and Motivation
