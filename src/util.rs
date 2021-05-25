@@ -1,5 +1,4 @@
 use crate::driver_internal::TableWrapper;
-use log::{debug, warn};
 use prettytable::{Cell, Row};
 use std::path::{Path, PathBuf};
 
@@ -30,30 +29,20 @@ pub fn create_table_from_paths(
 
     // FIXME: maximize error recovery in this loop.
     for repo in repos {
-        debug!("Creating row from path: {:#?}", repo);
         let repo_obj = match git2::Repository::open(&repo) {
             Ok(repo) => repo,
-            Err(_) => {
-                debug!("Could not open Git repository. Continuing to next repository...");
-                continue;
-            }
+            Err(_) => continue,
         };
 
         // FIXME: in case deeper recoverable errors are desired, use the match arm...
         // Err(error) if error.class() == git2::ErrorClass::Config => continue,
         let origin = match repo_obj.find_remote("origin") {
             Ok(origin) => origin,
-            Err(_) => {
-                debug!("Could not find remote origin. Continuing to next repository...");
-                continue;
-            }
+            Err(_) => continue,
         };
         let url = origin.url().unwrap_or("none");
-        debug!("> url: {:#?}", url);
-
         let head = repo_obj.head().ok()?;
         let branch = head.shorthand().unwrap_or("none");
-        debug!("> branch: {:#?}", branch);
 
         // FIXME: test using the "is_bare()" method for a repository object.
         let mut opts = git2::StatusOptions::new();
@@ -99,7 +88,6 @@ pub fn create_table_from_paths(
             Condition::Unpushed => table.add_row(create_row("Fcl", "unpushed")),
             _ => table.add_row(create_row("Frl", "error")),
         };
-        debug!("> condition: {:#?}", condition);
     }
 
     // D.R.Y. is important, but the "non_repos" loop would not benefit from the closure used by
@@ -118,7 +106,6 @@ pub fn create_table_from_paths(
         table.add_row(Row::new(cells));
     }
 
-    debug!("Generated {:#?} rows for table object", table.len());
     match table.is_empty() {
         true => None,
         false => Some(TableWrapper {
@@ -132,55 +119,30 @@ pub fn create_table_from_paths(
 fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> bool {
     let local = match head.peel_to_commit() {
         Ok(local) => local,
-        Err(e) => {
-            debug!("> error: {}", e);
-            return false;
-        }
+        Err(_) => return false,
     };
-    debug!("> local commit: {:#?}", local.id());
-    if let Some(name) = head.name() {
-        debug!("> local ref: {}", name);
-    }
 
     let upstream = match repo.resolve_reference_from_short_name("origin") {
-        Ok(reference) => {
-            if let Some(name) = reference.name() {
-                debug!("> origin ref: {}", name);
-            }
-            match reference.peel_to_commit() {
-                Ok(upstream) => upstream,
-                Err(e) => {
-                    debug!("> error: {}", e);
-                    return false;
-                }
-            }
-        }
-        Err(e) => {
-            debug!("> error: {}", e);
-            return false;
-        }
+        Ok(reference) => match reference.peel_to_commit() {
+            Ok(upstream) => upstream,
+            Err(_) => return false,
+        },
+        Err(_) => return false,
     };
-    debug!("> origin commit: {:#?}", upstream.id());
 
     matches!(repo.graph_ahead_behind(local.id(), upstream.id()), Ok(ahead) if ahead.0 > 0)
 }
 
 fn get_email(repo_path: &Path) -> String {
-    let func = |cfg: git2::Config| -> Option<String> {
+    let find_email_in_config = |cfg: git2::Config| -> Option<String> {
         let entries = match cfg.entries(None) {
             Ok(o) => o,
-            Err(e) => {
-                debug!("Encountered error. Returning none: {:#?}", e);
-                return None;
-            }
+            Err(_) => return None,
         };
         for entry in &entries {
             let entry = match entry {
                 Ok(o) => o,
-                Err(e) => {
-                    warn!("Encountered error: {:#?}", e);
-                    continue;
-                }
+                Err(_) => continue,
             };
             let key = match entry.name() {
                 Some(s) => s,
@@ -197,25 +159,15 @@ fn get_email(repo_path: &Path) -> String {
         None
     };
 
-    match git2::Config::open(&repo_path.join(".git").join("config")) {
-        Ok(o) => match func(o) {
-            Some(value) => return value,
-            None => debug!("Email not found. Trying default config..."),
-        },
-        Err(e) => debug!(
-            "Encountered error accessing config in .git/config for {:#?}: {:#?}",
-            &repo_path, e
-        ),
-    };
-    match git2::Config::open_default() {
-        Ok(o) => match func(o) {
-            Some(value) => return value,
-            None => debug!("Email not found in neither the default config nor the local config."),
-        },
-        Err(e) => debug!(
-            "Encountered error accessing default git config for {:#?}: {:#?}",
-            &repo_path, e
-        ),
-    };
+    if let Ok(o) = git2::Config::open(&repo_path.join(".git").join("config")) {
+        if let Some(o) = find_email_in_config(o) {
+            return o;
+        }
+    }
+    if let Ok(o) = git2::Config::open_default() {
+        if let Some(o) = find_email_in_config(o) {
+            return o;
+        }
+    }
     "-".to_string()
 }

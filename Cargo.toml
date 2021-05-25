@@ -13,9 +13,7 @@ version = "1.2.1"
 
 [dependencies]
 ansi_term = { version = "^0", default-features = false }
-env_logger = { version = "^0", default-features = false }
 git2 = { version = "^0", default-features = false }
-log = { version = "^0", default-features = false }
 prettytable-rs = { version = "^0", default-features = false }
 structopt = { version = "^0", default-features = false }
 
@@ -29,7 +27,6 @@ codegen-units = 1
 lto = true
 
 # These applications should not panic often and only read from the filesystem.
-# Thus, setting "RUST_LOG=debug" and running again is relatively safe.
 panic = "abort"
 
 # There noticeable speed difference from level 3 to 'z' or 's'.
