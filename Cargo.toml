@@ -9,16 +9,14 @@ license = "Apache-2.0"
 name = "gfold"
 readme = "README.md"
 repository = "https://github.com/nickgerace/gfold/"
-version = "1.2.1"
+version = "1.3.0"
 
 [dependencies]
+anyhow = "^1"
 ansi_term = { version = "^0", default-features = false }
 git2 = { version = "^0", default-features = false }
 prettytable-rs = { version = "^0", default-features = false }
 structopt = { version = "^0", default-features = false }
-
-# We need the default features from the following crate(s):
-anyhow = "^1"
 
 [profile.release]
 codegen-units = 1

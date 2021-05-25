@@ -10,12 +10,12 @@
 
 ```sh
 % gfold
-great-journey      unclean   main      git@github.com:truth/great-journey.git
-installation-zero  bare      main      https://github.com/the-ark/installation-zero.git
-sierra             unpushed  dev       https://github.com/forward-unto-dawn/sierra.git
-spark              clean     issue343  git@github.com:guilty/spark.git
-tartarus           unclean   delta     git@github.com:covenant/tartarus.git
-voi                clean     main      https://github.com/earth/voi.git
+astrid         unclean   main       git@github.com:db/astrid.git
+fev            bare      main       https://github.com/institute/fev.git
+gb             unpushed  dev        https://github.com/hrothgar/gb.git
+liberty-prime  clean     issue2287  git@github.com:bos/liberty-prime.git
+neloth         unclean   patch      git@github.com:telvanni/neloth.git
+synth          clean     main       https://github.com/railroad/synth.git
 ```
 
 ## Description and Motivation
