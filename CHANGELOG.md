@@ -14,6 +14,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Config type to be embedded within the Driver
   - Not in public library modules, but this should improve generation efficiency
 
+### Removed
+
+- `-d/--debug` flag since all logging has been removed from the librariy, and `main.rs` does not log
+- `env_logger` crate
+- `log` crate
+- Logging from the entire library in favor of returning errors when needed and handling when possible/preferred
+
 ## [1.2.1] - 2021-05-23
 
 ### Changed

@@ -1,8 +1,7 @@
 //! This module contains the types required for generating results for `gfold`.
 use crate::{driver_internal::TableWrapper, util};
 use ansi_term::Style;
-use anyhow::Result;
-use log::{debug, error, warn};
+use anyhow::{anyhow, Result};
 use std::{
     cmp::Ordering,
     fs,
@@ -35,8 +34,6 @@ pub struct Driver {
 impl Driver {
     /// Constructing a `Driver` will generate results with a given `&Path` and `&Config`.
     pub fn new(path: &Path, config: Config) -> Result<Driver> {
-        debug!("Running with config: {:#?}", &config);
-        debug!("Running in path: {:#?}", &path);
         let mut driver = Driver {
             tables: Vec::new(),
             config,
@@ -49,23 +46,17 @@ impl Driver {
     }
 
     /// Print results to `STDOUT` after generation.
-    pub fn print_results(self) {
+    pub fn print_results(self) -> Result<()> {
         #[cfg(windows)]
         if !self.config.no_color {
             ansi_term::enable_ansi_support();
         }
 
-        debug!("Printing results with {} tables...", self.tables.len());
         match self.tables.len().cmp(&1) {
             Ordering::Greater => {
                 let last = match self.tables.last() {
                     Some(s) => s.path_string.clone(),
-                    None => {
-                        error!(
-                            "Last object not found for table vector. Continuing with empty string."
-                        );
-                        String::from("")
-                    }
+                    None => return Err(anyhow!("Last object not found for table vector")),
                 };
                 for table_wrapper in self.tables {
                     match self.config.no_color {
@@ -85,6 +76,7 @@ impl Driver {
             }
             _ => {}
         };
+        Ok(())
     }
 
     // Sequential exeuction has benchmarked faster than concurrent implementations.
@@ -102,32 +94,18 @@ impl Driver {
                 let entry_path = entry.path();
                 match git2::Repository::open(&entry_path) {
                     Ok(_) => repos.push(entry_path),
-                    Err(e) => {
-                        debug!(
-                            "Tried to open {:#?} as git repository: {:#?}",
-                            entry_path,
-                            e.message()
-                        );
+                    Err(_) => {
                         if self.config.include_non_repos {
                             non_repos.push(entry_path.clone());
                         }
                         if !self.config.shallow {
-                            if let Err(e) = self.execute_in_directory(&entry_path) {
-                                warn!(
-                                    "Encountered error during recursive walk into {:#?}: {:#?}",
-                                    &entry_path, e
-                                );
-                            }
+                            self.execute_in_directory(&entry_path)?;
                         }
                     }
                 }
             }
         }
 
-        debug!("Git repositories found: {:#?}", repos);
-        if self.config.include_non_repos {
-            debug!("Standard directories found: {:#?}", non_repos);
-        }
         if !repos.is_empty() {
             if !self.config.skip_sort {
                 repos.sort();
@@ -147,7 +125,6 @@ impl Driver {
     }
 
     fn sort_results(&mut self) {
-        debug!("Sorting {:#?} tables...", self.tables.len());
         if self.tables.len() >= 2 {
             // FIXME: find a way to do this without cloning.
             self.tables.sort_by_key(|table| table.path_string.clone());

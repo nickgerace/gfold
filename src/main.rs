@@ -11,8 +11,6 @@ By default, it displays relevant information for all repos in the current\n\
 working directory."
 )]
 struct Opt {
-    #[structopt(short, long, help = "Set to debug mode")]
-    debug: bool,
     #[structopt(
         short,
         long,
@@ -40,11 +38,6 @@ struct Opt {
 fn main() -> Result<()> {
     let opt = Opt::from_args();
 
-    if opt.debug {
-        env::set_var("RUST_LOG", "debug");
-    }
-    env_logger::init();
-
     let mut path = env::current_dir()?;
     if let Some(provided_path) = opt.path {
         path.push(provided_path)
@@ -61,6 +54,6 @@ fn main() -> Result<()> {
             skip_sort: opt.skip_sort,
         },
     )?
-    .print_results();
+    .print_results()?;
     Ok(())
 }
