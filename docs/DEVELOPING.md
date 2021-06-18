@@ -13,10 +13,11 @@ cargo +nightly fmt
 cargo clippy
 cargo test
 cargo build --release
-du -h target/release/gfold | cut -f -1
-strip target/release/gfold
-du -h target/release/gfold | cut -f -1
-time target/release/gfold $TEMP_TARGET
+TEMP_BINARY=target/release/gfold
+du -h $TEMP_BINARY | cut -f -1
+strip $TEMP_BINARY
+du -h $TEMP_BINARY | cut -f -1
+time $TEMP_BINARY $TEMP_TARGET
 ```
 
 > You can change `TEMP_TARGET` to a directory you'd like to target.
