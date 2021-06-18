@@ -27,6 +27,6 @@ lto = true
 # These applications should not panic often and only read from the filesystem.
 panic = "abort"
 
-# There noticeable speed difference from level 3 to 'z' or 's'.
+# There is noticeable speed difference from level 3 to 'z' or 's'.
 # We need this speed for the user experience.
 opt-level = 3

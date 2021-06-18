@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Continue upon PermissionDenied errors rather than exiting
 - Documentation to be moved to the new `docs` directory
 
 ## [1.3.0] - 2021-05-25

@@ -4,7 +4,7 @@ use ansi_term::Style;
 use anyhow::{anyhow, Result};
 use std::{
     cmp::Ordering,
-    fs,
+    fs, io,
     path::{Path, PathBuf},
 };
 
@@ -84,26 +84,34 @@ impl Driver {
         let mut repos: Vec<PathBuf> = Vec::new();
         let mut non_repos: Vec<PathBuf> = Vec::new();
 
-        for entry in (fs::read_dir(dir)?).flatten() {
-            let file_name_buf = entry.file_name();
-            let file_name = match file_name_buf.to_str() {
-                Some(o) => o,
-                None => continue,
-            };
-            if !file_name.starts_with('.') && entry.file_type()?.is_dir() {
-                let entry_path = entry.path();
-                match git2::Repository::open(&entry_path) {
-                    Ok(_) => repos.push(entry_path),
-                    Err(_) => {
-                        if self.config.include_non_repos {
-                            non_repos.push(entry_path.clone());
-                        }
-                        if !self.config.shallow {
-                            self.execute_in_directory(&entry_path)?;
+        match fs::read_dir(dir) {
+            Ok(o) => {
+                for entry in o.flatten() {
+                    let file_name_buf = entry.file_name();
+                    let file_name = match file_name_buf.to_str() {
+                        Some(o) => o,
+                        None => continue,
+                    };
+                    if !file_name.starts_with('.') && entry.file_type()?.is_dir() {
+                        let entry_path = entry.path();
+                        match git2::Repository::open(&entry_path) {
+                            Ok(_) => repos.push(entry_path),
+                            Err(_) => {
+                                if self.config.include_non_repos {
+                                    non_repos.push(entry_path.clone());
+                                }
+                                if !self.config.shallow {
+                                    self.execute_in_directory(&entry_path)?;
+                                }
+                            }
                         }
                     }
                 }
             }
+            Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
+                println!("Permission denied: {}", dir.display())
+            }
+            Err(e) => return Err(e.into()),
         }
 
         if !repos.is_empty() {
