@@ -1,6 +1,6 @@
-# Advanced Usage
+# Extra
 
-This document contains recommendations for experienced terminal users and/or frequent `gfold` users.
+This document contains extra information related to using `gfold`.
 
 ## Post-Installation
 

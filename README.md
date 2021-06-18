@@ -73,10 +73,6 @@ gfold /this/is/an/absolute/path
 gfold ../../this/is/a/relative/path
 ```
 
-### Advanced Usage
-
-For recommendations aimed towards experienced terminal users and/or frequent `gfold` users, check out the [doc](./docs/ADVANCED.md).
-
 ## Compatibility
 
 `gfold` is intended to be ran on *any* tier one Rust target.
@@ -85,6 +81,10 @@ Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platf
 ## Code of Conduct
 
 This repository follows and enforces the Rust programming language's [Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct).
+
+## More Information
+
+Please continue to [EXTRA.md](./docs/EXTRA.md) for more information on using `gfold`.
 
 ## Maintainers
 
