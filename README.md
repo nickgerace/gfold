@@ -20,7 +20,7 @@ prime   clean     issue2287  git@github.com:bos/prime.git
 
 ## Description and Motivation
 
-This app displays relevant information for multiple Git repositories in one, or multiple, directories.
+This app displays relevant information for multiple Git repositories in one to many directories.
 While this tool might seem limited in scope and purpose, that is by design.
 
 It prints each repository in alphabetical order, and pads each result based on the longest directory, branch, and status string.
@@ -36,7 +36,7 @@ There multiple methods for installing `gfold`.
 You can use [macOS Homebrew](https://brew.sh) or [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux) to install the [tap](https://github.com/nickgerace/homebrew-gfold).
 
 ```sh
-brew install nickgerace/gfold/gfold`
+brew install nickgerace/gfold/gfold
 ```
 
 ### AUR
