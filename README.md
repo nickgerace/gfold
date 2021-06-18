@@ -73,6 +73,10 @@ gfold /this/is/an/absolute/path
 gfold ../../this/is/a/relative/path
 ```
 
+### Advanced Usage
+
+For recommendations aimed towards experienced terminal users and/or frequent `gfold` users, check out the [doc](./docs/ADVANCED.md).
+
 ## Compatibility
 
 `gfold` is intended to be ran on *any* tier one Rust target.
