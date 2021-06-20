@@ -17,5 +17,5 @@ labels: ''
 ### How did you obtain the application?
 <!--answer-here-->
 
-### Paste the output of `gfold --help`:
+### Paste the output of `gfold -V`:
 <!--answer-here-->
