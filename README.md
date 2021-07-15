@@ -78,6 +78,16 @@ gfold ../../this/is/a/relative/path
 `gfold` is intended to be ran on *any* tier one Rust target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
+## Troubleshooting
+
+If `fold` from GNU Coreutils is installed on macOS via `brew`, it will be named `gfold`.
+You can avoid this collision with shell aliases, shell functions, and/or `PATH` changes.
+Here is an example with the `o` dropped from `gfold`:
+
+```sh
+alias gfld=$HOME/.cargo/bin/gfold
+```
+
 ## Code of Conduct
 
 This repository follows and enforces the Rust programming language's [Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct).
