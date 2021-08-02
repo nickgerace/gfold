@@ -151,7 +151,7 @@ dependencies = [
 
 [[package]]
 name = "gfold"
-version = "1.4.0"
+version = "1.4.1"
 dependencies = [
  "ansi_term",
  "anyhow",
