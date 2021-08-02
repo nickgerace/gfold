@@ -116,7 +116,7 @@ pub fn create_table_from_paths(
 }
 
 // FIXME: this function may not currently work because "clean", non-main branches can be considered "unpushed".
-fn is_unpushed(repo: &git2::Repository, head: &git2::Reference) -> bool {
+fn is_unpushed(repo: &git2::Repository, head: &git2::Reference<'_>) -> bool {
     let local = match head.peel_to_commit() {
         Ok(local) => local,
         Err(_) => return false,

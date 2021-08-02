@@ -121,7 +121,7 @@ impl Driver {
             if let Some(table_wrapper) = util::create_table_from_paths(
                 repos,
                 non_repos,
-                &dir,
+                dir,
                 &self.config.enable_unpushed_check,
                 &self.config.no_color,
                 &self.config.show_email,
