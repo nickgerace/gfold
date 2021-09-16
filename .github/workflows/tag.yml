@@ -1,0 +1,58 @@
+on:
+  push:
+    tags: ['*']
+name: tag
+jobs:
+  publish:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+          - os: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: cargo build --release --locked
+      - if: runner.os != 'Windows'
+        run: |
+          if [ $(echo ${{ github.ref }} | grep "rc") ]; then
+            echo "PRERELEASE=true" >> $GITHUB_ENV
+            echo "PRERELEASE=true"
+          else
+            echo "PRERELEASE=false" >> $GITHUB_ENV
+            echo "PRERELEASE=false"
+          fi
+          echo $PRERELEASE
+
+          VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\///g')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION"
+      - if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $full = "${{ github.ref }}"
+
+          if ( $full -like '*rc*' ) {
+            echo "PRERELEASE=true" >> $env:GITHUB_ENV
+            echo "PRERELEASE=true"
+          } else {
+            echo "PRERELEASE=false" >> $env:GITHUB_ENV
+            echo "PRERELEASE=false"
+          }
+
+          $trimmed = $full -replace 'refs/tags/',''
+          echo "VERSION=$trimmed" >> $env:GITHUB_ENV
+          echo "VERSION=$trimmed"
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
+          prerelease: ${{ env.PRERELEASE }}
+          release_name: "gfold ${{ env.VERSION }}"
+          body: "Please refer to **[CHANGELOG.md](https://github.com/nickgerace/gfold/blob/main/CHANGELOG.md)** for information on this release."

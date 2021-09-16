@@ -1,59 +1,81 @@
+use crate::types::Opt;
 use anyhow::Result;
-use std::{env, path::PathBuf};
-use structopt::StructOpt;
+use clap::Clap;
+use std::env;
 
-#[derive(StructOpt, Debug)]
-#[structopt(
-    name = "gfold",
-    about = "https://github.com/nickgerace/gfold\n\n\
-This application helps you keep track of multiple Git repositories via CLI.\n\
-By default, it displays relevant information for all repos in the current\n\
-working directory."
-)]
-struct Opt {
-    #[structopt(
-        short,
-        long,
-        help = "Toggle to enable checking for unpushed commits (experimental)"
-    )]
-    enable_unpushed_check: bool,
-    #[structopt(short, long, help = "Include standard directories in the result")]
-    include_non_repos: bool,
-    #[structopt(short = "q", long = "nc", help = "Disable color output")]
-    no_color: bool,
-    #[structopt(parse(from_os_str), help = "Target a different directory")]
-    path: Option<PathBuf>,
-    #[structopt(short, long, help = "Only search in the target directory")]
-    shallow: bool,
-    #[structopt(
-        short = "m",
-        long = "show-email",
-        help = "Toggle to show git config user.email"
-    )]
-    show_email: bool,
-    #[structopt(short = "x", long, help = "Toggle to skip sorting")]
-    skip_sort: bool,
-}
+mod driver;
+mod types;
+mod util;
 
 fn main() -> Result<()> {
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
 
     let mut path = env::current_dir()?;
     if let Some(provided_path) = opt.path {
         path.push(provided_path)
     };
 
-    gfold::driver::Driver::new(
+    driver::Driver::new(
         &path.canonicalize()?,
-        gfold::driver::Config {
-            enable_unpushed_check: opt.enable_unpushed_check,
-            include_non_repos: opt.include_non_repos,
-            no_color: opt.no_color,
-            shallow: opt.shallow,
-            show_email: opt.show_email,
-            skip_sort: opt.skip_sort,
-        },
+        opt.enable_unpushed_check,
+        opt.include_non_repos,
+        opt.no_color,
+        opt.shallow,
+        opt.show_email,
+        opt.skip_sort,
     )?
     .print_results()?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+
+    #[test]
+    fn current_directory() {
+        let current_dir = env::current_dir().expect("failed to get CWD");
+        assert!(
+            !driver::Driver::new(&current_dir, false, false, false, false, false, false,).is_err()
+        );
+    }
+
+    #[test]
+    fn parent_directory() {
+        let mut current_dir = env::current_dir().expect("failed to get CWD");
+        current_dir.pop();
+        assert!(
+            !driver::Driver::new(&current_dir, false, false, false, false, false, false,).is_err()
+        );
+    }
+
+    #[test]
+    fn parent_directory_all_options() {
+        let mut current_dir = env::current_dir().expect("failed to get CWD");
+        current_dir.pop();
+        let mut count = 1;
+        for include_non_repos in &[true, false] {
+            for no_color in &[true, false] {
+                for shallow in &[true, false] {
+                    for show_email in &[true, false] {
+                        for skip_sort in &[true, false] {
+                            println!("[test:{} / include_non_repos:{} / no_color:{} / shallow:{} / show_email:{} / skip_sort:{}]", count, include_non_repos, no_color, shallow, show_email, skip_sort);
+                            assert!(!driver::Driver::new(
+                                &current_dir,
+                                false,
+                                *include_non_repos,
+                                *no_color,
+                                *shallow,
+                                *show_email,
+                                *skip_sort,
+                            )
+                            .is_err());
+                            count += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

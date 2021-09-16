@@ -1,5 +1,5 @@
 //! This module contains the types required for generating results for `gfold`.
-use crate::{driver_internal::TableWrapper, util};
+use crate::{types::TableWrapper, util};
 use ansi_term::Style;
 use anyhow::{anyhow, Result};
 use std::{
@@ -8,9 +8,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
-/// A bedrock type that is a required parameter when creating a new `Driver`.
-#[derive(Debug)]
-pub struct Config {
+/// Creating this object with a given `Config` will generate results that can be printed to `STDOUT`.
+pub struct Driver {
+    tables: Vec<TableWrapper>,
     /// Enable checking for unpushed commits (experimental).
     pub enable_unpushed_check: bool,
     /// Include standard directories in the result.
@@ -25,21 +25,28 @@ pub struct Config {
     pub skip_sort: bool,
 }
 
-/// Creating this object with a given `Config` will generate results that can be printed to `STDOUT`.
-pub struct Driver {
-    tables: Vec<TableWrapper>,
-    config: Config,
-}
-
 impl Driver {
     /// Constructing a `Driver` will generate results with a given `&Path` and `&Config`.
-    pub fn new(path: &Path, config: Config) -> Result<Driver> {
+    pub fn new(
+        path: &Path,
+        enable_unpushed_check: bool,
+        include_non_repos: bool,
+        no_color: bool,
+        shallow: bool,
+        show_email: bool,
+        skip_sort: bool,
+    ) -> Result<Driver> {
         let mut driver = Driver {
             tables: Vec::new(),
-            config,
+            enable_unpushed_check,
+            include_non_repos,
+            no_color,
+            shallow,
+            show_email,
+            skip_sort,
         };
         driver.execute_in_directory(path)?;
-        if !driver.config.skip_sort {
+        if !driver.skip_sort {
             driver.sort_results();
         }
         Ok(driver)
@@ -59,7 +66,7 @@ impl Driver {
                     None => return Err(anyhow!("Last object not found for table vector")),
                 };
                 for table_wrapper in self.tables {
-                    match self.config.no_color {
+                    match self.no_color {
                         false => {
                             println!("{}", Style::new().bold().paint(&table_wrapper.path_string))
                         }
@@ -97,10 +104,10 @@ impl Driver {
                         match git2::Repository::open(&entry_path) {
                             Ok(_) => repos.push(entry_path),
                             Err(_) => {
-                                if self.config.include_non_repos {
+                                if self.include_non_repos {
                                     non_repos.push(entry_path.clone());
                                 }
-                                if !self.config.shallow {
+                                if !self.shallow {
                                     self.execute_in_directory(&entry_path)?;
                                 }
                             }
@@ -115,16 +122,16 @@ impl Driver {
         }
 
         if !repos.is_empty() {
-            if !self.config.skip_sort {
+            if !self.skip_sort {
                 repos.sort();
             }
             if let Some(table_wrapper) = util::create_table_from_paths(
                 repos,
                 non_repos,
                 dir,
-                &self.config.enable_unpushed_check,
-                &self.config.no_color,
-                &self.config.show_email,
+                &self.enable_unpushed_check,
+                &self.no_color,
+                &self.show_email,
             ) {
                 self.tables.push(table_wrapper);
             }

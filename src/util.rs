@@ -1,4 +1,4 @@
-use crate::driver_internal::TableWrapper;
+use crate::types::TableWrapper;
 use prettytable::{Cell, Row};
 use std::path::{Path, PathBuf};
 
