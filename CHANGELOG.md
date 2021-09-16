@@ -16,11 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Entire structure from library-driven to application-internal
+- Entire structure from library-driven to application-driven (no `lib.rs`)
 - Primary CLI crate from StructOpt to Clap v3 (beta)
 
 ### Removed
 
+- `DEVELOPING.md` and `EXTRA.md` since they were outdated/unimportant
 - `lib.rs` and the crate's library-driven structure
 
 ## [1.4.1] - 2021-08-02
