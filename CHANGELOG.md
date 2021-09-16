@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Discrete Code of Conduct file
 - Visible alias for `no-color` flag to use (now, its full name can be used)
 
 ### Changed
