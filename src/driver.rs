@@ -55,8 +55,10 @@ impl Driver {
     /// Print results to `STDOUT` after generation.
     pub fn print_results(self) -> Result<()> {
         #[cfg(windows)]
-        if !self.config.no_color {
-            ansi_term::enable_ansi_support();
+        if !self.no_color {
+            if let Err(e) = ansi_term::enable_ansi_support() {
+                return Err(anyhow!("error encountered when enabling ansi support: https://docs.rs/ansi_term/latest/x86_64-pc-windows-msvc/ansi_term/fn.enable_ansi_support.html"));
+            }
         }
 
         match self.tables.len().cmp(&1) {
