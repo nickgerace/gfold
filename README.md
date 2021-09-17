@@ -1,10 +1,9 @@
 # gfold
 
-[![tag](https://img.shields.io/github/v/tag/nickgerace/gfold?label=version&style=flat-square)](https://github.com/nickgerace/gfold/releases/latest)
-[![crates.io](https://img.shields.io/crates/v/gfold?style=flat-square)](https://crates.io/crates/gfold)
-[![docs.rs](https://img.shields.io/docsrs/gfold?style=flat-square)](https://docs.rs/gfold)
+[![tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=github&label=version&style=flat-square&color=blue)](https://github.com/nickgerace/gfold/releases/latest)
+[![crates.io](https://img.shields.io/crates/v/gfold?style=flat-square&logo=rust&color=orange)](https://crates.io/crates/gfold)
 [![build](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
-[![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square)](./LICENSE)
+[![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&color=purple)](./LICENSE)
 
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
@@ -61,6 +60,13 @@ You can use [cargo](https://crates.io) to install the [crate](https://crates.io/
 cargo install gfold
 ```
 
+Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
+
+```sh
+cargo install cargo-update
+cargo install-update -a
+```
+
 ## Usage
 
 Pass in the `-h`, or `--help`, flag to see all the options for using this application.
@@ -87,11 +93,3 @@ Here is an example with the `o` dropped from `gfold`:
 ```sh
 alias gfld=$HOME/.cargo/bin/gfold
 ```
-
-## Code of Conduct
-
-This repository follows and enforces the Rust programming language's [Code of Conduct](https://www.rust-lang.org/policies/code-of-conduct).
-
-## More Information
-
-Please continue to [EXTRA.md](./docs/EXTRA.md) for more information on using `gfold`.

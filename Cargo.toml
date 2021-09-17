@@ -12,11 +12,14 @@ repository = "https://github.com/nickgerace/gfold/"
 version = "1.4.1"
 
 [dependencies]
-anyhow = "^1"
-ansi_term = { version = "^0", default-features = false }
-git2 = { version = "^0", default-features = false }
-prettytable-rs = { version = "^0", default-features = false }
-structopt = { version = "^0", default-features = false }
+anyhow = "1"
+ansi_term = { version = "0", default-features = false }
+git2 = { version = "0", default-features = false }
+prettytable-rs = { version = "0", default-features = false }
+
+# Add features as needed: ["color", "unicode_help", "cargo"]
+# Source: https://github.com/clap-rs/clap/tree/v3.0.0-beta.4#optional-dependencies--features
+clap = { version = "3.0.0-beta.4", features = ["derive", "std", "suggestions"], default_features = false }
 
 [profile.release]
 codegen-units = 1

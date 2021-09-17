@@ -7,7 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Added
+
+- Discrete Code of Conduct file
+- Visible alias for `no-color` flag to use (now, its full name can be used)
+
+### Changed
+
+- Entire structure from library-driven to application-driven (no `lib.rs`)
+- Primary CLI crate from StructOpt to Clap v3 (beta)
+
+### Removed
+
+- `DEVELOPING.md` and `EXTRA.md` since they were outdated/unimportant
+- `lib.rs` and the crate's library-driven structure
 
 ## [1.4.1] - 2021-08-02
 
