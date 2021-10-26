@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Discrete Code of Conduct file
+- Unpushed commit checking by default (greedy static analysis, so this may need to be tuned for edge cases)
+- `git` CLI wrapper instead of Git library usage due to security, Git already being installed, inconsistencies between the library and the CLI, and more
 
 ### Changed
 
@@ -23,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - All CLI flags except for `-h/--help` and `-V/--version`
 - CLI crate since it is unneeded
-- Git library usage in favor of leveraging `git` subcommands due to security, Git already being installed, and more
+- Git library usage in favor of leveraging `git` subcommands due to security, Git already being installed, inconsistencies between the library and the CLI, and more
 - `DEVELOPING.md` and `EXTRA.md` since they were outdated/unimportant
 - `lib.rs` and the crate's library-based components
 
