@@ -1,46 +1,47 @@
-use clap::Clap;
-use std::path::PathBuf;
+use crate::dir;
+use anyhow::Result;
+use std::{fs, path::PathBuf};
 
-#[derive(Clap, Debug)]
-#[clap(
-    name = "gfold",
-    version = env!("CARGO_PKG_VERSION"),
-    about = "https://github.com/nickgerace/gfold\n\n\
-This application helps you keep track of multiple Git repositories via CLI.\n\
-By default, it displays relevant information for all repos in the current\n\
-working directory."
-)]
-pub struct Opt {
-    #[clap(
-        short,
-        long,
-        about = "Toggle to enable checking for unpushed commits (experimental)"
-    )]
-    pub enable_unpushed_check: bool,
-    #[clap(short, long, about = "Include standard directories in the result")]
-    pub include_non_repos: bool,
-    #[clap(
-        short = 'q',
-        long = "nc",
-        visible_alias = "no-color",
-        about = "Disable color output"
-    )]
-    pub no_color: bool,
-    #[clap(parse(from_os_str), about = "Target a different directory")]
-    pub path: Option<PathBuf>,
-    #[clap(short, long, about = "Only search in the target directory")]
-    pub shallow: bool,
-    #[clap(
-        short = 'm',
-        long = "show-email",
-        about = "Toggle to show git config user.email"
-    )]
-    pub show_email: bool,
-    #[clap(short = 'x', long, about = "Toggle to skip sorting")]
-    pub skip_sort: bool,
+#[derive(Debug, Clone)]
+pub enum Status {
+    Bare,
+    Clean,
+    Unclean,
+    Unpushed,
 }
 
-pub struct TableWrapper {
-    pub path_string: String,
-    pub table: prettytable::Table,
+#[derive(Clone)]
+pub struct Report {
+    pub path: String,
+    pub parent: String,
+    pub status: Status,
+    pub status_as_string: String,
+    pub branch: String,
+    pub url: String,
+}
+
+pub struct Targets(pub Vec<PathBuf>);
+
+impl Targets {
+    pub fn generate_targets(&mut self, path: PathBuf) -> Result<()> {
+        let entries = match fs::read_dir(&path) {
+            Ok(o) => o,
+            Err(e) => {
+                eprintln!("{}: {}", e, &path.display());
+                return Ok(());
+            }
+        };
+        for wrapped_entry in entries {
+            let entry = wrapped_entry?;
+            if entry.file_type()?.is_dir() && !dir::is_hidden(&entry) {
+                match dir::has_git_subdir(&entry) {
+                    true => self.0.push(entry.path()),
+                    false => {
+                        self.generate_targets(entry.path())?;
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
 }

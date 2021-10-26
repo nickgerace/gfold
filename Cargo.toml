@@ -2,7 +2,7 @@
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 categories = ["command-line-utilities", "command-line-interface"]
 description = "CLI tool to help keep track of your Git repositories."
-edition = "2018"
+edition = "2021"
 homepage = "https://nickgerace.dev"
 keywords = ["git", "cli"]
 license = "Apache-2.0"
@@ -13,13 +13,9 @@ version = "1.4.1"
 
 [dependencies]
 anyhow = "1"
-ansi_term = { version = "0", default-features = false }
-git2 = { version = "0", default-features = false }
-prettytable-rs = { version = "0", default-features = false }
-
-# Add features as needed: ["color", "unicode_help", "cargo"]
-# Source: https://github.com/clap-rs/clap/tree/v3.0.0-beta.4#optional-dependencies--features
-clap = { version = "3.0.0-beta.4", features = ["derive", "std", "suggestions"], default_features = false }
+rayon = { version = "1", default-features = false }
+termcolor = "1"
+thiserror = "1"
 
 [profile.release]
 codegen-units = 1
@@ -27,7 +23,7 @@ codegen-units = 1
 # Instruct linker to optimize at the link stage.
 lto = true
 
-# These applications should not panic often and only read from the filesystem.
+# This application should not panic often and only read from the filesystem.
 panic = "abort"
 
 # There is a noticeable speed difference from level 3 to 'z' or 's'.

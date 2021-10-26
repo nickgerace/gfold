@@ -28,15 +28,19 @@ However, if you would like to target another directory, you can pass that path (
 
 ## Installation
 
-There multiple methods for installing `gfold`.
+There are multiple methods for installing `gfold`.
 
-### Homebrew and Linux Brew
+### Homebrew (macOS only)
 
-You can use [macOS Homebrew](https://brew.sh) or [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux) to install the [tap](https://github.com/nickgerace/homebrew-gfold).
+You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
 
 ```sh
-brew install nickgerace/gfold/gfold
+brew install nickgerace/nickgerace/gfold
 ```
+
+_Notes:_
+- _The original [tap](https://github.com/nickgerace/homebrew-gfold) is still actively maintained, but is deprecated. Please migrate to the new tap._
+- _Both the current and deprecated taps may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)._
 
 ### AUR
 
@@ -52,7 +56,7 @@ yay -S gfold
 paru -S gfold
 ```
 
-### Cargo
+### Cargo (recommended)
 
 You can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
 
@@ -67,6 +71,25 @@ cargo install cargo-update
 cargo install-update -a
 ```
 
+### Binary from a Release
+
+If you do not want to use one of the above installation methods, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
+The following convenience script can be used on macOS and Linux amd64 systems (requires `wget`, `jq`, and `curl` to be installed):
+
+```sh
+(
+    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+    if [ "$OS" = "linux" ]; then OS=linux-gnu; fi
+    LATEST=$(curl -s https://api.github.com/repos/nickgerace/gfold/releases/latest | jq -r ".tag_name")
+    wget -O gfold https://github.com/nickgerace/gfold/releases/download/$LATEST/gfold-$OS-amd64
+    chmod +x gfold
+    sudo mv gfold /usr/local/bin/gfold
+)
+```
+
+_Note: the above convenience script does not verify the binary with a checksum.
+Discretion is advised._
+
 ## Usage
 
 Pass in the `-h`, or `--help`, flag to see all the options for using this application.
@@ -75,6 +98,7 @@ Pass in the `-h`, or `--help`, flag to see all the options for using this applic
 gfold
 gfold ..
 gfold $HOME
+gfold ~/
 gfold /this/is/an/absolute/path
 gfold ../../this/is/a/relative/path
 ```
