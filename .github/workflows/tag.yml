@@ -7,7 +7,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: gfold
+            asset_name: gfold-linux-gnu-amd64
+          - os: windows-latest
+            artifact_name: gfold.exe
+            asset_name: gfold-windows-amd64.exe
+          - os: macos-latest
+            artifact_name: gfold
+            asset_name: gfold-darwin-amd64
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -49,6 +58,8 @@ jobs:
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
           prerelease: ${{ env.PRERELEASE }}
           release_name: "gfold ${{ env.VERSION }}"
