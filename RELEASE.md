@@ -11,7 +11,7 @@ This checklist details the `gfold` release process.
 - [ ] Checkout (or create a branch of) `main` at its latest commit.
 - [ ] Change the `version` field in `Cargo.toml` to `<tag>`.
 - [ ] (Skip for release candidates) change the version in `CHANGELOG.md` and uncomment the line, `<!--The latest version contains all changes.-->`.
-- [ ] Run `cargo xtask release` and verify that everything looks/works as expected.
+- [ ] Run `make ci build` and verify that everything looks/works as expected.
 - [ ] Create a commit with the following message: `Update to <tag>`. Do not push (or merge) the commit.
 - [ ] Test and verify the publishing workflow: `cargo publish --dry-run`.
 - [ ] Finally, push (or merge) the preparation commit into `main`.

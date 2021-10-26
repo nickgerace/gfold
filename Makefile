@@ -8,13 +8,15 @@ prepare:
 	cd $(MAKEPATH); cargo +nightly fmt
 	cd $(MAKEPATH); cargo clippy --all-features --all-targets
 
-build: ci
+build:
 	cd $(MAKEPATH); cargo build --release
 
 ci:
 	cd $(MAKEPATH); cargo +nightly fmt --all -- --check
 	cd $(MAKEPATH); cargo clippy -- -D warnings
 	cd $(MAKEPATH); cargo test -- --nocapture
+
+all: prepare ci build
 
 scan:
 	cd $(MAKEPATH); cargo +nightly udeps

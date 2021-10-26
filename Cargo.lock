@@ -72,7 +72,7 @@ checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 
 [[package]]
 name = "gfold"
-version = "1.4.1"
+version = "2.0.0"
 dependencies = [
  "anyhow",
  "rayon",
