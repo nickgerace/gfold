@@ -12,17 +12,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Discrete Code of Conduct file
-- Visible alias for `no-color` flag to use (now, its full name can be used)
 
 ### Changed
 
+- Codebase re-write geared towards data-efficiency and parallelism
+- Dramatic runtime speed and binary size improvements (consistently able to reproduce, but heavily variable based on payload, OS, etc.)
 - Entire structure from library-driven to application-driven (no `lib.rs`)
-- Primary CLI crate from StructOpt to Clap v3 (beta)
 
 ### Removed
 
+- All CLI flags except for `-h/--help` and `-V/--version`
+- CLI crate since it is unneeded
+- Git library usage in favor of leveraging `git` subcommands due to security, Git already being installed, and more
 - `DEVELOPING.md` and `EXTRA.md` since they were outdated/unimportant
-- `lib.rs` and the crate's library-driven structure
+- `lib.rs` and the crate's library-based components
 
 ## [1.4.1] - 2021-08-02
 

@@ -5,14 +5,8 @@ title: ''
 labels: ''
 ---
 
-### Describe the issue:
-<!--answer-here-->
-
-### Are you using Windows, macOS, Linux, or another OS?
-<!--answer-here-->
-
-### How did you install or obtain the application?
-<!--answer-here-->
-
-### Paste the output of `gfold -V`:
-<!--answer-here-->
+<!-- Thanks for filing an issue! Here are some good things to include in order to help get the issue solved quickly: -->
+<!-- 1. Providing a clear description of the issue (alongside reproduction steps, as needed) -->
+<!-- 2. Providing what OS you are using -->
+<!-- 3. Providing the method of installing/obtaining the application -->
+<!-- 4. Pasting the output of `gfold -V` to confirm the version -->
