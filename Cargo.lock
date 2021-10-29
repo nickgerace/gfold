@@ -94,7 +94,7 @@ dependencies = [
 
 [[package]]
 name = "gfold"
-version = "2.0.1-rc1"
+version = "2.0.1"
 dependencies = [
  "anyhow",
  "env_logger",
