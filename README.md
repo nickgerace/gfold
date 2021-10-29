@@ -17,7 +17,7 @@ pam     clean     main       https://github.com/onc/pam.git
 prime   clean     issue2287  git@github.com:bos/prime.git
 ```
 
-## Description and Motivation
+## Description
 
 This app displays relevant information for multiple Git repositories in one to many directories.
 While this tool might seem limited in scope and purpose, that is by design.
