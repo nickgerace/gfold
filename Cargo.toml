@@ -13,9 +13,14 @@ version = "2.0.0"
 
 [dependencies]
 anyhow = "1"
+log = "0"
 rayon = { version = "1", default-features = false }
 termcolor = "1"
 thiserror = "1"
+
+# Add features as needed: ["termcolor", "regex"]
+# Source: https://github.com/env-logger-rs/env_logger/blob/main/Cargo.toml#L47
+env_logger = { version = "0", features = ["atty", "humantime"], default_features = false }
 
 [profile.release]
 codegen-units = 1

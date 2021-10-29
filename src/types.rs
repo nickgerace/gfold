@@ -1,6 +1,7 @@
 use crate::dir;
 use anyhow::Result;
-use std::{fs, path::PathBuf};
+use log::warn;
+use std::{fs, io, path::PathBuf};
 
 #[derive(Debug, Clone)]
 pub enum Status {
@@ -26,8 +27,12 @@ impl Targets {
     pub fn generate_targets(&mut self, path: PathBuf) -> Result<()> {
         let entries = match fs::read_dir(&path) {
             Ok(o) => o,
+            Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
+                warn!("Permission denied: {}", &path.display());
+                return Ok(());
+            }
             Err(e) => {
-                eprintln!("{}: {}", e, &path.display());
+                warn!("{}: {}", e, &path.display());
                 return Ok(());
             }
         };

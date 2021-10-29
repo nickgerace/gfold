@@ -39,7 +39,7 @@ brew install nickgerace/nickgerace/gfold
 ```
 
 _Notes:_
-- _The original [tap](https://github.com/nickgerace/homebrew-gfold) is still actively maintained, but is deprecated. Please migrate to the new tap._
+- _The original [tap](https://github.com/nickgerace/homebrew-gfold) will no longer be maintained after version `2.0.1`. Please migrate to the new tap._
 - _Both the current and deprecated taps may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)._
 
 ### AUR
