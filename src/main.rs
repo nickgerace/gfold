@@ -9,6 +9,11 @@ mod run;
 mod types;
 
 fn main() -> Result<()> {
+    if env::var("RUST_LOG").is_err() {
+        env::set_var("RUST_LOG", "off");
+    }
+    env_logger::init();
+
     match env::args().nth(1).as_deref() {
         Some(s) if s == "-h" || s == "--help" => {
             println!("gfold {}{}", consts::VERSION, consts::HELP);
