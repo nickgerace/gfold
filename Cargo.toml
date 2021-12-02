@@ -9,7 +9,7 @@ license = "Apache-2.0"
 name = "gfold"
 readme = "README.md"
 repository = "https://github.com/nickgerace/gfold/"
-version = "2.0.1"
+version = "2.0.2"
 
 [dependencies]
 anyhow = "1"
