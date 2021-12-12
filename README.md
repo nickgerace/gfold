@@ -7,7 +7,7 @@
 
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
-```sh
+```
 % gfold
 astrid  unclean   main       git@github.com:db/astrid.git
 fev     bare      main       https://github.com/institute/fev.git
@@ -34,25 +34,24 @@ There are multiple methods for installing `gfold`.
 
 You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
 
-```sh
+```bash
 brew install nickgerace/nickgerace/gfold
 ```
 
-_Notes:_
-- _The original [tap](https://github.com/nickgerace/homebrew-gfold) will no longer be maintained after version `2.0.1`. Please migrate to the new tap._
-- _Both the current and deprecated taps may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux)._
+The original [tap](https://github.com/nickgerace/homebrew-gfold) will no longer be maintained after version `2.0.1`.
+Please migrate to the new tap using the command above.
+Neither the current and deprecated taps will work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
 
 ### AUR
 
 You can use a Linux distribution that supports installing packages from the AUR, [Arch User Respository](https://aur.archlinux.org/), to install the following:
 
-- [gfold](https://aur.archlinux.org/packages/gfold/) - builds from source
-- [gfold-git](https://aur.archlinux.org/packages/gfold-git/) - development package
+- [**gfold**](https://aur.archlinux.org/packages/gfold/): builds from source
+- [**gfold-git**](https://aur.archlinux.org/packages/gfold-git/): development package
 
-Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru), in order to install their AUR packages.
+Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [paru](https://github.com/Morganamilo/paru), in order to install their AUR packages.
 
-```sh
-yay -S gfold
+```bash
 paru -S gfold
 ```
 
@@ -60,41 +59,39 @@ paru -S gfold
 
 You can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
 
-```sh
-cargo install gfold
+```bash
+cargo install --locked gfold
 ```
 
 Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
 
-```sh
-cargo install cargo-update
+```bash
+cargo install --locked cargo-update
 cargo install-update -a
 ```
 
 ### Binary from a Release
 
 If you do not want to use one of the above installation methods, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
-The following convenience script can be used on macOS and Linux amd64 systems (requires `wget`, `jq`, and `curl` to be installed):
 
-```sh
-(
-    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-    if [ "$OS" = "linux" ]; then OS=linux-gnu; fi
-    LATEST=$(curl -s https://api.github.com/repos/nickgerace/gfold/releases/latest | jq -r ".tag_name")
-    wget -O gfold https://github.com/nickgerace/gfold/releases/download/$LATEST/gfold-$OS-amd64
-    chmod +x gfold
-    sudo mv gfold /usr/local/bin/gfold
-)
+```bash
+curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | sh
 ```
 
-_Note: the above convenience script does not verify the binary with a checksum.
-Discretion is advised._
+For security, please note that the installation convenience script does not verify the binary with a checksum.
+Discretion is advised, including downloading and reading the script before execution.
+
+To uninstall `gfold` fully, after using this installation method, execute the following script:
+
+```bash
+curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstall.sh | sh
+```
 
 ## Usage
 
 Pass in the `-h`, or `--help`, flag to see all the options for using this application.
 
-```sh
+```bash
 gfold
 gfold ..
 gfold $HOME
@@ -105,7 +102,7 @@ gfold ../../this/is/a/relative/path
 
 ## Compatibility
 
-`gfold` is intended to be ran on *any* tier one Rust target.
+`gfold` is intended to be ran on *any* tier one Rust 🦀 target that `git` is also available on.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
 ## Troubleshooting
@@ -114,6 +111,6 @@ If `fold` from GNU Coreutils is installed on macOS via `brew`, it will be named 
 You can avoid this collision with shell aliases, shell functions, and/or `PATH` changes.
 Here is an example with the `o` dropped from `gfold`:
 
-```sh
+```bash
 alias gfld=$HOME/.cargo/bin/gfold
 ```
