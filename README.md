@@ -75,7 +75,7 @@ cargo install-update -a
 If you do not want to use one of the above installation methods, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
 
 ```bash
-curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | sh
+curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | bash
 ```
 
 For security, please note that the installation convenience script does not verify the binary with a checksum.
@@ -84,7 +84,7 @@ Discretion is advised, including downloading and reading the script before execu
 To uninstall `gfold` fully, after using this installation method, execute the following script:
 
 ```bash
-curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstall.sh | sh
+curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstall.sh | bash
 ```
 
 ## Usage
