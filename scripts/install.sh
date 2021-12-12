@@ -9,10 +9,10 @@ for BINARY in "jq" "wget" "curl"; do
 done
 
 INSTALL_OS="unknown"
-if [ "$(uname -s)" = "Linux" ] && [ "$(uname -m)" != "x86_64" ]; then
+if [ "$(uname -s)" = "Linux" ] && [ "$(uname -m)" = "x86_64" ]; then
     echo "assuming glibc (GNU) and not another libc (e.g. musl-libc)"
     INSTALL_OS="linux-gnu"
-elif [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" != "x86_64" ]; then
+elif [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "x86_64" ]; then
     INSTALL_OS="darwin"
 else
     echo "error: must execute on Linux or Darwin x86_64 host"
