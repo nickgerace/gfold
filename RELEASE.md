@@ -23,3 +23,11 @@ Steps should (and often must) be executed in sequential order.
 | ✔️  | ✔️      | Download the crate via `cargo install --locked gfold` or `cargo install --locked --version <tag> gfold`.                        |
 | ✔️  | ✔️      | Verify that the [GitHub release](https://github.com/nickgerace/gfold/releases) on the repository's releases page looks correct. |
 | ⛔   | ✔️      | Update the formula for the [Hombrew tap](https://github.com/nickgerace/homebrew-nickgerace).                                    |
+
+## Versioning Scheme
+
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Generally, the versioning scheme looks like the following formats where `X` is an unsigned integer:
+
+- **Release candidates (RCs):** `X.X.X-rc.X`
+- **Full releases:** `X.X.X`
