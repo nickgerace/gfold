@@ -1,12 +1,13 @@
-use crate::{
-    color,
-    consts::{NEWLINE, PAD},
-    error::Error,
-    types::{Report, Status, Targets},
-};
+use crate::color;
+use crate::consts::{NEWLINE, PAD};
+use crate::error::Error;
+use crate::types::{Report, Status, Targets};
 use anyhow::Result;
 use rayon::prelude::*;
-use std::{collections::BTreeMap, env, path::Path, process::Command};
+use std::collections::BTreeMap;
+use std::env;
+use std::path::Path;
+use std::process::Command;
 
 pub fn run(provided_path: Option<&str>) -> Result<()> {
     let path = match provided_path {

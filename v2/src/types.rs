@@ -1,7 +1,8 @@
 use crate::dir;
 use anyhow::Result;
 use log::warn;
-use std::{fs, io, path::PathBuf};
+use std::path::PathBuf;
+use std::{fs, io};
 
 #[derive(Debug, Clone)]
 pub enum Status {

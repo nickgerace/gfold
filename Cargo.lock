@@ -257,6 +257,13 @@ dependencies = [
 [[package]]
 name = "v3"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "log",
+ "rayon",
+ "termcolor",
+ "thiserror",
+]
 
 [[package]]
 name = "winapi"
