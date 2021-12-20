@@ -1,0 +1,24 @@
+[package]
+authors = ["Nick Gerace <nickagerace@gmail.com>"]
+categories = ["command-line-utilities", "command-line-interface"]
+description = "CLI tool to help keep track of your Git repositories."
+edition = "2021"
+homepage = "https://nickgerace.dev"
+keywords = ["git", "cli"]
+license = "Apache-2.0"
+name = "v2"
+readme = "README.md"
+repository = "https://github.com/nickgerace/gfold/"
+version = "0.1.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1"
+log = "0"
+rayon = { version = "1", default-features = false }
+termcolor = "1"
+thiserror = "1"
+
+# Add features as needed: ["termcolor", "regex"]
+# Source: https://github.com/env-logger-rs/env_logger/blob/main/Cargo.toml#L47
+env_logger = { version = "0", features = ["atty", "humantime"], default_features = false }
