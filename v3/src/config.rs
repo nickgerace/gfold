@@ -10,6 +10,13 @@ use std::path::PathBuf;
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     pub path: PathBuf,
+    pub mode: Mode,
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum Mode {
+    Classic,
+    Modern,
 }
 
 impl Config {
@@ -26,6 +33,7 @@ impl Config {
                 warn!("{}", e);
                 Ok(Config {
                     path: env::current_dir()?.canonicalize()?,
+                    mode: Mode::Classic,
                 })
             }
         }

@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use crate::color;
 use crate::report::Reports;
 use anyhow::Result;
@@ -48,6 +50,15 @@ pub fn classic(reports: &Reports) -> Result<()> {
                 report.url,
                 branch_width = branch_max + PAD
             );
+        }
+    }
+    Ok(())
+}
+
+pub fn standard(reports: &Reports) -> Result<()> {
+    for i in &reports.0 {
+        for i in i.1 {
+            println!("{:?}", Path::new(&i.parent).join(&i.path));
         }
     }
     Ok(())

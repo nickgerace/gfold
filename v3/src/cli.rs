@@ -4,6 +4,7 @@ use crate::report::Reports;
 use crate::target_gen::Targets;
 use anyhow::Result;
 use std::env;
+use crate::config::Mode;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const HELP: &str = "
@@ -24,27 +25,33 @@ ARGS:
     <path>    Target a different directory";
 
 pub fn parse() -> Result<()> {
+    let mut config = Config::try_config()?;
     match env::args().nth(1).as_deref() {
         Some(s) if s == "-h" || s == "--help" => {
             println!("gfold {}{}", VERSION, HELP);
-            Ok(())
+            return Ok(());
         }
         Some(s) if s == "-V" || s == "--version" => {
             println!("gfold {}", VERSION);
-            Ok(())
+            return Ok(());
         }
-        Some(s) => run(Some(s)),
-        None => run(None),
+        Some(s) if s == "--new" => {
+            config.mode = Mode::Modern;
+
+        }
+        Some(s) => {
+            config.path = env::current_dir()?.join(s).canonicalize()?;
+        }
+        None => {}
     }
+    run(&config)
 }
 
-fn run(path: Option<&str>) -> Result<()> {
-    let mut config = Config::try_config()?;
-    if let Some(s) = path {
-        config.path = env::current_dir()?.join(s).canonicalize()?;
+fn run(config: &Config) -> Result<()> {
+    let reports = Reports::new(Targets::new(&config.path)?)?;
+    match config.mode {
+        Mode::Modern => display::standard(&reports)?,
+        Mode::Classic =>  display::classic(&reports)?,
     }
-
-    let reports = Reports::new(Targets::new(config.path)?)?;
-    display::classic(&reports)?;
     Ok(())
 }
