@@ -1,17 +1,16 @@
-use std::path::Path;
+use anyhow::Result;
 
+mod cli;
 mod color;
+mod config;
 mod display;
 mod error;
+mod logging;
 mod report;
 mod status;
 mod target_gen;
 
-use report::Reports;
-use target_gen::Targets;
-
-fn main() {
-    let foo = Targets::new(Path::new("/Users/nick/src").to_path_buf()).unwrap();
-    let bar = Reports::new(foo).unwrap();
-    display::classic(&bar).unwrap();
+fn main() -> Result<()> {
+    logging::init();
+    cli::parse()
 }

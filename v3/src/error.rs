@@ -11,4 +11,7 @@ pub enum Error {
     FileNameStrConversionFailure(PathBuf),
     #[error("could not convert path (Path) to &str: {0}")]
     PathToStrConversionFailure(PathBuf),
+
+    #[error("FOO")]
+    Foo,
 }

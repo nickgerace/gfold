@@ -42,3 +42,8 @@ bench-loosely:
 	@du -h $(NEW)
 	@du $(INSTALLED)
 	@du $(NEW)
+
+release:
+	cd $(MAKEPATH); cargo build --release
+	@du -h $(MAKEPATH)/target/release/v2
+	@du -h $(MAKEPATH)/target/release/v3
