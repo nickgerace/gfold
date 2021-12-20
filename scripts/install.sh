@@ -23,5 +23,5 @@ LATEST=$(curl -s https://api.github.com/repos/nickgerace/gfold/releases/latest |
 if [ -f /tmp/gfold ]; then rm /tmp/gfold; fi
 wget -O /tmp/gfold https://github.com/nickgerace/gfold/releases/download/$LATEST/gfold-$INSTALL_OS-amd64
 chmod +x /tmp/gfold
-sudo mv /tmp/gfold /usr/local/bin/gfold
+mv /tmp/gfold /usr/local/bin/gfold
 echo "gfold has been installed to /usr/local/bin/gfold"
