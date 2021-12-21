@@ -7,13 +7,13 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Config {
-    pub path: PathBuf,
-    pub mode: Mode,
+    pub default_path: Option<PathBuf>,
+    pub mode: Option<Mode>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Mode {
     Classic,
     Modern,
@@ -32,10 +32,20 @@ impl Config {
             Err(e) => {
                 warn!("{}", e);
                 Ok(Config {
-                    path: env::current_dir()?.canonicalize()?,
-                    mode: Mode::Classic,
+                    default_path: None,
+                    mode: None,
                 })
             }
         }
+    }
+
+    pub fn set_defaults_if_empty(&mut self) -> Result<()> {
+        if self.default_path.is_none() {
+            self.default_path = Some(env::current_dir()?.canonicalize()?);
+        }
+        if self.mode.is_none() {
+            self.mode = Some(Mode::Classic)
+        }
+        Ok(())
     }
 }

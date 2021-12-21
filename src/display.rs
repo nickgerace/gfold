@@ -55,6 +55,7 @@ pub fn classic(reports: &Reports) -> Result<()> {
     Ok(())
 }
 
+// TODO: finish this functionality.
 pub fn modern(reports: &Reports) -> Result<()> {
     for i in &reports.0 {
         for i in i.1 {

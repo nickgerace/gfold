@@ -1,7 +1,5 @@
 use crate::config::{Config, Mode};
-use crate::display;
-use crate::report::Reports;
-use crate::target_gen::Targets;
+use crate::run;
 use anyhow::Result;
 use clap::Parser;
 use std::env;
@@ -28,20 +26,14 @@ pub fn parse() -> Result<()> {
 
     let opt = Opt::parse();
     if let Some(s) = opt.path {
-        config.path = env::current_dir()?.join(s).canonicalize()?;
+        config.default_path = Some(env::current_dir()?.join(s).canonicalize()?);
     }
     if opt.new {
-        config.mode = Mode::Modern;
+        config.mode = Some(Mode::Modern);
     }
 
-    run(&config)
-}
+    // Set remaining "None" options to their defaults, if needed.
+    config.set_defaults_if_empty()?;
 
-fn run(config: &Config) -> Result<()> {
-    let reports = Reports::new(Targets::new(&config.path)?)?;
-    match config.mode {
-        Mode::Modern => display::modern(&reports)?,
-        Mode::Classic => display::classic(&reports)?,
-    }
-    Ok(())
+    run::run(&config)
 }

@@ -7,6 +7,7 @@ mod display;
 mod error;
 mod logging;
 mod report;
+mod run;
 mod status;
 mod target_gen;
 
