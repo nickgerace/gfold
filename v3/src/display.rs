@@ -55,7 +55,7 @@ pub fn classic(reports: &Reports) -> Result<()> {
     Ok(())
 }
 
-pub fn standard(reports: &Reports) -> Result<()> {
+pub fn modern(reports: &Reports) -> Result<()> {
     for i in &reports.0 {
         for i in i.1 {
             println!("{:?}", Path::new(&i.parent).join(&i.path));
