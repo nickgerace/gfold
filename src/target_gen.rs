@@ -1,19 +1,19 @@
 use anyhow::Result;
 use log::{error, warn};
 use std::fs::DirEntry;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::{fs, io};
 
 pub struct Targets(pub Vec<PathBuf>);
 
 impl Targets {
-    pub fn new(path: &PathBuf) -> Result<Targets> {
+    pub fn new(path: &Path) -> Result<Targets> {
         let mut targets = Targets(Vec::new());
         targets.generate_targets(path)?;
         Ok(targets)
     }
 
-    fn generate_targets(&mut self, path: &PathBuf) -> Result<()> {
+    fn generate_targets(&mut self, path: &Path) -> Result<()> {
         let entries = match fs::read_dir(&path) {
             Ok(o) => o,
             Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {

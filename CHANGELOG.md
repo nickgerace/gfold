@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Ability to use config file in `$HOME/.config/gfold/gfold.json`
+- Experimental new display mode (`--new` flag)
+- Formal CLI parsing library (again)
 - Install and uninstall scripts
 
 ## [2.0.2] - 2021-12-02

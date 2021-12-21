@@ -21,7 +21,7 @@ pub enum Mode {
 
 impl Config {
     pub fn try_config() -> Result<Config> {
-        let home = dirs::home_dir().ok_or(Error::Foo)?;
+        let home = dirs::home_dir().ok_or(Error::HomeDirNotFound)?;
         let filepath = home.join(".config").join("gfold").join("gfold.json");
         match File::open(filepath) {
             Ok(o) => {
