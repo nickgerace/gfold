@@ -19,6 +19,8 @@ struct Opt {
     new: bool,
     #[clap(help = "Path to target directory (defaults to current working directory")]
     path: Option<String>,
+    #[clap(long, short, help = "Print config options and exit")]
+    print: bool,
 }
 
 pub fn parse() -> Result<()> {
@@ -35,5 +37,8 @@ pub fn parse() -> Result<()> {
     // Set remaining "None" options to their defaults, if needed.
     config.set_defaults_if_empty()?;
 
-    run::run(&config)
+    match opt.print {
+        true => config.print(),
+        false => run::run(&config),
+    }
 }

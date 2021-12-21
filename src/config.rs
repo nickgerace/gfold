@@ -48,4 +48,9 @@ impl Config {
         }
         Ok(())
     }
+
+    pub fn print(self) -> Result<()> {
+        println!("{}", serde_json::to_string_pretty(&self)?);
+        Ok(())
+    }
 }
