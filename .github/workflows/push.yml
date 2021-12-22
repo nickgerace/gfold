@@ -1,5 +1,8 @@
-on: push
 name: push
+on:
+  push:
+    branches-exclude:
+      - "main"
 jobs:
   prepare:
     runs-on: ubuntu-latest
