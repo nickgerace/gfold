@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Codebase to a domain-driven architecture for easier refactoring
+- Codebase to a domain-driven architecture
 
 ## [2.0.2] - 2021-12-02
 
