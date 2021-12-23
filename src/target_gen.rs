@@ -1,8 +1,8 @@
 use anyhow::Result;
+use log::{error, warn};
 use std::fs::DirEntry;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
-use tracing::{error, warn};
 
 pub struct Targets(pub Vec<PathBuf>);
 
