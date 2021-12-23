@@ -1,57 +1,53 @@
 use anyhow::Result;
-use std::env;
 
+mod cli;
 mod color;
-mod consts;
-mod dir;
+mod config;
+mod display;
 mod error;
+mod logging;
+mod report;
 mod run;
-mod types;
+mod status;
+mod target_gen;
 
 fn main() -> Result<()> {
-    if env::var("RUST_LOG").is_err() {
-        env::set_var("RUST_LOG", "off");
-    }
-    env_logger::init();
-
-    match env::args().nth(1).as_deref() {
-        Some(s) if s == "-h" || s == "--help" => {
-            println!("gfold {}{}", consts::VERSION, consts::HELP);
-            Ok(())
-        }
-        Some(s) if s == "-V" || s == "--version" => {
-            println!("gfold {}", consts::VERSION);
-            Ok(())
-        }
-        Some(s) => run::run(Some(s)),
-        None => run::run(None),
-    }
+    logging::init();
+    cli::parse()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::Config;
+    use crate::error::Error;
     use std::env;
 
     #[test]
     fn current_directory() {
-        assert!(run::run(None).is_ok());
+        let mut config = Config::default();
+        config.set_defaults_if_empty().unwrap();
+
+        assert!(run::run(&config).is_ok());
     }
 
     #[test]
     fn parent_directory() {
-        let mut parent = env::current_dir().expect("failed to get CWD");
+        let mut config = Config::default();
+        config.set_defaults_if_empty().unwrap();
+        let mut parent = env::current_dir().expect("failed to get current working directory");
         parent.pop();
-        assert!(run::run(Some(
-            parent
-                .to_str()
-                .expect("found None for PathBuf conversion to &str")
-        ))
-        .is_ok());
+        config.default_path = Some(parent);
+
+        assert!(run::run(&config).is_ok());
     }
 
     #[test]
     fn home_directory() {
-        assert!(run::run(Some(env!("HOME"))).is_ok());
+        let mut config = Config::default();
+        config.set_defaults_if_empty().unwrap();
+        config.default_path = Some(dirs::home_dir().ok_or(Error::HomeDirNotFound).unwrap());
+
+        assert!(run::run(&config).is_ok());
     }
 }

@@ -1,7 +1,8 @@
+name: tag
 on:
   push:
-    tags: ['*']
-name: tag
+    tags:
+      - "*"
 jobs:
   publish:
     runs-on: ${{ matrix.os }}

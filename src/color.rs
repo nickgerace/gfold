@@ -1,4 +1,4 @@
-use crate::types::Status;
+use crate::status::Status;
 use std::io::{self, Write};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 

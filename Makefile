@@ -1,30 +1,37 @@
-MAKEPATH:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-NEW:=$(MAKEPATH)/target/release/gfold
-INSTALLED:=$(shell which gfold)
+MAKEPATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+NEW := $(MAKEPATH)/target/release/gfold
+INSTALLED := $(shell which gfold)
 
-prepare:
+.DEFAULT_GOAL := prepare
+
+prepare: fmt
 	cd $(MAKEPATH); cargo update
 	cd $(MAKEPATH); cargo fix --edition-idioms --allow-dirty --allow-staged
-	cd $(MAKEPATH); cargo +nightly fmt
 	cd $(MAKEPATH); cargo clippy --all-features --all-targets
+.PHONY: prepare
 
-build:
-	cd $(MAKEPATH); cargo build --release
+fmt:
+	cd $(MAKEPATH); cargo +nightly fmt
+.PHONY: fmt
 
 ci:
 	cd $(MAKEPATH); cargo +nightly fmt --all -- --check
 	cd $(MAKEPATH); cargo clippy -- -D warnings
 	cd $(MAKEPATH); cargo test -- --nocapture
+.PHONY: ci
 
-all: prepare ci build
+build:
+	cd $(MAKEPATH); cargo build --release
+.PHONY: build
 
 scan:
 	cd $(MAKEPATH); cargo +nightly udeps
-	cd $(MAKEPATH); cargo audit
 	cd $(MAKEPATH); cargo bloat --release
 	cd $(MAKEPATH); cargo bloat --release --crates
+	cd $(MAKEPATH); cargo audit
+.PHONY: scan
 
-bench-loosely:
+bench-loosely: build
 	@echo "============================================================="
 	@time $(INSTALLED) ~/
 	@echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -32,5 +39,4 @@ bench-loosely:
 	@echo "============================================================="
 	@du -h $(INSTALLED)
 	@du -h $(NEW)
-	@du $(INSTALLED)
-	@du $(NEW)
+.PHONY: bench-loosely

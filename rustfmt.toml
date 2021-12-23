@@ -1,2 +1,2 @@
-imports_granularity = "Crate"
+imports_granularity = "Module"
 newline_style = "Unix"
