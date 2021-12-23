@@ -2,9 +2,9 @@ use std::env;
 
 pub fn init(debug: bool) {
     if debug {
-        env::set_var("RUST_LOG", "debug")
+        env::set_var("RUST_LOG", "debug");
     } else if env::var("RUST_LOG").is_err() {
         env::set_var("RUST_LOG", "off");
     }
-    tracing_subscriber::fmt().init();
+    env_logger::init();
 }
