@@ -1,5 +1,5 @@
-use crate::config::{Config, Mode};
-use crate::run;
+use crate::config::{Config, DisplayMode};
+use crate::{logging, run};
 use anyhow::Result;
 use clap::Parser;
 use std::env;
@@ -22,6 +22,8 @@ operating systems:
     Windows        {FOLDERID_Profile}\\.config\\gfold\\gfold.json",
 )]
 struct Opt {
+    #[clap(long, help = "Enable debug logging (sets \"RUST_LOG\" to \"debug\")")]
+    debug: bool,
     #[clap(long, help = "(TODO) Display results with the new output mode")]
     new: bool,
     #[clap(help = "Path to target directory (defaults to current working directory)")]
@@ -31,14 +33,17 @@ struct Opt {
 }
 
 pub fn parse() -> Result<()> {
+    // First and foremost, get logging up and running.
+    let opt = Opt::parse();
+    logging::init(opt.debug);
+
     let mut config = Config::try_config()?;
 
-    let opt = Opt::parse();
     if let Some(s) = opt.path {
         config.default_path = Some(env::current_dir()?.join(s).canonicalize()?);
     }
     if opt.new {
-        config.mode = Some(Mode::Modern);
+        config.display_mode = Some(DisplayMode::Modern);
     }
 
     // Set remaining "None" options to their defaults, if needed.

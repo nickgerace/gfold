@@ -12,7 +12,6 @@ mod status;
 mod target_gen;
 
 fn main() -> Result<()> {
-    logging::init();
     cli::parse()
 }
 

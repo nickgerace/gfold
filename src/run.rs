@@ -1,4 +1,4 @@
-use crate::config::{Config, Mode};
+use crate::config::{Config, DisplayMode};
 use crate::display;
 use crate::error::Error;
 use crate::report::Reports;
@@ -10,9 +10,9 @@ pub fn run(config: &Config) -> Result<()> {
         Some(s) => s,
         None => return Err(Error::EmptyConfigOption(config.to_owned()).into()),
     })?)?;
-    match config.mode {
-        Some(Mode::Modern) => display::modern(&reports),
-        Some(Mode::Classic) => display::classic(&reports),
+    match config.display_mode {
+        Some(DisplayMode::Modern) => display::modern(&reports),
+        Some(DisplayMode::Classic) => display::classic(&reports),
         None => Err(Error::EmptyConfigOption(config.to_owned()).into()),
     }
 }

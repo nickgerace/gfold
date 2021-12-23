@@ -1,20 +1,20 @@
 use crate::error::Error;
 use anyhow::Result;
-use log::warn;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
+use tracing::warn;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
     pub default_path: Option<PathBuf>,
-    pub mode: Option<Mode>,
+    pub display_mode: Option<DisplayMode>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum Mode {
+pub enum DisplayMode {
     Classic,
     Modern,
 }
@@ -32,7 +32,7 @@ impl Config {
                 warn!("{}", e);
                 Ok(Config {
                     default_path: None,
-                    mode: None,
+                    display_mode: None,
                 })
             }
         }
@@ -42,8 +42,8 @@ impl Config {
         if self.default_path.is_none() {
             self.default_path = Some(env::current_dir()?.canonicalize()?);
         }
-        if self.mode.is_none() {
-            self.mode = Some(Mode::Classic)
+        if self.display_mode.is_none() {
+            self.display_mode = Some(DisplayMode::Classic)
         }
         Ok(())
     }
