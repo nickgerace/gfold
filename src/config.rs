@@ -7,7 +7,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Config {
     pub default_path: Option<PathBuf>,
     pub mode: Option<Mode>,
