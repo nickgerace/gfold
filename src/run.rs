@@ -6,13 +6,18 @@ use crate::target_gen::Targets;
 use anyhow::Result;
 
 pub fn run(config: &Config) -> Result<()> {
-    let reports = Reports::new(Targets::new(match &config.default_path {
-        Some(s) => s,
-        None => return Err(Error::EmptyConfigOption(config.to_owned()).into()),
-    })?)?;
-    match config.display_mode {
-        Some(DisplayMode::Modern) => display::modern(&reports),
-        Some(DisplayMode::Classic) => display::classic(&reports),
-        None => Err(Error::EmptyConfigOption(config.to_owned()).into()),
+    let display_mode = config.determine_display_mode()?;
+
+    let reports = Reports::new(
+        Targets::new(match &config.default_path {
+            Some(s) => s,
+            None => return Err(Error::EmptyConfigOption(config.to_owned()).into()),
+        })?,
+        &display_mode,
+    )?;
+
+    match display_mode {
+        DisplayMode::Standard => display::standard(&reports),
+        DisplayMode::Classic => display::classic(&reports),
     }
 }

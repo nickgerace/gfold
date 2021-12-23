@@ -15,8 +15,8 @@ pub struct Config {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum DisplayMode {
+    Standard,
     Classic,
-    Modern,
 }
 
 impl Config {
@@ -43,7 +43,7 @@ impl Config {
             self.default_path = Some(env::current_dir()?.canonicalize()?);
         }
         if self.display_mode.is_none() {
-            self.display_mode = Some(DisplayMode::Classic)
+            self.display_mode = Some(DisplayMode::Standard)
         }
         Ok(())
     }
@@ -51,5 +51,13 @@ impl Config {
     pub fn print(self) -> Result<()> {
         println!("{}", serde_json::to_string_pretty(&self)?);
         Ok(())
+    }
+
+    pub fn determine_display_mode(&self) -> Result<DisplayMode> {
+        match self.display_mode {
+            Some(DisplayMode::Standard) => Ok(DisplayMode::Standard),
+            Some(DisplayMode::Classic) => Ok(DisplayMode::Classic),
+            None => Err(Error::EmptyConfigOption(self.to_owned()).into()),
+        }
     }
 }
