@@ -18,20 +18,16 @@ While CLI options are prioritized, default options will fallback to the config
 file if it exists. Here is the config file lookup locations for some common
 operating systems:
 
-  Linux/macOS  $HOME/.config/gfold/gfold.json
-  Windows      {FOLDERID_Profile}\\.config\\gfold\\gfold.json",
+    Linux/macOS    $HOME/.config/gfold/gfold.json
+    Windows        {FOLDERID_Profile}\\.config\\gfold\\gfold.json",
 )]
 struct Opt {
-    #[clap(long, short, help = "(TODO) Display results with the new output mode")]
+    #[clap(long, help = "(TODO) Display results with the new output mode")]
     new: bool,
-    #[clap(help = "Path to target directory (defaults to current working directory")]
+    #[clap(help = "Path to target directory (defaults to current working directory)")]
     path: Option<String>,
-    #[clap(long, short, help = "Print config options and exit")]
+    #[clap(long, help = "Print config options and exit")]
     print: bool,
-    #[clap(long, help = "Save config to config file location and exit")]
-    save: bool,
-    #[clap(long, help = "Delete config file and its parent directory and exit")]
-    delete: bool,
 }
 
 pub fn parse() -> Result<()> {
@@ -48,10 +44,8 @@ pub fn parse() -> Result<()> {
     // Set remaining "None" options to their defaults, if needed.
     config.set_defaults_if_empty()?;
 
-    match (opt.print, opt.save, opt.delete) {
-        (true, _, _) => config.print(),
-        (_, true, _) => config.save(),
-        (_, _, true) => config.delete(),
-        (false, false, false) => run::run(&config),
+    match opt.print {
+        true => config.print(),
+        false => run::run(&config),
     }
 }

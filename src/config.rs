@@ -2,10 +2,10 @@ use crate::error::Error;
 use anyhow::Result;
 use log::warn;
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::PathBuf;
-use std::{env, fs};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Config {
@@ -21,7 +21,8 @@ pub enum Mode {
 
 impl Config {
     pub fn try_config() -> Result<Config> {
-        match File::open(config_file(false)?) {
+        let home = dirs::home_dir().ok_or(Error::HomeDirNotFound)?;
+        match File::open(home.join(".config").join("gfold").join("gfold.json")) {
             Ok(o) => {
                 let reader = BufReader::new(o);
                 let config: Config = serde_json::from_reader(reader)?;
@@ -51,25 +52,4 @@ impl Config {
         println!("{}", serde_json::to_string_pretty(&self)?);
         Ok(())
     }
-
-    pub fn save(self) -> Result<()> {
-        fs::create_dir_all(config_file(true)?)?;
-        Ok(fs::write(
-            config_file(false)?,
-            serde_json::to_string_pretty(&self)?,
-        )?)
-    }
-
-    pub fn delete(self) -> Result<()> {
-        fs::remove_file(config_file(false)?)?;
-        Ok(fs::remove_dir(config_file(true)?)?)
-    }
-}
-
-fn config_file(parent: bool) -> Result<PathBuf> {
-    let home = dirs::home_dir().ok_or(Error::HomeDirNotFound)?;
-    Ok(match parent {
-        true => home.join(".config").join("gfold"),
-        false => home.join(".config").join("gfold").join("gfold.json"),
-    })
 }

@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Formal CLI parsing library (again)
 - Install and uninstall scripts
 
+### Changed
+
+- Codebase to a domain-driven architecture for easier refactoring
+
 ## [2.0.2] - 2021-12-02
 
 ### Changed
