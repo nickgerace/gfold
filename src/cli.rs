@@ -23,16 +23,13 @@ struct Args {
         description = "path to target directory (defaults to current working directory)"
     )]
     path: Option<String>,
+    #[argh(switch, description = "display results with classic formatting")]
+    classic: bool,
     #[argh(
         switch,
         description = "enable debug logging (sets \"RUST_LOG\" to \"debug\")"
     )]
     debug: bool,
-    #[argh(
-        switch,
-        description = "(TODO) display results with the new output mode"
-    )]
-    new: bool,
     #[argh(switch, description = "display merged config options")]
     print: bool,
     #[argh(switch, short = 'V', description = "display version information")]
@@ -56,14 +53,11 @@ fn merge_config_and_run(args: &Args) -> Result<()> {
     let mut config = Config::try_config()?;
 
     if let Some(s) = &args.path {
-        config.default_path = Some(env::current_dir()?.join(s).canonicalize()?);
+        config.path = env::current_dir()?.join(s).canonicalize()?;
     }
-    if args.new {
-        config.display_mode = Some(DisplayMode::Modern);
+    if args.classic {
+        config.display_mode = DisplayMode::Classic;
     }
-
-    // Set remaining "None" options to their defaults, if needed.
-    config.set_defaults_if_empty()?;
 
     match args.print {
         true => config.print(),

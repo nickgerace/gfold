@@ -20,8 +20,11 @@ ci:
 	cd $(MAKEPATH); cargo test -- --nocapture
 .PHONY: ci
 
-build:
+release:
 	cd $(MAKEPATH); cargo build --release
+.PHONY: release
+
+build: release
 .PHONY: build
 
 scan:
@@ -31,7 +34,7 @@ scan:
 	cd $(MAKEPATH); cargo audit
 .PHONY: scan
 
-bench-loosely: build
+bench-loosely:
 	@echo "============================================================="
 	@time $(INSTALLED) ~/
 	@echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"

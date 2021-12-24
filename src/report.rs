@@ -1,3 +1,4 @@
+use crate::config::DisplayMode;
 use crate::error::Error;
 use crate::status::Status;
 use crate::target_gen::Targets;
@@ -6,6 +7,8 @@ use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::path::Path;
 use std::process::Command;
+
+pub const NONE: &str = "none";
 
 #[cfg(target_os = "windows")]
 const NEWLINE: &str = "\r\n";
@@ -20,16 +23,24 @@ pub struct Report {
     pub status_as_string: String,
     pub branch: String,
     pub url: String,
+
+    // Optional field that's only used in DisplayMode::Standard.
+    pub email: Option<String>,
 }
 
 pub struct Reports(pub BTreeMap<String, Vec<Report>>);
 
 impl Reports {
-    pub fn new(targets: Targets) -> Result<Reports> {
+    pub fn new(targets: Targets, display_mode: &DisplayMode) -> Result<Reports> {
+        let include_email = match display_mode {
+            DisplayMode::Standard => true,
+            DisplayMode::Classic => false,
+        };
+
         let unprocessed = targets
             .0
             .into_par_iter()
-            .map(|m| generate_report(&m))
+            .map(|m| generate_report(&m, include_email))
             .collect::<Vec<Result<Report>>>();
 
         // Use a BTreeMap over a HashMap for sorted keys.
@@ -53,7 +64,7 @@ impl Reports {
     }
 }
 
-fn generate_report(path: &Path) -> Result<Report> {
+fn generate_report(path: &Path, include_email: bool) -> Result<Report> {
     let branch = git(&["rev-parse", "--abbrev-ref", "HEAD"], path)?;
     let branch = match branch.strip_suffix(NEWLINE) {
         Some(s) => s,
@@ -69,7 +80,7 @@ fn generate_report(path: &Path) -> Result<Report> {
             },
         },
     };
-    let status_as_string = format!("{:?}", &status);
+    let status_as_string = format!("{:?}", &status).to_lowercase();
 
     Ok(Report {
         path: match path.file_name() {
@@ -84,14 +95,18 @@ fn generate_report(path: &Path) -> Result<Report> {
                 Some(s) => s.to_string(),
                 None => return Err(Error::PathToStrConversionFailure(s.to_path_buf()).into()),
             },
-            None => "-".to_string(),
+            None => NONE.to_string(),
         },
         status,
         status_as_string,
         branch: branch.to_string(),
         url: match git(&["config", "remote.origin.url"], path)?.strip_suffix(NEWLINE) {
             Some(s) => s.to_string(),
-            None => "-".to_string(),
+            None => NONE.to_string(),
+        },
+        email: match include_email {
+            true => Some(get_email(path)?),
+            false => None,
         },
     })
 }
@@ -110,6 +125,13 @@ fn is_unclean(path: &Path) -> Result<bool> {
 
 fn is_unpushed(path: &Path, branch: &str) -> Result<bool> {
     Ok(!git(&["log", &format!("origin/{}..HEAD", branch)], path)?.is_empty())
+}
+
+fn get_email(path: &Path) -> Result<String> {
+    match git(&["config", "--get", "user.email"], path)?.strip_suffix(NEWLINE) {
+        Some(s) => Ok(s.to_string()),
+        None => Ok(NONE.to_string()),
+    }
 }
 
 fn git(args: &[&str], wd: &Path) -> Result<String> {

@@ -1,4 +1,3 @@
-use crate::config::Config;
 use std::path::PathBuf;
 use thiserror::Error;
 
@@ -12,8 +11,6 @@ pub enum Error {
     FileNameStrConversionFailure(PathBuf),
     #[error("could not convert path (Path) to &str: {0}")]
     PathToStrConversionFailure(PathBuf),
-    #[error("found empty option in config: {0:?}")]
-    EmptyConfigOption(Config),
     #[error("could not find home directory")]
     HomeDirNotFound,
 }

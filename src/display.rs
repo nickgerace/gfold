@@ -1,10 +1,10 @@
+use crate::color;
+use crate::error::Error;
+use crate::report::{Reports, NONE};
+use anyhow::Result;
 use std::path::Path;
 
-use crate::color;
-use crate::report::Reports;
-use anyhow::Result;
-
-pub const PAD: usize = 2;
+const PAD: usize = 2;
 
 pub fn classic(reports: &Reports) -> Result<()> {
     let length = reports.0.keys().len();
@@ -43,7 +43,7 @@ pub fn classic(reports: &Reports) -> Result<()> {
 
         for report in reports {
             print!("{:<path_width$}", report.path, path_width = path_max + PAD);
-            color::write_status(&report.status, status_max + PAD)?;
+            color::write_status(&report.status, &report.status_as_string, status_max + PAD)?;
             println!(
                 "{:<branch_width$}{}",
                 report.branch,
@@ -55,12 +55,44 @@ pub fn classic(reports: &Reports) -> Result<()> {
     Ok(())
 }
 
-// TODO: finish this functionality.
-pub fn modern(reports: &Reports) -> Result<()> {
-    for i in &reports.0 {
-        for i in i.1 {
-            println!("{:?}", Path::new(&i.parent).join(&i.path));
+pub fn standard(reports: &Reports) -> Result<()> {
+    let mut all_reports = Vec::new();
+    for grouped_report in &reports.0 {
+        all_reports.append(&mut grouped_report.1.clone());
+    }
+    all_reports.sort_by(|a, b| a.path.cmp(&b.path));
+    all_reports.sort_by(|a, b| a.status_as_string.cmp(&b.status_as_string));
+
+    let mut first = true;
+    for report in all_reports {
+        match first {
+            true => {
+                first = false;
+            }
+            false => println!(),
         }
+
+        print!("📡 ");
+        let full_path = Path::new(&report.parent).join(&report.path);
+        color::write_group_title(&format!(
+            "{} ⇒ {}",
+            &report.path,
+            full_path
+                .to_str()
+                .ok_or_else(|| Error::PathToStrConversionFailure(full_path.clone()))?
+        ))?;
+        color::write_status(&report.status, &report.status_as_string, PAD)?;
+        println!(
+            " ({})
+{}
+{}",
+            report.branch,
+            report.url,
+            match &report.email {
+                Some(s) => s,
+                None => NONE,
+            },
+        );
     }
     Ok(())
 }
