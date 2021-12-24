@@ -7,7 +7,7 @@ This document contains all information related to release.
 This checklist details the `gfold` release process.
 Steps should (and frequently must) be executed in sequential order.
 
-- [ ] Checkout and rebase `main` to its latest commit
+- [ ] Checkout and rebase `main` to its latest commit, then checkout a new branch
 - [ ] Change the `version` field in `Cargo.toml` to the new tag
 - [ ] **Full Releases Only**: change the version in `CHANGELOG.md` and uncomment the following line: `<!--The latest version contains all changes.-->`
 - [ ] Run final `make` targets and verify that everything looks/works as expected:
@@ -16,7 +16,7 @@ Steps should (and frequently must) be executed in sequential order.
 make ci build
 ```
 
-- [ ] Create and _do not push/merge_ a commit with the following message: `Update to <tag>`
+- [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
 
 - [ ] Test and verify the publishing workflow:
 
@@ -24,7 +24,7 @@ make ci build
 cargo publish --dry-run
 ```
 
-- [ ] Push/merge the preparation commit into `main`
+- [ ] Merge the preparation commit into `main`
 - [ ] Checkout and rebase `main` to its latest commit, which should be the aforementioned commit
 - [ ] Tag and push the tag:
 

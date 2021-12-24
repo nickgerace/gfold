@@ -5,26 +5,57 @@
 [![build](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
 [![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&color=purple)](./LICENSE)
 
+> This **README** is for `gfold 3.x` users.
+> Since `gfold 3.x` has not yet been released, contents of this **README** may be inapplicable to your version of `gfold`.
+>
+> For the latest, full release of `gfold 2.x`, please refer to the [**README** corresponding to the latest, full release](https://github.com/nickgerace/gfold/blob/2.0.2/README.md).
+
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
 ```
 % gfold
+📡 astrid ⇒ /home/neloth/src/astrid
+unclean (main)
+git@github.com:db/astrid.git
+neloth@housetelvanni.dev
+
+📡 fev ⇒ /home/neloth/src/fev
+bare (issue2277)
+none
+neloth@housetelvanni.dev
+
+📡 gb ⇒ /home/neloth/src/gb
+unpushed (dev)
+https://github.com/hrothgar/gb.git
+neloth@housetelvanni.dev
+
+📡 pam ⇒ /home/neloth/src/pam
+clean (main)
+https://github.com/onc/pam.git
+neloth@solstheimcommunityserver.org
+```
+
+The classic display mode can be toggled on with `--classic`.
+
+```
+% gfold --classic
 astrid  unclean   main       git@github.com:db/astrid.git
-fev     bare      main       https://github.com/institute/fev.git
+fev     bare      main       none
 gb      unpushed  dev        https://github.com/hrothgar/gb.git
 neloth  unclean   patch      git@github.com:telvanni/neloth.git
 pam     clean     main       https://github.com/onc/pam.git
 prime   clean     issue2287  git@github.com:bos/prime.git
 ```
 
+If you'd prefer to use the classic display mode by default, and avoid setting the flag every time, you can set it in the config file (see **Usage** section).
+
 ## Description
 
 This app displays relevant information for multiple Git repositories in one to many directories.
 While this tool might seem limited in scope and purpose, that is by design.
 
-It prints each repository in alphabetical order, and pads each result based on the longest directory, branch, and status string.
 By default, `gfold` looks at every Git repository via traversal from the current working directory.
-However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument.
+However, if you would like to target another directory, you can pass that path (relative or absolute) as the first argument or change the default path in the config file.
 
 ## Installation
 
@@ -38,9 +69,7 @@ You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/
 brew install nickgerace/nickgerace/gfold
 ```
 
-The original [tap](https://github.com/nickgerace/homebrew-gfold) will no longer be maintained after version `2.0.1`.
-Please migrate to the new tap using the command above.
-Neither the current and deprecated taps will work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
+**Please note:** the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
 
 ### AUR
 
@@ -78,18 +107,22 @@ If you do not want to use one of the above installation methods, you can downloa
 curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | bash
 ```
 
-For security, please note that the installation convenience script does not verify the binary with a checksum.
-Discretion is advised, including downloading and reading the script before execution.
-
 To uninstall `gfold` fully, after using this installation method, execute the following script:
 
 ```bash
 curl https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstall.sh | bash
 ```
 
+The uninstall script can also be used for cleanup in the event of a failed install.
+
+#### Security Considerations
+
+Please note that the installation convenience script _does not verify the binary with a checksum_.
+Discretion is advised, including downloading and reading the script before execution.
+
 ## Usage
 
-Pass in the `-h`, or `--help`, flag to see all the options for using this application.
+Pass in `--help` flag to see all the options for using this application.
 
 ```bash
 gfold
@@ -99,6 +132,51 @@ gfold ~/
 gfold /this/is/an/absolute/path
 gfold ../../this/is/a/relative/path
 ```
+
+### Config File
+
+Upon execution, `gfold` will look for a config file at the following path on macOS, Linux and similar operating systems:
+
+```bash
+$HOME/.config/gfold/gfold.json
+```
+
+On Windows, the config file is located at the following path:
+
+```powershell
+{FOLDERID_Profile}\.config\gfold\gfold.json
+```
+
+Creating and using the config file is entirely optional, and you can ignore your config file at any time using the `-i` flag.
+
+#### Example: Creating a Config File
+
+Here is an example creation workflow for a config file.
+This config file will default to the classic display mode and set the default path to `$HOME`, rather than the current working directory.
+
+```bash
+gfold --classic ~/ --print > $HOME/.config/gfold/gfold.json
+```
+
+Here are the contents of the resulting config file:
+
+```json
+{
+  "path": "/home/neloth",
+  "display_mode": "Classic"
+}
+```
+
+#### Example: Backing Up a Config file
+
+You can back up a config file and track its history with `git`.
+On macOS, Linux, and most systems, you can link the file back to a `git` repository.
+
+```bash
+ln -s path/to/repository/gfold.json $HOME/.config/gfold/gfold.json
+```
+
+Now, you can update the config file within your repository and include the linking as part of your environment setup workflow.
 
 ## Compatibility
 

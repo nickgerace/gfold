@@ -1,5 +1,5 @@
 use crate::error::Error;
-use anyhow::Result;
+use anyhow::{Context, Result};
 use log::warn;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -46,13 +46,21 @@ impl Config {
     // This method tries to deserialize the config file (empty, non-existent, partial or complete)
     // and uses "EntryConfig" as an intermediary struct. This is the primary method used when
     // creating a config.
+    //
+    // Within this method, we check if the config file is empty before deserializing it. Users
+    // should be able to proceed with empty config files. If empty, then we fall back to the
+    // "EntryConfig" default before conversion.
     pub fn try_config() -> Result<Config> {
         let home = dirs::home_dir().ok_or(Error::HomeDirNotFound)?;
         let entry_config = match File::open(home.join(".config").join("gfold").join("gfold.json")) {
-            Ok(o) => {
-                let reader = BufReader::new(o);
-                serde_json::from_reader(reader)?
-            }
+            Ok(o) => match o.metadata()?.len() {
+                len if len > 0 => {
+                    let reader = BufReader::new(o);
+                    serde_json::from_reader(reader)
+                        .context("config file's contents are likely invalid JSON")?
+                }
+                _ => EntryConfig::default(),
+            },
             Err(e) => {
                 warn!("{}", e);
                 EntryConfig::default()

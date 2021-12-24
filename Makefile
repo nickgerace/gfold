@@ -4,21 +4,24 @@ INSTALLED := $(shell which gfold)
 
 .DEFAULT_GOAL := prepare
 
-prepare: fmt
+prepare:
+	cd $(MAKEPATH); cargo +nightly fmt
 	cd $(MAKEPATH); cargo update
 	cd $(MAKEPATH); cargo fix --edition-idioms --allow-dirty --allow-staged
 	cd $(MAKEPATH); cargo clippy --all-features --all-targets
 .PHONY: prepare
 
-fmt:
-	cd $(MAKEPATH); cargo +nightly fmt
-.PHONY: fmt
+ci: lint test
+.PHONY: ci
 
-ci:
+test:
+	cd $(MAKEPATH); cargo test -- --nocapture
+.PHONY: test
+
+lint:
 	cd $(MAKEPATH); cargo +nightly fmt --all -- --check
 	cd $(MAKEPATH); cargo clippy -- -D warnings
-	cd $(MAKEPATH); cargo test -- --nocapture
-.PHONY: ci
+.PHONY: lint
 
 release:
 	cd $(MAKEPATH); cargo build --release
