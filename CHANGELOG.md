@@ -11,19 +11,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Ability to ignore config file options
+- Ability to print merged config options
+- Ability to store default path target in config file (defaults to current working directory)
 - Ability to use config file in `$HOME/.config/gfold/gfold.json` and `{FOLDERID_Profile}\.config\gfold\gfold.json`
-- Experimental new display mode (`--new` flag)
+- Ability to use old display mode with `--classic` flag and store preference in config file
 - Formal CLI parsing library, `argh`
 - Install and uninstall scripts
+- New display mode that avoids grouping repositories (API-breaking since this is the new default display mode)
 
 ### Changed
 
-- Codebase to a domain-driven architecture
+- Codebase to a domain-driven architecture (major refactor)
 
 ### Notes
 
-- This crate has used other CLI parsing libraries in the past, and recently did not use any, but with manual testing and [publicly available benchmarks](https://github.com/rust-cli/argparse-benchmarks-rs/blob/c37e78aabdaa4384a9c49be3735a686803d0e37a/README.md#results), `argh` is now in use.
 - Evaluated using `tracing` and `tracing-subscriber` over `log` and `env_logger`, but due to their combined larger size, the logging crates remain the same as before.
+- The config file can be non-existent, empty, partially filled out or completely filled out. There's also an option to ignore the config file completely and only use CLI options.
+- This crate has used other CLI parsing libraries in the past, and recently did not use any, but with manual testing and [publicly available benchmarks](https://github.com/rust-cli/argparse-benchmarks-rs/blob/c37e78aabdaa4384a9c49be3735a686803d0e37a/README.md#results), `argh` is now in use.
 
 ## [2.0.2] - 2021-12-02
 

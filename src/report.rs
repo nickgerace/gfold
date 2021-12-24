@@ -100,7 +100,7 @@ fn generate_report(path: &Path, include_email: bool) -> Result<Report> {
         status,
         status_as_string,
         branch: branch.to_string(),
-        url: match git(&["config", "remote.origin.url"], path)?.strip_suffix(NEWLINE) {
+        url: match git(&["config", "--get", "remote.origin.url"], path)?.strip_suffix(NEWLINE) {
             Some(s) => s.to_string(),
             None => NONE.to_string(),
         },
@@ -128,18 +128,15 @@ fn is_unpushed(path: &Path, branch: &str) -> Result<bool> {
 }
 
 fn get_email(path: &Path) -> Result<String> {
-    match git(&["config", "--get", "user.email"], path)?.strip_suffix(NEWLINE) {
-        Some(s) => Ok(s.to_string()),
-        None => Ok(NONE.to_string()),
-    }
+    Ok(
+        match git(&["config", "--get", "user.email"], path)?.strip_suffix(NEWLINE) {
+            Some(s) => s.to_string(),
+            None => NONE.to_string(),
+        },
+    )
 }
 
 fn git(args: &[&str], wd: &Path) -> Result<String> {
-    match Command::new("git").args(args).current_dir(wd).output() {
-        Ok(o) => match String::from_utf8(o.stdout) {
-            Ok(s) => Ok(s),
-            Err(e) => Err(e.into()),
-        },
-        Err(e) => Err(e.into()),
-    }
+    let output = Command::new("git").args(args).current_dir(wd).output()?;
+    Ok(String::from_utf8(output.stdout)?)
 }

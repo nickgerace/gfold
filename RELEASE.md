@@ -5,24 +5,53 @@ This document contains all information related to release.
 ## Checklist
 
 This checklist details the `gfold` release process.
-Steps should (and often must) be executed in sequential order.
+Steps should (and frequently must) be executed in sequential order.
 
-| RC  | Release | Step                                                                                                                            |
-|-----|---------|---------------------------------------------------------------------------------------------------------------------------------|
-| ✔️  | ✔️      | Checkout and rebase `main` to its latest commit.                                                                                |
-| ✔️  | ✔️      | Change the `version` field in `Cargo.toml` to the new tag.                                                                      |
-| ⛔   | ✔️      | Change the version in `CHANGELOG.md` and uncomment the line, `<!--The latest version contains all changes.-->`.                 |
-| ✔️  | ✔️      | Run `make ci build` and verify that everything looks/works as expected.                                                         |
-| ✔️  | ✔️      | Create a commit with the following message: `Update to <tag>`. **Do not push (or merge) the commit yet.**                       |
-| ✔️  | ✔️      | Test and verify the publishing workflow: `cargo publish --dry-run`.                                                             |
-| ✔️  | ✔️      | Push (or merge) the preparation commit into `main`.                                                                             |
-| ✔️  | ✔️      | Checkout and rebase `main` to its latest commit, which should be the aforementioned commit.                                     |
-| ✔️  | ✔️      | Tag with `git tag <tag>` and push the tag: `git push --tags origin main`.                                                       |
-| ✔️  | ✔️      | Publish the crate: `cargo publish`.                                                                                             |
-| ✔️  | ✔️      | Verify that the [crate](https://crates.io/crates/gfold) on `crates.io` looks correct.                                           |
-| ✔️  | ✔️      | Download the crate via `cargo install --locked gfold` or `cargo install --locked --version <tag> gfold`.                        |
-| ✔️  | ✔️      | Verify that the [GitHub release](https://github.com/nickgerace/gfold/releases) on the repository's releases page looks correct. |
-| ⛔   | ✔️      | Update the formula for the [Hombrew tap](https://github.com/nickgerace/homebrew-nickgerace).                                    |
+- [ ] Checkout and rebase `main` to its latest commit
+- [ ] Change the `version` field in `Cargo.toml` to the new tag
+- [ ] **Full Releases Only**: change the version in `CHANGELOG.md` and uncomment the following line: `<!--The latest version contains all changes.-->`
+- [ ] Run final `make` targets and verify that everything looks/works as expected:
+
+```bash
+make ci build
+```
+
+- [ ] Create and _do not push/merge_ a commit with the following message: `Update to <tag>`
+
+- [ ] Test and verify the publishing workflow:
+
+```bash
+cargo publish --dry-run
+```
+
+- [ ] Push/merge the preparation commit into `main`
+- [ ] Checkout and rebase `main` to its latest commit, which should be the aforementioned commit
+- [ ] Tag and push the tag:
+
+```bash
+git tag <tag>
+git push --tags origin main
+```
+
+- [ ] Publish the crate:
+
+```bash
+cargo publish
+```
+
+- [ ] Verify that the [crate](https://crates.io/crates/gfold) on `crates.io` looks correct
+- [ ] Download and install the crate:
+
+```bash
+# Full releases
+cargo install --locked gfold
+
+# Release candidates (RCs)
+cargo install --locked --version <tag> gfold
+```
+
+- [ ] Verify that the [GitHub release](https://github.com/nickgerace/gfold/releases) on the repository's releases page looks correct
+- [ ] **Full Releases Only**: Update the formula for the [Hombrew tap](https://github.com/nickgerace/homebrew-nickgerace)
 
 ## Versioning Scheme
 
