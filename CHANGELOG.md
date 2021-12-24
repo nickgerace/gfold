@@ -24,6 +24,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Codebase to a domain-driven architecture (major refactor)
 
+### Removed
+
+- Mention of the [deprecated, old Homebrew tap](https://github.com/nickgerace/homebrew-gfold) in the README
+- Short `-h` flag due to CLI crate addition (`argh`)
+
 ### Notes
 
 - Evaluated using `tracing` and `tracing-subscriber` over `log` and `env_logger`, but due to their combined larger size, the logging crates remain the same as before.
