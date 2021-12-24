@@ -71,7 +71,7 @@ pub fn standard(reports: &Reports) -> Result<()> {
             }
             false => println!(),
         }
-    
+
         print!("📡 ");
         let full_path = Path::new(&report.parent).join(&report.path);
         color::write_group_title(&format!(
@@ -79,7 +79,7 @@ pub fn standard(reports: &Reports) -> Result<()> {
             &report.path,
             full_path
                 .to_str()
-                .ok_or(Error::PathToStrConversionFailure(full_path.clone()))?
+                .ok_or_else(|| Error::PathToStrConversionFailure(full_path.clone()))?
         ))?;
         color::write_status(&report.status, &report.status_as_string, PAD)?;
         println!(

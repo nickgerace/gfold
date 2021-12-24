@@ -53,14 +53,11 @@ fn merge_config_and_run(args: &Args) -> Result<()> {
     let mut config = Config::try_config()?;
 
     if let Some(s) = &args.path {
-        config.default_path = Some(env::current_dir()?.join(s).canonicalize()?);
+        config.path = env::current_dir()?.join(s).canonicalize()?;
     }
     if args.classic {
-        config.display_mode = Some(DisplayMode::Classic);
+        config.display_mode = DisplayMode::Classic;
     }
-
-    // Set remaining "None" options to their defaults, if needed.
-    config.set_defaults_if_empty()?;
 
     match args.print {
         true => config.print(),
