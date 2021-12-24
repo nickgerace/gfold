@@ -23,6 +23,10 @@ struct Args {
         description = "path to target directory (defaults to current working directory)"
     )]
     path: Option<String>,
+
+    #[argh(switch, short = 'i', description = "ignore config file settings")]
+    ignore_config_file: bool,
+
     #[argh(switch, description = "display results with classic formatting")]
     classic: bool,
     #[argh(
@@ -37,9 +41,11 @@ struct Args {
 }
 
 pub fn parse() -> Result<()> {
-    // First and foremost, get logging up and running.
+    // First and foremost, get logging up and running. We want logs as quickly as possible for
+    // debugging by setting "RUST_LOG".
     let args: Args = argh::from_env();
     logging::init(args.debug);
+
     match args.version {
         true => {
             println!("gfold {}", env!("CARGO_PKG_VERSION"));
@@ -50,7 +56,10 @@ pub fn parse() -> Result<()> {
 }
 
 fn merge_config_and_run(args: &Args) -> Result<()> {
-    let mut config = Config::try_config()?;
+    let mut config = match args.ignore_config_file {
+        true => Config::new()?,
+        false => Config::try_config()?,
+    };
 
     if let Some(s) = &args.path {
         config.path = env::current_dir()?.join(s).canonicalize()?;

@@ -4,11 +4,12 @@ on:
     branches-exclude:
       - "main"
     paths:
-      - **/*.rs
-      - **/Cargo.*
-      - **/rustfmt.toml
+      - "**.rs"
+      - "Cargo.*"
+      - "rustfmt.toml"
 
 jobs:
+
   prepare:
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +31,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:

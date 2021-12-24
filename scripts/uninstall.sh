@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-function delete-binary {
-    if [ -f "$1" ]; then
-        rm "$1"
+function perform-uninstall {
+    for FILE in "/tmp/gfold" "/usr/local/bin/gfold"; do
+        if [ -f "$FILE" ]; then
+            rm "$FILE"
+            echo "[uninstall-gfold] ✅  deleted $FILE"
+        fi
+    done
+    echo "[uninstall-gfold] ✅  gfold has been uninstalled from your system"
+
+    if [ -f $HOME/.config/gfold/gfold.json ]; then
+        echo "[uninstall-gfold] ⚠️  you may want to delete or backup the config file"
+        echo "[uninstall-gfold] ⚠️  config file path: $HOME/.config/gfold/gfold.json"
     fi
 }
 
-delete-binary /tmp/gfold
-delete-binary /usr/local/bin/gfold
-echo "gfold has been removed from your system"
+perform-uninstall
