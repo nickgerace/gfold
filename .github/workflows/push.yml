@@ -3,6 +3,11 @@ on:
   push:
     branches-exclude:
       - "main"
+    paths:
+      - **/*.rs
+      - **/Cargo.*
+      - **/rustfmt.toml
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
