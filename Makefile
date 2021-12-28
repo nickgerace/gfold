@@ -30,6 +30,10 @@ release:
 build: release
 .PHONY: build
 
+clean:
+	cd $(MAKEPATH); cargo clean
+.PHONY: clean
+
 scan:
 	cd $(MAKEPATH); cargo +nightly udeps
 	cd $(MAKEPATH); cargo bloat --release

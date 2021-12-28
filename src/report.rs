@@ -1,14 +1,13 @@
 use crate::config::DisplayMode;
+use crate::consts::NONE;
 use crate::error::Error;
 use crate::status::Status;
 use crate::target_gen::Targets;
 use anyhow::Result;
 use rayon::prelude::*;
 use std::collections::BTreeMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
-
-pub const NONE: &str = "none";
 
 #[cfg(target_os = "windows")]
 const NEWLINE: &str = "\r\n";
@@ -31,16 +30,24 @@ pub struct Report {
 pub struct Reports(pub BTreeMap<String, Vec<Report>>);
 
 impl Reports {
-    pub fn new(targets: Targets, display_mode: &DisplayMode) -> Result<Reports> {
+    pub fn new(
+        targets: Targets,
+        display_mode: &DisplayMode,
+        git_path: &Option<PathBuf>,
+    ) -> Result<Reports> {
         let include_email = match display_mode {
             DisplayMode::Standard => true,
             DisplayMode::Classic => false,
+        };
+        let git_path = match git_path {
+            Some(s) => s.canonicalize()?,
+            None => Path::new("git").to_path_buf(),
         };
 
         let unprocessed = targets
             .0
             .into_par_iter()
-            .map(|m| generate_report(&m, include_email))
+            .map(|path| generate_report(&path, &git_path, include_email))
             .collect::<Vec<Result<Report>>>();
 
         // Use a BTreeMap over a HashMap for sorted keys.
@@ -64,17 +71,17 @@ impl Reports {
     }
 }
 
-fn generate_report(path: &Path, include_email: bool) -> Result<Report> {
-    let branch = git(&["rev-parse", "--abbrev-ref", "HEAD"], path)?;
-    let branch = match branch.strip_suffix(NEWLINE) {
-        Some(s) => s,
-        None => return Err(Error::StripNewLineFromStringFailure(branch).into()),
+fn generate_report(repo_path: &Path, git_path: &Path, include_email: bool) -> Result<Report> {
+    let git_shim = GitShim {
+        working_directory: repo_path.to_path_buf(),
+        git_path: git_path.to_path_buf(),
     };
-    let status = match is_bare(path)? {
+    let branch = git_shim.get_branch()?;
+    let status = match git_shim.is_bare()? {
         true => Status::Bare,
-        false => match is_unclean(path)? {
+        false => match git_shim.is_unclean()? {
             true => Status::Unclean,
-            false => match is_unpushed(path, branch)? {
+            false => match git_shim.is_unpushed(&branch)? {
                 true => Status::Unpushed,
                 false => Status::Clean,
             },
@@ -83,14 +90,16 @@ fn generate_report(path: &Path, include_email: bool) -> Result<Report> {
     let status_as_string = format!("{:?}", &status).to_lowercase();
 
     Ok(Report {
-        path: match path.file_name() {
+        path: match repo_path.file_name() {
             Some(s) => match s.to_str() {
                 Some(s) => s.to_string(),
-                None => return Err(Error::FileNameStrConversionFailure(path.to_path_buf()).into()),
+                None => {
+                    return Err(Error::FileNameStrConversionFailure(repo_path.to_path_buf()).into())
+                }
             },
-            None => return Err(Error::FileNameNotFound(path.to_path_buf()).into()),
+            None => return Err(Error::FileNameNotFound(repo_path.to_path_buf()).into()),
         },
-        parent: match path.parent() {
+        parent: match repo_path.parent() {
             Some(s) => match s.to_str() {
                 Some(s) => s.to_string(),
                 None => return Err(Error::PathToStrConversionFailure(s.to_path_buf()).into()),
@@ -99,44 +108,76 @@ fn generate_report(path: &Path, include_email: bool) -> Result<Report> {
         },
         status,
         status_as_string,
-        branch: branch.to_string(),
-        url: match git(&["config", "--get", "remote.origin.url"], path)?.strip_suffix(NEWLINE) {
-            Some(s) => s.to_string(),
-            None => NONE.to_string(),
-        },
+        branch,
+        url: git_shim.get_url()?,
         email: match include_email {
-            true => Some(get_email(path)?),
+            true => Some(git_shim.get_email()?),
             false => None,
         },
     })
 }
 
-fn is_bare(path: &Path) -> Result<bool> {
-    let bare_output = git(&["rev-parse", "--is-bare-repository"], path)?;
-    match bare_output.strip_suffix(NEWLINE) {
-        Some(s) => Ok(s != "false"),
-        None => Err(Error::StripNewLineFromStringFailure(bare_output).into()),
+struct GitShim {
+    working_directory: PathBuf,
+    git_path: PathBuf,
+}
+
+impl GitShim {
+    pub fn is_bare(&self) -> Result<bool> {
+        let bare_output = self.git(&["rev-parse", "--is-bare-repository"])?;
+        match bare_output.strip_suffix(NEWLINE) {
+            Some(s) => Ok(s != "false"),
+            None => Err(Error::StripNewLineFromStringFailure(bare_output).into()),
+        }
     }
-}
 
-fn is_unclean(path: &Path) -> Result<bool> {
-    Ok(!git(&["status", "--porcelain"], path)?.is_empty())
-}
+    pub fn is_unclean(&self) -> Result<bool> {
+        Ok(!self.git(&["status", "--porcelain"])?.is_empty())
+    }
 
-fn is_unpushed(path: &Path, branch: &str) -> Result<bool> {
-    Ok(!git(&["log", &format!("origin/{}..HEAD", branch)], path)?.is_empty())
-}
+    pub fn is_unpushed(&self, branch: &str) -> Result<bool> {
+        Ok(!self
+            .git(&["log", &format!("origin/{}..HEAD", branch)])?
+            .is_empty())
+    }
 
-fn get_email(path: &Path) -> Result<String> {
-    Ok(
-        match git(&["config", "--get", "user.email"], path)?.strip_suffix(NEWLINE) {
-            Some(s) => s.to_string(),
-            None => NONE.to_string(),
-        },
-    )
-}
+    pub fn get_branch(&self) -> Result<String> {
+        let branch = self.git(&["rev-parse", "--abbrev-ref", "HEAD"])?;
+        match branch.strip_suffix(NEWLINE) {
+            Some(s) => Ok(s.to_string()),
+            None => Err(Error::StripNewLineFromStringFailure(branch).into()),
+        }
+    }
 
-fn git(args: &[&str], wd: &Path) -> Result<String> {
-    let output = Command::new("git").args(args).current_dir(wd).output()?;
-    Ok(String::from_utf8(output.stdout)?)
+    pub fn get_email(&self) -> Result<String> {
+        Ok(
+            match self
+                .git(&["config", "--get", "user.email"])?
+                .strip_suffix(NEWLINE)
+            {
+                Some(s) => s.to_string(),
+                None => NONE.to_string(),
+            },
+        )
+    }
+
+    pub fn get_url(&self) -> Result<String> {
+        Ok(
+            match self
+                .git(&["config", "--get", "remote.origin.url"])?
+                .strip_suffix(NEWLINE)
+            {
+                Some(s) => s.to_string(),
+                None => NONE.to_string(),
+            },
+        )
+    }
+
+    fn git(&self, args: &[&str]) -> Result<String> {
+        let output = Command::new(&self.git_path)
+            .args(args)
+            .current_dir(&self.working_directory)
+            .output()?;
+        Ok(String::from_utf8(output.stdout)?)
+    }
 }
