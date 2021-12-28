@@ -4,6 +4,7 @@ use crate::error::Error;
 use crate::status::Status;
 use crate::target_gen::Targets;
 use anyhow::Result;
+use log::debug;
 use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -89,6 +90,10 @@ fn generate_report(repo_path: &Path, git_path: &Path, include_email: bool) -> Re
     };
     let status_as_string = format!("{:?}", &status).to_lowercase();
 
+    debug!(
+        "generating report for repository at {:?} on branch {} with status: {:?}",
+        &repo_path, &branch, &status
+    );
     Ok(Report {
         path: match repo_path.file_name() {
             Some(s) => match s.to_str() {
@@ -178,6 +183,10 @@ impl GitShim {
             .args(args)
             .current_dir(&self.working_directory)
             .output()?;
+        debug!(
+            "executed {:?} in {:?} with args {:?}: {:?}",
+            &self.git_path, &self.working_directory, args, output
+        );
         Ok(String::from_utf8(output.stdout)?)
     }
 }

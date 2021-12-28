@@ -8,7 +8,7 @@ function perform-uninstall {
             echo "[uninstall-gfold] ✅  deleted $FILE"
         fi
     done
-    echo "[uninstall-gfold] ✅  gfold has been uninstalled from your system"
+    echo "[uninstall-gfold] ✅  uninstallation/cleanup has completed successfully"
 
     if [ -f $HOME/.config/gfold/gfold.json ]; then
         echo "[uninstall-gfold] ⚠️  you may want to delete or backup the config file"
