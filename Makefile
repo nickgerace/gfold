@@ -34,6 +34,10 @@ clean:
 	cd $(MAKEPATH); cargo clean
 .PHONY: clean
 
+install:
+	cargo install --path $(MAKEPATH)
+.PHONY: install
+
 scan:
 	cd $(MAKEPATH); cargo +nightly udeps
 	cd $(MAKEPATH); cargo bloat --release
@@ -47,6 +51,9 @@ bench-loosely:
 	@echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 	@time $(NEW) -i ~/
 	@echo "============================================================="
+.PHONY: bench-loosely
+
+compare:
 	@du -h $(INSTALLED)
 	@du -h $(NEW)
-.PHONY: bench-loosely
+.PHONY: compare
