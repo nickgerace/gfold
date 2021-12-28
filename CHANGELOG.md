@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Ability to ignore config file options
 - Ability to print merged config options
+- Ability to specify path to `git`
 - Ability to store default path target in config file (defaults to current working directory)
 - Ability to use config file in `$HOME/.config/gfold/gfold.json` and `{FOLDERID_Profile}\.config\gfold\gfold.json`
 - Ability to use old display mode with `--classic` flag and store preference in config file

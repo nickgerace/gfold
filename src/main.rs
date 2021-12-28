@@ -3,6 +3,7 @@ use anyhow::Result;
 mod cli;
 mod color;
 mod config;
+mod consts;
 mod display;
 mod error;
 mod logging;

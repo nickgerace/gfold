@@ -3,6 +3,7 @@ use crate::{logging, run};
 use anyhow::Result;
 use argh::FromArgs;
 use std::env;
+use std::path::PathBuf;
 
 #[derive(FromArgs)]
 #[argh(description = "https://github.com/nickgerace/gfold
@@ -20,7 +21,7 @@ operating systems:
 struct Args {
     #[argh(
         positional,
-        description = "path to target directory (defaults to current working directory)"
+        description = "specify path to target directory (defaults to current working directory)"
     )]
     path: Option<String>,
 
@@ -34,6 +35,11 @@ struct Args {
         description = "enable debug logging (sets \"RUST_LOG\" to \"debug\")"
     )]
     debug: bool,
+    #[argh(
+        option,
+        description = "specify path to git binary rather than using git in PATH"
+    )]
+    git_path: Option<PathBuf>,
     #[argh(switch, description = "display merged config options")]
     print: bool,
     #[argh(switch, short = 'V', description = "display version information")]
@@ -66,6 +72,9 @@ fn merge_config_and_run(args: &Args) -> Result<()> {
     }
     if args.classic {
         config.display_mode = DisplayMode::Classic;
+    }
+    if let Some(s) = &args.git_path {
+        config.git_path = Some(s.clone());
     }
 
     match args.print {

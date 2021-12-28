@@ -1,6 +1,7 @@
 use crate::color;
+use crate::consts::NONE;
 use crate::error::Error;
-use crate::report::{Reports, NONE};
+use crate::report::Reports;
 use anyhow::Result;
 use std::path::Path;
 
