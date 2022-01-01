@@ -1,9 +1,10 @@
 # gfold
 
-[![tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=github&label=version&style=flat-square&color=blue)](https://github.com/nickgerace/gfold/releases/latest)
+[![build](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square&logo=github&logoColor=white)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
+[![tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=git&logoColor=white&label=version&style=flat-square&color=silver)](https://github.com/nickgerace/gfold/releases/latest)
 [![crates.io](https://img.shields.io/crates/v/gfold?style=flat-square&logo=rust&color=orange)](https://crates.io/crates/gfold)
-[![build](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
-[![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&color=purple)](./LICENSE)
+[![aur](https://img.shields.io/aur/version/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://aur.archlinux.org/packages/gfold/)
+[![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&logo=apache&color=silver)](./LICENSE)
 
 > This **README** is for `gfold 3.x` users.
 > Since `gfold 3.x` has not yet been released, contents of this **README** may be inapplicable to your version of `gfold`.
@@ -59,34 +60,26 @@ However, if you would like to target another directory, you can pass that path (
 
 ## Installation
 
-There are multiple methods for installing `gfold`.
+[![Packaging status](https://repology.org/badge/vertical-allrepos/gfold.svg)](https://repology.org/project/gfold/versions)
 
-### Homebrew (macOS only)
-
-You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
+**macOS users:** you can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
 
 ```bash
 brew install nickgerace/nickgerace/gfold
 ```
 
-**Please note:** the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
+_Note:_ the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
 
-### AUR
-
-You can use a Linux distribution that supports installing packages from the AUR, [Arch User Respository](https://aur.archlinux.org/), to install the following:
-
-- [**gfold**](https://aur.archlinux.org/packages/gfold/): builds from source
-- [**gfold-git**](https://aur.archlinux.org/packages/gfold-git/): development package
-
-Many people choose to use an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers), such as [paru](https://github.com/Morganamilo/paru), in order to install their AUR packages.
+**Arch Linux and AUR users:** you can use a Linux distribution that supports installing packages from the [Arch User Respository](https://aur.archlinux.org/) (AUR) to install either the [regular package](https://aur.archlinux.org/packages/gfold/) or the [development package](https://aur.archlinux.org/packages/gfold-git/).
 
 ```bash
 paru -S gfold
+paru -S gfold-git
 ```
 
-### Cargo (recommended)
+_Note:_ the above example uses [paru](https://github.com/Morganamilo/paru), which is an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) used to install packages from the AUR.
 
-You can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
+**Rust developers and Cargo users:** you can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
 
 ```bash
 cargo install --locked gfold
@@ -99,13 +92,22 @@ cargo install --locked cargo-update
 cargo install-update -a
 ```
 
-### Binary from a Release
+**Install from source:** if you want to install from source, and not from [crates.io](https://crates.io/crates/gfold), you can clone the repository and build `gfold`.
 
-If you do not want to use one of the above installation methods, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
+```bash
+git clone https://github.com/nickgerace/gfold.git
+cd gfold
+make install
+```
+
+**Download a binary:** if you do not want to use one of the above installation methods, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
 
 ```bash
 curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | bash
 ```
+
+_Note:_ the installation convenience script _does not verify the binary with a checksum_.
+Discretion is advised, including downloading and reading the script before execution.
 
 To uninstall `gfold` fully, after using this installation method, execute the following script:
 
@@ -114,11 +116,6 @@ curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstal
 ```
 
 The uninstall script can also be used for cleanup in the event of a failed install.
-
-#### Security Considerations
-
-Please note that the installation convenience script _does not verify the binary with a checksum_.
-Discretion is advised, including downloading and reading the script before execution.
 
 ## Usage
 

@@ -1,6 +1,5 @@
 MAKEPATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 NEW := $(MAKEPATH)/target/release/gfold
-INSTALLED := $(shell which gfold)
 
 .DEFAULT_GOAL := prepare
 
@@ -35,7 +34,7 @@ clean:
 .PHONY: clean
 
 install:
-	cargo install --path $(MAKEPATH)
+	cargo install --locked --path $(MAKEPATH)
 .PHONY: install
 
 scan:
@@ -47,13 +46,13 @@ scan:
 
 bench-loosely:
 	@echo "============================================================="
-	@time $(INSTALLED) ~/
+	@time $(shell which gfold) ~/
 	@echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 	@time $(NEW) -i ~/
 	@echo "============================================================="
 .PHONY: bench-loosely
 
 compare:
-	@du -h $(INSTALLED)
+	@du -h $(shell which gfold)
 	@du -h $(NEW)
 .PHONY: compare
