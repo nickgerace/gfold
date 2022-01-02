@@ -15,25 +15,22 @@
 
 ```
 % gfold
-📡 astrid ⇒ /home/neloth/src/astrid
-unclean (main)
-git@github.com:db/astrid.git
-neloth@housetelvanni.dev
-
-📡 fev ⇒ /home/neloth/src/fev
-bare (issue2277)
-none
-neloth@housetelvanni.dev
-
-📡 gb ⇒ /home/neloth/src/gb
-unpushed (dev)
-https://github.com/hrothgar/gb.git
-neloth@housetelvanni.dev
-
-📡 pam ⇒ /home/neloth/src/pam
-clean (main)
-https://github.com/onc/pam.git
-neloth@solstheimcommunityserver.org
+astrid ~ /home/neloth/src/astrid
+  unclean (main)
+  git@github.com:db/astrid.git
+  neloth@housetelvanni.dev
+fev ~ /home/neloth/src/fev
+  bare (issue2277)
+  none
+  neloth@housetelvanni.dev
+gb ~ /home/neloth/src/gb
+  unpushed (dev)
+  https://github.com/hrothgar/gb.git
+  neloth@housetelvanni.dev
+pam ~ /home/neloth/src/pam
+  clean (main)
+  https://github.com/onc/pam.git
+  neloth@solstheimcommunityserver.org
 ```
 
 The classic display mode can be toggled on with `--classic`.
