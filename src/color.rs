@@ -22,9 +22,24 @@ pub fn write_status(
     stdout.reset()
 }
 
-pub fn write_group_title(title: &str) -> io::Result<()> {
+pub fn write_bold(input: &str, newline: bool) -> io::Result<()> {
+    write_color(input, newline, ColorSpec::new().set_bold(true))
+}
+
+pub fn write_gray(input: &str, newline: bool) -> io::Result<()> {
+    write_color(
+        input,
+        newline,
+        ColorSpec::new().set_fg(Some(Color::Rgb(128, 128, 128))),
+    )
+}
+
+fn write_color(input: &str, newline: bool, color_spec: &mut ColorSpec) -> io::Result<()> {
     let mut stdout = StandardStream::stdout(ColorChoice::Always);
-    stdout.set_color(ColorSpec::new().set_bold(true))?;
-    writeln!(&mut stdout, "{}", title)?;
+    stdout.set_color(color_spec)?;
+    match newline {
+        true => writeln!(&mut stdout, "{}", input)?,
+        false => write!(&mut stdout, "{}", input)?,
+    }
     stdout.reset()
 }

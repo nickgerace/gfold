@@ -19,7 +19,7 @@ pub fn classic(reports: &Reports) -> Result<()> {
                 }
                 false => println!(),
             }
-            color::write_group_title(group.0)?;
+            color::write_bold(group.0, true)?;
         }
 
         let mut path_max = 0;
@@ -64,29 +64,24 @@ pub fn standard(reports: &Reports) -> Result<()> {
     all_reports.sort_by(|a, b| a.path.cmp(&b.path));
     all_reports.sort_by(|a, b| a.status_as_string.cmp(&b.status_as_string));
 
-    let mut first = true;
     for report in all_reports {
-        match first {
-            true => {
-                first = false;
-            }
-            false => println!(),
-        }
+        color::write_bold(&report.path, false)?;
 
-        print!("📡 ");
         let full_path = Path::new(&report.parent).join(&report.path);
-        color::write_group_title(&format!(
-            "{} ⇒ {}",
-            &report.path,
+        let full_path_formatted = format!(
+            " ~ {}",
             full_path
                 .to_str()
                 .ok_or_else(|| Error::PathToStrConversionFailure(full_path.clone()))?
-        ))?;
+        );
+        color::write_gray(&full_path_formatted, true)?;
+
+        print!("  ");
         color::write_status(&report.status, &report.status_as_string, PAD)?;
         println!(
             " ({})
-{}
-{}",
+  {}
+  {}",
             report.branch,
             report.url,
             match &report.email {
