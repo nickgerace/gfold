@@ -6,7 +6,7 @@ use std::env;
 use std::path::PathBuf;
 
 #[derive(FromArgs)]
-#[argh(description = "https://github.com/nickgerace/gfold
+#[argh(description = "More information: https://github.com/nickgerace/gfold
 
 This application helps you keep track of multiple Git repositories via CLI.
 By default, it displays relevant information for all repos in the current
@@ -25,10 +25,11 @@ struct Args {
     )]
     path: Option<String>,
 
-    #[argh(switch, short = 'i', description = "ignore config file settings")]
-    ignore_config_file: bool,
-
-    #[argh(switch, description = "display results with classic formatting")]
+    #[argh(
+        switch,
+        short = 'c',
+        description = "display results with classic formatting"
+    )]
     classic: bool,
     #[argh(
         switch,
@@ -40,7 +41,12 @@ struct Args {
         description = "specify path to git binary rather than using git in PATH"
     )]
     git_path: Option<PathBuf>,
-    #[argh(switch, description = "display merged config options")]
+    #[argh(switch, short = 'i', description = "ignore config file settings")]
+    ignore_config_file: bool,
+    #[argh(
+        switch,
+        description = "display config options chosen, including those from the config file if they exist"
+    )]
     print: bool,
     #[argh(switch, short = 'V', description = "display version information")]
     version: bool,
@@ -53,12 +59,10 @@ pub fn parse() -> Result<()> {
     logging::init(args.debug);
 
     match args.version {
-        true => {
-            println!("gfold {}", env!("CARGO_PKG_VERSION"));
-            Ok(())
-        }
-        false => merge_config_and_run(&args),
+        true => println!("gfold {}", env!("CARGO_PKG_VERSION")),
+        false => merge_config_and_run(&args)?,
     }
+    Ok(())
 }
 
 fn merge_config_and_run(args: &Args) -> Result<()> {
