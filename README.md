@@ -6,11 +6,6 @@
 [![aur](https://img.shields.io/aur/version/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://aur.archlinux.org/packages/gfold/)
 [![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&logo=apache&color=silver)](./LICENSE)
 
-> This **README** is for `gfold 3.x` users.
-> Since `gfold 3.x` has not yet been released, contents of this **README** may be inapplicable to your version of `gfold`.
->
-> For the latest, full release of `gfold 2.x`, please refer to the [**README** corresponding to the latest, full release](https://github.com/nickgerace/gfold/blob/2.0.2/README.md).
-
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
 ```
@@ -79,13 +74,13 @@ _Note:_ the above example uses [paru](https://github.com/Morganamilo/paru), whic
 **Rust developers and Cargo users:** you can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
 
 ```bash
-cargo install --locked gfold
+cargo install gfold
 ```
 
 Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
 
 ```bash
-cargo install --locked cargo-update
+cargo install cargo-update
 cargo install-update -a
 ```
 
@@ -113,6 +108,8 @@ curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstal
 ```
 
 The uninstall script can also be used for cleanup in the event of a failed install.
+
++**Don't see your preferred package manager?:** please [file an issue](https://github.com/nickgerace/gfold/issues/new/choose)!
 
 ## Usage
 

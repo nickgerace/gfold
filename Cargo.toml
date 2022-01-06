@@ -10,7 +10,7 @@ readme = "README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
 edition = "2021"
-version = "3.0.0-rc.4"
+version = "3.0.0"
 
 [dependencies]
 anyhow = "1"
