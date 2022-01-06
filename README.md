@@ -3,7 +3,7 @@
 [![build](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square&logo=github&logoColor=white)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
 [![tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=git&logoColor=white&label=version&style=flat-square&color=silver)](https://github.com/nickgerace/gfold/releases/latest)
 [![crates.io](https://img.shields.io/crates/v/gfold?style=flat-square&logo=rust&color=orange)](https://crates.io/crates/gfold)
-[![aur](https://img.shields.io/aur/version/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://aur.archlinux.org/packages/gfold/)
+[![arch linux](https://img.shields.io/archlinux/v/community/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/community/x86_64/gfold/)
 [![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&logo=apache&color=silver)](./LICENSE)
 
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
@@ -62,10 +62,15 @@ brew install nickgerace/nickgerace/gfold
 
 _Note:_ the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
 
-**Arch Linux and AUR users:** you can use a Linux distribution that supports installing packages from the [Arch User Respository](https://aur.archlinux.org/) (AUR) to install either the [regular package](https://aur.archlinux.org/packages/gfold/) or the [development package](https://aur.archlinux.org/packages/gfold-git/).
+**Arch Linux users:** you can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [community repository](https://archlinux.org/packages/community/x86_64/gfold/):
 
 ```bash
-paru -S gfold
+pacman -S gfold
+```
+
+[Development (VCS) package](https://aur.archlinux.org/packages/gfold-git/) can be installed from the AUR:
+
+```bash
 paru -S gfold-git
 ```
 
