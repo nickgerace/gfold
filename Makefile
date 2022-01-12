@@ -44,6 +44,10 @@ scan:
 	cd $(MAKEPATH); cargo audit
 .PHONY: scan
 
+msrv:
+	cd $(MAKEPATH); cargo msrv
+.PHONY: msrv
+
 bench-loosely:
 	@echo "============================================================="
 	@time $(shell which gfold) ~/

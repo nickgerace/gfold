@@ -11,6 +11,7 @@ repository = "https://github.com/nickgerace/gfold/"
 
 edition = "2021"
 version = "3.0.0"
+rust-version = "1.56.1"
 
 [dependencies]
 anyhow = "1"
