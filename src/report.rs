@@ -2,18 +2,22 @@ use crate::config::DisplayMode;
 use crate::consts::NONE;
 use crate::error::Error;
 use crate::status::Status;
-use crate::target_gen::Targets;
 use anyhow::Result;
-use log::debug;
+use log::{debug, error, warn};
 use rayon::prelude::*;
 use std::collections::BTreeMap;
+use std::fs::DirEntry;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::{fs, io};
 
 #[cfg(target_os = "windows")]
 const NEWLINE: &str = "\r\n";
 #[cfg(not(target_os = "windows"))]
 const NEWLINE: &str = "\n";
+
+// Use a BTreeMap over a HashMap for sorted keys.
+pub type Reports = BTreeMap<String, Vec<Report>>;
 
 #[derive(Clone, Debug)]
 pub struct Report {
@@ -28,48 +32,39 @@ pub struct Report {
     pub email: Option<String>,
 }
 
-pub struct Reports(pub BTreeMap<String, Vec<Report>>);
+pub fn generate_reports(
+    path: &Path,
+    display_mode: &DisplayMode,
+    git_path: &Option<PathBuf>,
+) -> Result<Reports> {
+    let include_email = match display_mode {
+        DisplayMode::Standard => true,
+        DisplayMode::Classic => false,
+    };
+    let git_path = match git_path {
+        Some(s) => s.canonicalize()?,
+        None => Path::new("git").to_path_buf(),
+    };
 
-impl Reports {
-    pub fn new(
-        targets: Targets,
-        display_mode: &DisplayMode,
-        git_path: &Option<PathBuf>,
-    ) -> Result<Reports> {
-        let include_email = match display_mode {
-            DisplayMode::Standard => true,
-            DisplayMode::Classic => false,
-        };
-        let git_path = match git_path {
-            Some(s) => s.canonicalize()?,
-            None => Path::new("git").to_path_buf(),
-        };
+    let unprocessed = recursive_target_gen(path)?
+        .into_par_iter()
+        .map(|path| generate_report(&path, &git_path, include_email))
+        .collect::<Vec<Result<Report>>>();
 
-        let unprocessed = targets
-            .0
-            .into_par_iter()
-            .map(|path| generate_report(&path, &git_path, include_email))
-            .collect::<Vec<Result<Report>>>();
-
-        // Use a BTreeMap over a HashMap for sorted keys.
-        let mut processed: Reports = Reports(BTreeMap::new());
-        for wrapped_report in unprocessed {
-            match wrapped_report {
-                Ok(o) => {
-                    let report = o.clone();
-                    if let Some(mut s) = processed
-                        .0
-                        .insert(report.clone().parent, vec![report.clone()])
-                    {
-                        s.push(report.clone());
-                        processed.0.insert(report.parent, s);
-                    }
+    let mut processed = Reports::new();
+    for wrapped_report in unprocessed {
+        match wrapped_report {
+            Ok(o) => {
+                let report = o.clone();
+                if let Some(mut s) = processed.insert(report.clone().parent, vec![report.clone()]) {
+                    s.push(report.clone());
+                    processed.insert(report.parent, s);
                 }
-                Err(e) => return Err(e),
             }
+            Err(e) => return Err(e),
         }
-        Ok(processed)
     }
+    Ok(processed)
 }
 
 fn generate_report(repo_path: &Path, git_path: &Path, include_email: bool) -> Result<Report> {
@@ -189,4 +184,59 @@ impl GitShim {
         );
         Ok(String::from_utf8(output.stdout)?)
     }
+}
+
+fn recursive_target_gen(path: &Path) -> Result<Vec<PathBuf>> {
+    let mut results = vec![];
+    let entries: Vec<DirEntry> = match fs::read_dir(&path) {
+        Ok(o) => o.filter_map(|r| r.ok()).collect(),
+        Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
+            warn!("{}: {}", e, &path.display());
+            return Ok(results);
+        }
+        Err(e) => {
+            error!("{}: {}", e, &path.display());
+            return Ok(results);
+        }
+    };
+
+    let targets = entries
+        .par_iter()
+        .map(|entry| {
+            if entry.file_type()?.is_dir() && !is_hidden(entry) {
+                return match has_git_subdir(entry) {
+                    true => Ok(Some(vec![entry.path()])),
+                    false => Ok(Some(recursive_target_gen(&entry.path())?)),
+                };
+            }
+            Ok(None)
+        })
+        .collect::<Vec<Result<Option<Vec<PathBuf>>>>>();
+
+    for target in targets {
+        match target {
+            Ok(o) => {
+                if let Some(mut s) = o {
+                    if !s.is_empty() {
+                        results.append(&mut s);
+                    }
+                }
+            }
+            Err(e) => return Err(e),
+        }
+    }
+    Ok(results)
+}
+
+fn is_hidden(entry: &DirEntry) -> bool {
+    entry
+        .file_name()
+        .to_str()
+        .map(|s| s.starts_with('.'))
+        .unwrap_or(false)
+}
+
+fn has_git_subdir(entry: &DirEntry) -> bool {
+    let suspect = entry.path().join(".git");
+    suspect.exists() && suspect.is_dir()
 }

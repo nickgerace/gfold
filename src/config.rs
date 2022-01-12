@@ -52,7 +52,7 @@ impl Config {
     // Within this method, we check if the config file is empty before deserializing it. Users
     // should be able to proceed with empty config files. If empty, then we fall back to the
     // "EntryConfig" default before conversion.
-    pub fn try_config() -> Result<Config> {
+    pub fn try_config() -> Result<Self> {
         let home = dirs::home_dir().ok_or(Error::HomeDirNotFound)?;
         let entry_config = match File::open(home.join(".config").join("gfold").join("gfold.json")) {
             Ok(o) => match o.metadata()?.len() {
@@ -68,13 +68,13 @@ impl Config {
                 EntryConfig::default()
             }
         };
-        entry_config_to_config(&entry_config)
+        Self::from_entry_config(&entry_config)
     }
 
     // This method does not look for the config file and uses "EntryConfig"'s defaults instead.
     // It is best for testing use and when the user wishes to skip config file lookup.
-    pub fn new() -> Result<Config> {
-        entry_config_to_config(&EntryConfig::default())
+    pub fn new() -> Result<Self> {
+        Self::from_entry_config(&EntryConfig::default())
     }
 
     // This method prints the full config (merged with config file, as needed) as valid JSON.
@@ -82,19 +82,18 @@ impl Config {
         println!("{}", serde_json::to_string_pretty(&self)?);
         Ok(())
     }
-}
 
-// Internal conversion function for private "EntryConfig" objects to "Config" objects.
-fn entry_config_to_config(entry_config: &EntryConfig) -> Result<Config> {
-    Ok(Config {
-        path: match &entry_config.path {
-            Some(s) => s.clone(),
-            None => env::current_dir()?.canonicalize()?,
-        },
-        display_mode: match &entry_config.display_mode {
-            Some(s) => s.clone(),
-            None => DisplayMode::Standard,
-        },
-        git_path: entry_config.git_path.clone(),
-    })
+    fn from_entry_config(entry_config: &EntryConfig) -> Result<Self> {
+        Ok(Config {
+            path: match &entry_config.path {
+                Some(s) => s.clone(),
+                None => env::current_dir()?.canonicalize()?,
+            },
+            display_mode: match &entry_config.display_mode {
+                Some(s) => s.clone(),
+                None => DisplayMode::Standard,
+            },
+            git_path: entry_config.git_path.clone(),
+        })
+    }
 }
