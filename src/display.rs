@@ -8,9 +8,9 @@ use std::path::Path;
 const PAD: usize = 2;
 
 pub fn classic(reports: &Reports) -> Result<()> {
-    let length = reports.0.keys().len();
+    let length = reports.keys().len();
     let mut first = true;
-    for group in &reports.0 {
+    for group in reports {
         // FIXME: make group title matching less cumbersome.
         if length > 1 {
             match first {
@@ -58,7 +58,7 @@ pub fn classic(reports: &Reports) -> Result<()> {
 
 pub fn standard(reports: &Reports) -> Result<()> {
     let mut all_reports = Vec::new();
-    for grouped_report in &reports.0 {
+    for grouped_report in reports {
         all_reports.append(&mut grouped_report.1.clone());
     }
     all_reports.sort_by(|a, b| a.path.cmp(&b.path));

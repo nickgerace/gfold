@@ -1,5 +1,4 @@
 MAKEPATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-NEW := $(MAKEPATH)/target/release/gfold
 
 .DEFAULT_GOAL := prepare
 
@@ -49,14 +48,10 @@ msrv:
 .PHONY: msrv
 
 bench-loosely:
-	@echo "============================================================="
-	@time $(shell which gfold) ~/
-	@echo "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-	@time $(NEW) -i ~/
-	@echo "============================================================="
+	REPOPATH=$(MAKEPATH) $(MAKEPATH)/scripts/bench-loosely.sh
 .PHONY: bench-loosely
 
-compare:
+compare: release
 	@du -h $(shell which gfold)
-	@du -h $(NEW)
+	@du -h $(MAKEPATH)/target/release/gfold
 .PHONY: compare
