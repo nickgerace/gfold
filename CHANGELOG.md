@@ -9,9 +9,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 <!-- The latest version contains all changes. -->
 
+### Added
+
+- [git2-rs](https://github.com/rust-lang/git2-rs), which replaces `git` subcommand usage
+
 ### Changed
 
 - Major performance improvements due to moving from sequential target generation to nested, parallel iterators for target generation
+
+### Removed
+
+- Git path option for CLI and config file
+- `git` subcommand usage
+
+### Notes
+
+- Even though `git` subcommands were used over **git2-rs** to reduce binary size, significant speed increases could only be achieved by using the latter.
+- Technically, removing the Git path option from the CLI and the config file could require a major version increase.
+- Given the immaturity of `3.0.0`, the (likely) infrequent use of the Git path option, and the overall structure/behavior remaining intact, the removal of this config option only necessitates a minor version increase.
+- For technical details on the field removal, please refer to the [diff between releases](https://github.com/nickgerace/gfold/compare/3.0.0...3.1.0).
 
 ### [3.0.0] - 2022-01-06
 

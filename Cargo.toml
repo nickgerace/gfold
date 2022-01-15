@@ -17,6 +17,7 @@ rust-version = "1.56.1"
 anyhow = "1"
 argh = "0"
 dirs = "4"
+git2 = { version = "0", default_features = false }
 log = "0"
 rayon = "1"
 serde = { version = "1", features = ["derive"] }
