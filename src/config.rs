@@ -14,7 +14,6 @@ use std::path::PathBuf;
 pub struct Config {
     pub path: PathBuf,
     pub display_mode: DisplayMode,
-    pub git_path: Option<PathBuf>,
 }
 
 // "EntryConfig" is a reflection of "Config" with its fields wrapped as "Option" types. This is to
@@ -26,7 +25,6 @@ pub struct Config {
 struct EntryConfig {
     pub path: Option<PathBuf>,
     pub display_mode: Option<DisplayMode>,
-    pub git_path: Option<PathBuf>,
 }
 
 // "DisplayMode" dictates which way the results gathered should be displayed to the user via
@@ -93,7 +91,6 @@ impl Config {
                 Some(s) => s.clone(),
                 None => DisplayMode::Standard,
             },
-            git_path: entry_config.git_path.clone(),
         })
     }
 }

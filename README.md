@@ -51,7 +51,7 @@ By default, `gfold` looks at every Git repository via traversal from the current
 If you would like to target another directory, you can pass its path (relative or absolute) as the first argument or change the default path in the config file.
 
 After traversal, `gfold` leverages [rayon](https://github.com/rayon-rs/rayon) to perform concurrent, read-only analysis of all Git repositories detected.
-Analysis is performed with the `git` CLI rather than [libgit2](https://github.com/rust-lang/git2-rs) to reduce binary size.
+Analysis is performed by leveraging the [git2-rs](https://github.com/rust-lang/git2-rs) library.
 
 ## Usage
 
@@ -96,7 +96,6 @@ Here are the contents of the resulting config file:
 {
   "path": "/home/neloth",
   "display_mode": "Classic",
-  "git_path": null
 }
 ```
 
