@@ -2,7 +2,7 @@ use crate::config::DisplayMode;
 use crate::error::Error;
 use crate::status::Status;
 use anyhow::Result;
-use git2::{Config, ErrorCode, Reference, Repository, StatusOptions};
+use git2::{ErrorCode, Reference, Repository, StatusOptions};
 use log::{debug, error, trace, warn};
 use rayon::prelude::*;
 use std::collections::BTreeMap;
@@ -175,10 +175,7 @@ fn generate_report(repo_path: &Path, include_email: bool) -> Result<Report> {
         },
         origin.url().map(|s| s.to_string()),
         match include_email {
-            true => match get_email(Some(&repo_path.join(".git").join("config"))) {
-                Some(email) => Some(email),
-                None => get_email(None),
-            },
+            true => get_email(&repo),
             false => None,
         },
     ))
@@ -199,15 +196,11 @@ fn is_unpushed(repo: &Repository, head: &Reference) -> Result<bool> {
     )
 }
 
-// Find the "user.email" value for a Git config. If a path is provided, try to open the config at
-// that path. Otherwise, try the default global Git config. Absorb and log any and all errors
-// as the email field is non-critical to our final results.
-fn get_email(config_path: Option<&Path>) -> Option<String> {
-    let config = match config_path {
-        Some(v) => Config::open(v),
-        None => Config::open_default(),
-    };
-    let config = match config {
+// Find the "user.email" value in the local or global Git config. The "config" method for a
+// "git2::Repository" object will look for a local config first and fallback to global, as needed.
+// Absorb and log any and all errors as the email field is non-critical to our final results.
+fn get_email(repository: &Repository) -> Option<String> {
+    let config = match repository.config() {
         Ok(v) => v,
         Err(e) => {
             trace!("ignored error: {}", e);
