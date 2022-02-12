@@ -55,3 +55,7 @@ compare: release
 	@du -h $(shell which gfold)
 	@du -h $(MAKEPATH)/target/release/gfold
 .PHONY: compare
+
+publish-dry-run:
+	cargo publish --dry-run
+.PHONY: publish-dry-run
