@@ -10,7 +10,7 @@ readme = "README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
 edition = "2021"
-version = "3.1.0-rc.1"
+version = "3.1.0-rc.2"
 rust-version = "1.56.1"
 
 [dependencies]
