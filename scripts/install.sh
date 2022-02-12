@@ -1,11 +1,25 @@
 #!/usr/bin/env bash
 set -e
 
+function log {
+    if [ ! "$1" ] || [ "$1" == "" ]; then
+        die "internal error: log message empty: please file an issue: https://github.com/nickgerace/gfold/issues/new"
+    fi
+    echo "[gfold-installer] $1"
+}
+
+function die {
+    if [ ! "$1" ] || [ "$1" == "" ]; then
+        die "internal error: error message empty: please file an issue: https://github.com/nickgerace/gfold/issues/new"
+    fi
+    log "error: $1"
+    exit 1
+}
+
 function check-dependencies {
     for BINARY in "jq" "wget" "curl"; do
         if ! [ "$(command -v ${BINARY})" ]; then
-            echo "[install-gfold] 🚫  \"$BINARY\" must be installed and in PATH"
-            exit 1
+            die "\"$BINARY\" must be installed and in PATH"
         fi
     done
 }
@@ -17,9 +31,7 @@ function perform-install {
     elif [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "x86_64" ]; then
         INSTALL_OS="darwin"
     else
-        echo "[install-gfold] 🚫  must execute on Linux or Darwin x86_64 host"
-        echo "[install-gfold] 🚫  for more installation methods: https://github.com/nickgerace/gfold"
-        exit 1
+        die "must execute on Linux or Darwin x86_64 host (for more installation methods, refer to the docs: https://github.com/nickgerace/gfold)"
     fi
 
     LATEST=$(curl -s https://api.github.com/repos/nickgerace/gfold/releases/latest | jq -r ".tag_name")
@@ -34,12 +46,12 @@ function perform-install {
     fi
     mv /tmp/gfold /usr/local/bin/gfold
 
-    echo "[install-gfold] ✅  gfold has been installed to /usr/local/bin/gfold"
     if [ $INSTALL_OS = "linux-gnu" ]; then
-        echo "[install-gfold] ⚠️  assuming glibc (GNU) and not another libc (e.g. musl-libc)"
-        echo "[install-gfold] ⚠️  if using another libc, you may need to choose another installation method"
-        echo "[install-gfold] ⚠️  for more information: https://github.com/nickgerace/gfold"
+        log "assuming glibc (GNU) and not another libc (e.g. musl-libc)"
+        log "if using another libc, you may need to choose another installation method"
+        log "for more information, refer to the docs: https://github.com/nickgerace/gfold"
     fi
+    log "gfold has been installed to /usr/local/bin/gfold"
 }
 
 check-dependencies

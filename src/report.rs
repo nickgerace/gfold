@@ -10,7 +10,7 @@ use std::fs::DirEntry;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
-// Use a BTreeMap over a HashMap for sorted keys.
+/// "Reports" uses a BTreeMap over a HashMap for sorted keys.
 pub type Reports = BTreeMap<Option<String>, Vec<Report>>;
 
 #[derive(Clone, Debug)]
@@ -19,11 +19,12 @@ pub struct Report {
     pub branch: String,
     pub status: Status,
 
-    // Fields that can report NONE with impeding execution.
+    /// Parent can report "NONE" without impeding execution.
     pub parent: Option<String>,
+    /// URL can report "NONE" without impeding execution.
     pub url: Option<String>,
 
-    // Optional field that's only used in DisplayMode::Standard.
+    /// Optional field that's only used in DisplayMode::Standard.
     pub email: Option<String>,
 }
 
@@ -111,9 +112,9 @@ fn recursive_target_gen(path: &Path) -> io::Result<Vec<PathBuf>> {
     Ok(results)
 }
 
-// Ensure the entry is a directory and is not hidden. Then, check if a Git sub directory exists,
-// which will indicate if the entry is a repository. Finally, generate targets based on that
-// repository.
+/// Ensure the entry is a directory and is not hidden. Then, check if a Git sub directory exists,
+/// which will indicate if the entry is a repository. Finally, generate targets based on that
+/// repository.
 fn process_entry(entry: &DirEntry) -> Target {
     match entry.file_type()?.is_dir()
         && !entry
@@ -185,8 +186,13 @@ fn is_unpushed(repo: &Repository, head: &Reference) -> Result<bool> {
     let local_head = head.peel_to_commit()?;
     let remote = format!(
         "origin/{}",
-        head.shorthand()
-            .ok_or(Error::GitReferenceShorthandInvalid)?
+        match head.shorthand() {
+            Some(v) => v,
+            None => {
+                trace!("assuming unpushed; could not determine shorthand for head");
+                return Ok(true);
+            }
+        }
     );
     let remote_head = repo
         .resolve_reference_from_short_name(&remote)?
@@ -196,9 +202,9 @@ fn is_unpushed(repo: &Repository, head: &Reference) -> Result<bool> {
     )
 }
 
-// Find the "user.email" value in the local or global Git config. The "config" method for a
-// "git2::Repository" object will look for a local config first and fallback to global, as needed.
-// Absorb and log any and all errors as the email field is non-critical to our final results.
+/// Find the "user.email" value in the local or global Git config. The "config" method for a
+/// "git2::Repository" object will look for a local config first and fallback to global, as needed.
+/// Absorb and log any and all errors as the email field is non-critical to our final results.
 fn get_email(repository: &Repository) -> Option<String> {
     let config = match repository.config() {
         Ok(v) => v,
