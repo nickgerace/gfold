@@ -6,6 +6,11 @@
 [![arch linux](https://img.shields.io/archlinux/v/community/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/community/x86_64/gfold/)
 [![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&logo=apache&color=silver)](./LICENSE)
 
+> This **README** is for users building from `main` in anticipation of `gfold 4.0.0`.
+> Since `gfold 4.0.0` has not yet been released, contents of this **README** may be inapplicable to your version of `gfold`.
+>
+> For the latest, full release (`gfold 3.0.0`), please refer to the [**README** most closely corresponding to it (`92e976b207`)](https://github.com/nickgerace/gfold/blob/92e976b207d7c1074bb87432e0e6ca3cd6575cf3/README.md).
+
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
 ```
@@ -41,6 +46,12 @@ prime   clean     issue2287  git@github.com:bos/prime.git
 ```
 
 If you'd prefer to use the classic display mode by default, and avoid setting the flag every time, you can set it in the config file (see **Usage** section).
+
+## Upcoming Release
+
+The next version of `gfold` will be `gfold 4.0.0`.
+While it might seem odd to bump the major version field so soon, user feedback and feature requests have been front and center for the next release, and setting up `gfold` for the future requires bumping that field.
+This **README** reflects changes in between the latest release (`gfold 3.0.0`) and the next release (`gfold 4.0.0`).
 
 ## Description
 

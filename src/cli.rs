@@ -15,8 +15,8 @@ While CLI options are prioritized, default options will fallback to the config
 file if it exists. Here is the config file lookup locations for some common
 operating systems:
 
-  macOS/linux       $HOME/.config/gfold/gfold.json
-  windows           {{FOLDERID_Profile}}\\.config\\gfold\\gfold.json")]
+  macOS/Linux       $HOME/.config/gfold/gfold.json
+  Windows           {{FOLDERID_Profile}}\\.config\\gfold\\gfold.json")]
 struct Args {
     #[argh(
         positional,
