@@ -1,10 +1,9 @@
 use crate::error::Error;
-use anyhow::{Context, Result};
-use log::warn;
+use anyhow::Result;
+
 use serde::{Deserialize, Serialize};
+
 use std::env;
-use std::fs::File;
-use std::io::BufReader;
 use std::path::PathBuf;
 
 // "Config" is the actual type consumed through the codebase. It is boostrapped via its public
@@ -52,19 +51,11 @@ impl Config {
     // "EntryConfig" default before conversion.
     pub fn try_config() -> Result<Self> {
         let home = dirs::home_dir().ok_or(Error::HomeDirNotFound)?;
-        let entry_config = match File::open(home.join(".config").join("gfold").join("gfold.json")) {
-            Ok(o) => match o.metadata()?.len() {
-                len if len > 0 => {
-                    let reader = BufReader::new(o);
-                    serde_json::from_reader(reader)
-                        .context("config file's contents are likely invalid JSON")?
-                }
-                _ => EntryConfig::default(),
-            },
-            Err(e) => {
-                warn!("{}", e);
-                EntryConfig::default()
-            }
+        let path = home.join(".config").join("gfold.toml");
+        let contents = std::fs::read_to_string(path)?;
+        let entry_config = match contents.is_empty() {
+            true => EntryConfig::default(),
+            false => toml::from_str(&contents)?,
         };
         Self::from_entry_config(&entry_config)
     }
@@ -75,9 +66,9 @@ impl Config {
         Self::from_entry_config(&EntryConfig::default())
     }
 
-    // This method prints the full config (merged with config file, as needed) as valid JSON.
+    // This method prints the full config (merged with config file, as needed) as valid, pretty TOML.
     pub fn print(self) -> Result<()> {
-        println!("{}", serde_json::to_string_pretty(&self)?);
+        print!("{}", toml::to_string_pretty(&self)?);
         Ok(())
     }
 
