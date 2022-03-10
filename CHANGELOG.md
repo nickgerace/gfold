@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Config file location from `<prefix>/gfold/gfold.json` to `<prefix>/gfold.toml`
+- Config file type from JSON to TOML
 - Major performance improvements due to moving from sequential target generation to nested, parallel iterators for target generation
 
 ### Removed

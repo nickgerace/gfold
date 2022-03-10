@@ -25,8 +25,8 @@ function perform-uninstall {
     done
     log "uninstallation and cleanup has completed successfully"
 
-    if [ -f $HOME/.config/gfold/gfold.json ]; then
-        log "you may want to delete or backup the config file: $HOME/.config/gfold/gfold.json"
+    if [ -f $HOME/.config/gfold.toml ]; then
+        log "you may want to delete or backup the config file: $HOME/.config/gfold.toml"
     fi
 }
 

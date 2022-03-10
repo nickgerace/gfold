@@ -82,13 +82,13 @@ gfold ../../this/is/a/relative/path
 Upon execution, `gfold` will look for a config file at the following path on macOS, Linux and similar operating systems:
 
 ```bash
-$HOME/.config/gfold/gfold.json
+$HOME/.config/gfold.toml
 ```
 
 On Windows, the config file is located at the following path:
 
 ```powershell
-{FOLDERID_Profile}\.config\gfold\gfold.json
+{FOLDERID_Profile}\.config\gfold.toml
 ```
 
 Creating and using the config file is entirely optional, and you can ignore your config file at any time using the `-i` flag.
@@ -96,7 +96,7 @@ Creating and using the config file is entirely optional, and you can ignore your
 Here is an example creation workflow for a config file:
 
 ```bash
-gfold --classic ~/ --print > $HOME/.config/gfold/gfold.json
+gfold --classic ~/ --print > $HOME/.config/gfold.toml
 ```
 
 This config file will default to the classic display mode and set the default path to `$HOME`, rather than the current working directory.
@@ -114,7 +114,7 @@ You can back up a config file and track its history with `git`.
 On macOS, Linux, and most systems, you can link the file back to a `git` repository.
 
 ```bash
-ln -s path/to/repository/gfold.json $HOME/.config/gfold/gfold.json
+ln -s path/to/repository/gfold.toml $HOME/.config/gfold.toml
 ```
 
 Now, you can update the config file within your repository and include the linking as part of your environment setup workflow.
