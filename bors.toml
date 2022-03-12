@@ -1,4 +1,9 @@
+status = [
+    "Lint",
+    "Clippy, Test, and Build (ubuntu-latest)",
+    "Build (windows-latest)",
+    "Build (macos-latest)"
+]
 timeout_sec = 900
-status = ["Lint and Test", "Build %"]
 delete_merged_branches = true
 update_base_for_deletes	= true

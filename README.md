@@ -5,6 +5,7 @@
 [![crates.io](https://img.shields.io/crates/v/gfold?style=flat-square&logo=rust&color=orange)](https://crates.io/crates/gfold)
 [![arch linux](https://img.shields.io/archlinux/v/community/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/community/x86_64/gfold/)
 [![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&logo=apache&color=silver)](./LICENSE)
+[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/42509)
 
 > This **README** is for users building from `main` in anticipation of `gfold 4.0.0`.
 > Since `gfold 4.0.0` has not yet been released, contents of this **README** may be inapplicable to your version of `gfold`.
