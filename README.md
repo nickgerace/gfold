@@ -103,11 +103,9 @@ This config file will default to the classic display mode and set the default pa
 
 Here are the contents of the resulting config file:
 
-```json
-{
-  "path": "/home/neloth",
-  "display_mode": "Classic",
-}
+```toml
+path = '/home/neloth'
+display_mode = 'Classic'
 ```
 
 You can back up a config file and track its history with `git`.

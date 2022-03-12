@@ -1,16 +1,22 @@
-name: push
+name: ci
 on:
   push:
-    branches-exclude:
-      - "main"
+    branches:
+      - staging
+      - trying
+  pull_request:
+    branches:
+      - main
     paths:
       - "**.rs"
       - "Cargo.*"
       - "rustfmt.toml"
-
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-
-  prepare:
+  test:
+    name: "Lint and Test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,6 +26,7 @@ jobs:
           toolchain: stable
           override: true
           components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
@@ -31,8 +38,8 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
-
   build:
+    name: "Build"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -44,6 +51,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         with:
           command: build

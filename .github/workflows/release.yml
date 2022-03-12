@@ -1,11 +1,11 @@
-name: tag
+name: release
 on:
   push:
     tags:
       - "*"
 jobs:
-
-  publish:
+  release:
+    name: "Release"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
