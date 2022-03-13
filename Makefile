@@ -9,24 +9,22 @@ prepare:
 	cd $(MAKEPATH); cargo clippy --all-features --all-targets
 .PHONY: prepare
 
-ci: lint test
-.PHONY: ci
-
-test:
-	cd $(MAKEPATH); cargo test -- --nocapture
-.PHONY: test
-
 lint:
 	cd $(MAKEPATH); cargo +nightly fmt --all -- --check
 	cd $(MAKEPATH); cargo clippy -- -D warnings
 .PHONY: lint
 
-release:
-	cd $(MAKEPATH); cargo build --release
-.PHONY: release
+test:
+	cd $(MAKEPATH); cargo nextest run --success-output immediate
+.PHONY: test
 
-build: release
-.PHONY: build
+scan:
+	cd $(MAKEPATH); cargo +nightly udeps
+	cd $(MAKEPATH); cargo bloat --release
+	cd $(MAKEPATH); cargo bloat --release --crates
+	cd $(MAKEPATH); cargo audit
+	cd $(MAKEPATH); cargo msrv
+.PHONY: scan
 
 clean:
 	cd $(MAKEPATH); cargo clean
@@ -36,26 +34,11 @@ install:
 	cargo install --locked --path $(MAKEPATH)
 .PHONY: install
 
-scan:
-	cd $(MAKEPATH); cargo +nightly udeps
-	cd $(MAKEPATH); cargo bloat --release
-	cd $(MAKEPATH); cargo bloat --release --crates
-	cd $(MAKEPATH); cargo audit
-.PHONY: scan
-
-msrv:
-	cd $(MAKEPATH); cargo msrv
-.PHONY: msrv
-
 bench-loosely:
-	REPOPATH=$(MAKEPATH) $(MAKEPATH)/scripts/bench-loosely.sh
+	$(MAKEPATH)/scripts/bench-loosely.sh
 .PHONY: bench-loosely
 
-compare: release
-	@du -h $(shell which gfold)
+size:
+	cd $(MAKEPATH); cargo build --release
 	@du -h $(MAKEPATH)/target/release/gfold
-.PHONY: compare
-
-publish-dry-run:
-	cargo publish --dry-run
-.PHONY: publish-dry-run
+.PHONY: size

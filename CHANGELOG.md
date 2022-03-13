@@ -11,25 +11,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- [Bors](https://bors.tech/) to avoid merge skew / semantic merge conflicts
+- Color mode option with the following choices: "always", "compatibility" and "never" 
+- Documentation comments almost everywhere for `cargo doc`
 - [git2-rs](https://github.com/rust-lang/git2-rs), which replaces `git` subcommand usage
+  - Even though `git` subcommands were used over **git2-rs** to reduce binary size, significant speed increases could only be achieved by using the latter.
+- JSON output flag for both version and results printing
 
 ### Changed
 
 - Config file location from `<prefix>/gfold/gfold.json` to `<prefix>/gfold.toml`
 - Config file type from JSON to TOML
 - Major performance improvements due to moving from sequential target generation to nested, parallel iterators for target generation
+- Module layout
+  - `cli`, `display`, and `report` modules now contain their children: `logging`, `color`, and `target` respectively.
+  - `target` is a new submodule of `display` since they are within the same bounded context, but the former is a subdomain of the latter.
+  - `color` now uses a harness rather than individual functions.
+- Grey color default to avoid a bug where the `stdout` color is not refreshed within `tmux` when using macOS `Terminal.app`
+- Testing for the entire crate
+  - All tests have been replaced in favor on one integration test.The old tests relied on developer's environment, which is highly variable. The new test creates multiple files, directories, and repositories in the `target` directory to simulate an actual development environment.
 
 ### Removed
 
+- `anyhow` dependency (reduced binary size) in favor of internal `Result` type
+- Display of `none` fields for the standard (default) display of result (i.e. now, if an optional field was not found, it is not shown)
 - Git path option for CLI and config file
 - `git` subcommand usage
-
-### Notes
-
-- Even though `git` subcommands were used over **git2-rs** to reduce binary size, significant speed increases could only be achieved by using the latter.
-- Technically, removing the Git path option from the CLI and the config file could require a major version increase.
-- Given the immaturity of `3.0.0`, the (likely) infrequent use of the Git path option, and the overall structure/behavior remaining intact, the removal of this config option only necessitates a minor version increase.
-- For technical details on the field removal, please refer to the [diff between releases](https://github.com/nickgerace/gfold/compare/3.0.0...3.1.0).
 
 ### [3.0.0] - 2022-01-06
 

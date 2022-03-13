@@ -1,4 +1,9 @@
-#[derive(Debug, Clone, Copy)]
+//! This module contains the [`crate::status::Status`] type.
+
+use serde::{Deserialize, Serialize};
+
+/// A summarized interpretation of the status of a Git working tree.
+#[derive(Debug, Clone, Copy, Deserialize, Serialize)]
 pub enum Status {
     Bare,
     Clean,

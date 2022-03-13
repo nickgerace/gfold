@@ -16,23 +16,23 @@ concurrency:
   cancel-in-progress: true
 jobs:
   lint:
-    name: "Lint"
+    name: "Nightly Fmt Check"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      # Do not use "rust-cache" since nightly will wipe out the cache daily
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: nightly
           override: true
           components: rustfmt
-      - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
   test:
-    name: "Clippy, Test, and Build (ubuntu-latest)"
+    name: "Clippy Lint, Test, and Build (ubuntu-latest)"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,9 +47,13 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+      # FIXME: use cargo nextest
       - uses: actions-rs/cargo@v1
         with:
           command: test
+      - uses: actions-rs/cargo@v1
+        with:
+          command: doc
       - uses: actions-rs/cargo@v1
         with:
           command: build
