@@ -13,7 +13,7 @@ Steps should (and frequently must) be executed in sequential order.
 - [ ] Run final `make` targets and verify that everything looks/works as expected:
 
 ```bash
-make ci build
+make lint test; cargo build
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
