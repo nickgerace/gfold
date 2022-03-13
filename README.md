@@ -192,14 +192,33 @@ The uninstall script can also be used for cleanup in the event of a failed insta
 
 **Preferred package manager not listed:** please [file an issue](https://github.com/nickgerace/gfold/issues/new/choose)!
 
+## Community
+
+For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./THANKS.md)** file.
+
+### Projects
+
+- [nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua), a `neovim` plugin for `gfold` *([announcement Reddit post](https://www.reddit.com/r/neovim/comments/t209wy/introducing_nvimgfoldlua/))*
+
+### Articles
+
+- ["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/), which featured `gfold`
+
+### Packaging
+
+- [Arch Linux community repository](https://archlinux.org/packages/community/x86_64/gfold/) for the `gfold` package
+- [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix) for the `gfold` package
+- [AUR](https://github.com/orhun/PKGBUILDs) for the `gfold-git` (VCS/development) package
+  - In the past, this included the `gfold` and `gfold-bin` packages as well, they those have been deprecated in favor of the official community repository package above
+
 ## Compatibility
 
-`gfold` is intended to be ran on *any* tier one Rust 🦀 target that `git` is also available on.
+`gfold` is intended to be ran on *any* tier one Rust 🦀 target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
 ## Troubleshooting
 
-If `fold` from GNU Coreutils is installed on macOS via `brew`, it will be named `gfold`.
+If `fold` from [GNU Coreutils](https://www.gnu.org/software/coreutils/) is installed on macOS via `brew`, it will be named `gfold`.
 You can avoid this collision with shell aliases, shell functions, and/or `PATH` changes.
 Here is an example with the `o` dropped from `gfold`:
 
