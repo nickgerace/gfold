@@ -4,7 +4,7 @@ use crate::config::{ColorMode, DisplayMode};
 use crate::display::color::ColorHarness;
 use crate::error::Error;
 use crate::report::Reports;
-use crate::result::Result;
+use anyhow::Result;
 use log::warn;
 use std::path::Path;
 

@@ -3,7 +3,7 @@
 
 use crate::config::{ColorMode, Config, DisplayMode};
 use crate::error::Error;
-use crate::result::Result;
+use anyhow::Result;
 use crate::run;
 use argh::FromArgs;
 use std::env;
