@@ -1,7 +1,7 @@
 //! This module contains the config specification and functionality for creating a config.
 
 use crate::error::Error;
-use crate::result::Result;
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::path::PathBuf;
