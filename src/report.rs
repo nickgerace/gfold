@@ -2,9 +2,9 @@
 
 use crate::config::DisplayMode;
 use crate::error::Error;
-use crate::result::Result;
 use crate::status::Status;
-use git2::{ErrorCode, Reference, Repository, StatusOptions};
+use anyhow::Result;
+use git2::{ErrorCode, Reference, Remote, Repository, StatusOptions};
 use log::{debug, trace};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -52,16 +52,18 @@ impl Report {
             name: match path.file_name() {
                 Some(s) => match s.to_str() {
                     Some(s) => s.to_string(),
-                    None => return Err(Error::FileNameToStrConversionFailure(path.to_path_buf())),
+                    None => {
+                        return Err(Error::FileNameToStrConversionFailure(path.to_path_buf()).into())
+                    }
                 },
-                None => return Err(Error::FileNameNotFound(path.to_path_buf())),
+                None => return Err(Error::FileNameNotFound(path.to_path_buf()).into()),
             },
             branch: (*branch).into(),
             status: *status,
             parent: match path.parent() {
                 Some(s) => match s.to_str() {
                     Some(s) => Some(s.to_string()),
-                    None => return Err(Error::PathToStrConversionFailure(s.to_path_buf())),
+                    None => return Err(Error::PathToStrConversionFailure(s.to_path_buf()).into()),
                 },
                 None => None,
             },
@@ -101,20 +103,34 @@ pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> Result<Label
 
 /// Generates a report with a given path.
 fn generate_report(repo_path: &Path, include_email: bool) -> Result<Report> {
-    debug!("attemping to generate report for path: {:?}", repo_path);
+    debug!(
+        "attemping to generate report for repository at path: {:?}",
+        repo_path
+    );
     let repo = Repository::open(repo_path)?;
     let head = match repo.head() {
         Ok(head) => Some(head),
         Err(ref e) if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound => {
             None
         }
-        Err(e) => return Err(Error::Git2Rs(e)),
+        Err(e) => return Err(e.into()),
     };
     let branch = match &head {
         Some(head) => head
             .shorthand()
             .ok_or(Error::GitReferenceShorthandInvalid)?,
         None => HEAD,
+    };
+
+    // Greedily chooses a remote if "origin" is not found.
+    let (remote, remote_name) = match repo.find_remote("origin") {
+        Ok(origin) => (Some(origin), Some("origin".to_string())),
+        Err(e) if e.code() == ErrorCode::NotFound => choose_remote_greedily(&repo)?,
+        Err(e) => return Err(e.into()),
+    };
+    let url = match remote {
+        Some(remote) => remote.url().map(|s| s.to_string()),
+        None => None,
     };
 
     // We'll include all untracked files and directories in the status options.
@@ -125,9 +141,12 @@ fn generate_report(repo_path: &Path, include_email: bool) -> Result<Report> {
     // are no commits to push.
     let status = match repo.statuses(Some(&mut opts)) {
         Ok(v) if v.is_empty() => match &head {
-            Some(head) => match is_unpushed(&repo, head)? {
-                true => Status::Unpushed,
-                false => Status::Clean,
+            Some(head) => match remote_name {
+                Some(remote_name) => match is_unpushed(&repo, head, &remote_name)? {
+                    true => Status::Unpushed,
+                    false => Status::Clean,
+                },
+                None => Status::Clean,
             },
             None => Status::Clean,
         },
@@ -136,28 +155,24 @@ fn generate_report(repo_path: &Path, include_email: bool) -> Result<Report> {
         Err(e) => return Err(e.into()),
     };
 
-    let url = match repo.find_remote("origin") {
-        Ok(origin) => origin.url().map(|s| s.to_string()),
-        Err(e) if e.code() == ErrorCode::NotFound => None,
-        Err(e) => return Err(Error::Git2Rs(e)),
-    };
     let email = match include_email {
         true => get_email(&repo),
         false => None,
     };
-    debug!(
-        "generating report for repository at {:?} on branch {} with status {:?}, url {:?}, and email {:?}",
-        &repo_path, &branch, &status, &url, &email
-    );
 
+    debug!(
+        "finalized report collection for repository at path: {:?}",
+        repo_path
+    );
     Report::new(repo_path, branch, &status, url, email)
 }
 
 /// Checks if local commit(s) on the current branch have not yet been pushed to the remote.
-fn is_unpushed(repo: &Repository, head: &Reference) -> Result<bool> {
+fn is_unpushed(repo: &Repository, head: &Reference, remote_name: &str) -> Result<bool> {
     let local_head = head.peel_to_commit()?;
     let remote = format!(
-        "origin/{}",
+        "{}/{}",
+        remote_name,
         match head.shorthand() {
             Some(v) => v,
             None => {
@@ -210,4 +225,15 @@ fn get_email(repository: &Repository) -> Option<String> {
         }
     }
     None
+}
+
+fn choose_remote_greedily(repository: &Repository) -> Result<(Option<Remote>, Option<String>)> {
+    let remotes = repository.remotes()?;
+    Ok(match remotes.get(0) {
+        Some(remote_name) => (
+            Some(repository.find_remote(remote_name)?),
+            Some(remote_name.to_string()),
+        ),
+        None => (None, None),
+    })
 }

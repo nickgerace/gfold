@@ -1,7 +1,4 @@
-use std::fs;
-use std::fs::Metadata;
-use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 use std::time::{Duration, Instant};
 
@@ -55,12 +52,10 @@ fn main() {
 fn loose_bench(new: &Path, old: &Path, target: &Path) {
     let new_duration = execute(new, target);
     let old_duration = execute(old, target);
-    let (new_text, old_text) = if new_duration > old_duration {
-        ("LOST", "WON ")
-    } else if new_duration < old_duration {
-        ("WON ", "LOST")
-    } else {
-        ("TIE ", "TIE ")
+    let (new_text, old_text) = match new_duration {
+        new_duration if new_duration > old_duration => ("LOST", "WON "),
+        new_duration if new_duration < old_duration => ("WON ", "LOST"),
+        _ => ("TIE ", "TIE "),
     };
 
     println!(

@@ -4,7 +4,8 @@ use crate::config::{ColorMode, DisplayMode};
 use crate::display::color::ColorHarness;
 use crate::error::Error;
 use crate::report::LabeledReports;
-use crate::result::Result;
+use anyhow::Result;
+use log::debug;
 use log::warn;
 use std::path::Path;
 
@@ -21,13 +22,14 @@ pub fn display(
 ) -> Result<()> {
     match display_mode {
         DisplayMode::Standard => standard(reports, color_mode),
-        DisplayMode::Json => Ok(json(reports)?),
+        DisplayMode::Json => json(reports),
         DisplayMode::Classic => classic(reports, color_mode),
     }
 }
 
 /// Display [`LabeledReports`] to `stdout` in the standard (default) format.
 fn standard(reports: &LabeledReports, color_mode: &ColorMode) -> Result<()> {
+    debug!("detected standard display mode");
     let mut all_reports = Vec::new();
     for grouped_report in reports {
         all_reports.append(&mut grouped_report.1.clone());
@@ -71,6 +73,7 @@ fn standard(reports: &LabeledReports, color_mode: &ColorMode) -> Result<()> {
 
 /// Display [`LabeledReports`] to `stdout` in JSON format.
 fn json(reports: &LabeledReports) -> Result<()> {
+    debug!("detected json display mode");
     let mut all_reports = Vec::new();
     for grouped_report in reports {
         all_reports.append(&mut grouped_report.1.clone());
@@ -83,6 +86,7 @@ fn json(reports: &LabeledReports) -> Result<()> {
 
 /// Display [`LabeledReports`] to `stdout` in the classic format.
 fn classic(reports: &LabeledReports, color_mode: &ColorMode) -> Result<()> {
+    debug!("detected classic display mode");
     let color_harness = ColorHarness::new(color_mode);
 
     let length = reports.keys().len();
