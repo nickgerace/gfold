@@ -2,7 +2,7 @@
 
 use crate::config::DisplayMode;
 use crate::error::Error;
-use anyhow::Result;
+use crate::result::Result;
 use crate::status::Status;
 use git2::{ErrorCode, Reference, Repository, StatusOptions};
 use log::{debug, trace};
