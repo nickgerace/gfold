@@ -2,7 +2,7 @@
 //! track of multiple Git repositories. The source code uses private modules rather than leveraging
 //! a library via `lib.rs`.
 
-use anyhow::Result;
+use crate::result::Result;
 
 mod cli;
 mod config;
@@ -15,9 +15,7 @@ mod status;
 
 /// Calls [`cli::parse_and_run()`] to generate a [`config::Config`] and eventually call [`run::run()`];
 fn main() -> Result<()> {
-    cli::parse_and_run()?;
-    panic!(
-    Ok(())
+    cli::parse_and_run()
 }
 
 #[cfg(test)]
@@ -28,7 +26,6 @@ mod tests {
     use git2::Repository;
     use std::path::Path;
     use std::{env, fs, io};
-    use git2::ErrorCode;
 
     #[test]
     fn integration() {
@@ -88,26 +85,10 @@ mod tests {
         for name in ["one", "two", "three"] {
             let current = nested.join(name);
             create_dir_or_die(&current);
-            let repository = Repository::init(&current).expect("could not initialize repository");
+            Repository::init(&current).expect("could not initialize repository");
 
             if name == "one" {
                 create_file_or_die(&current.join("newfile"));
-            }
-
-            if name == "two" {
-                if let Err(e) = repository.remote("origin", "https://google.com") {
-                    if e.code() != ErrorCode::Exists {
-                        panic!("{}", e);
-                    }
-                }
-            }
-
-            if name == "three" {
-                if let Err(e) = repository.remote("fork", "https://google.com") {
-                    if e.code() != ErrorCode::Exists {
-                        panic!("{}", e);
-                    }
-                }
             }
         }
 
