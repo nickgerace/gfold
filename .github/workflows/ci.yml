@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   test:
-    name: "Lint, Test, and Build (ubuntu-latest)"
+    name: "Lint / Test / Build (ubuntu-latest)"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,16 +38,16 @@ jobs:
           args: -- -D warnings
       - uses: actions-rs/cargo@v1
         with:
-          command: test
+          command: doc
       - uses: actions-rs/cargo@v1
         with:
-          command: doc
+          command: test
       - uses: actions-rs/cargo@v1
         with:
           command: build
           args: --locked
   build:
-    name: "Build"
+    name: "Test / Build"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -60,6 +60,9 @@ jobs:
           toolchain: stable
           override: true
       - uses: Swatinem/rust-cache@v1
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
       - uses: actions-rs/cargo@v1
         with:
           command: build

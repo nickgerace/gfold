@@ -1,7 +1,7 @@
 status = [
-    "Lint, Test, and Build (ubuntu-latest)",
-    "Build (windows-latest)",
-    "Build (macos-latest)"
+    "Lint / Test / Build (ubuntu-latest)",
+    "Test / Build (windows-latest)",
+    "Test / Build (macos-latest)"
 ]
 timeout_sec = 900
 delete_merged_branches = true
