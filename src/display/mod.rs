@@ -3,7 +3,7 @@
 use crate::config::{ColorMode, DisplayMode};
 use crate::display::color::ColorHarness;
 use crate::error::Error;
-use crate::report::Reports;
+use crate::report::LabeledReports;
 use crate::result::Result;
 use log::warn;
 use std::path::Path;
@@ -16,7 +16,7 @@ const NONE: &str = "none";
 /// This function chooses the display execution function based on the [`DisplayMode`] provided.
 pub fn display(
     display_mode: &DisplayMode,
-    reports: &Reports,
+    reports: &LabeledReports,
     color_mode: &ColorMode,
 ) -> Result<()> {
     match display_mode {
@@ -26,8 +26,8 @@ pub fn display(
     }
 }
 
-/// Display [`Reports`] to `stdout` in the standard (default) format.
-fn standard(reports: &Reports, color_mode: &ColorMode) -> Result<()> {
+/// Display [`LabeledReports`] to `stdout` in the standard (default) format.
+fn standard(reports: &LabeledReports, color_mode: &ColorMode) -> Result<()> {
     let mut all_reports = Vec::new();
     for grouped_report in reports {
         all_reports.append(&mut grouped_report.1.clone());
@@ -69,8 +69,8 @@ fn standard(reports: &Reports, color_mode: &ColorMode) -> Result<()> {
     Ok(())
 }
 
-/// Display [`Reports`] to `stdout` in JSON format.
-fn json(reports: &Reports) -> Result<()> {
+/// Display [`LabeledReports`] to `stdout` in JSON format.
+fn json(reports: &LabeledReports) -> Result<()> {
     let mut all_reports = Vec::new();
     for grouped_report in reports {
         all_reports.append(&mut grouped_report.1.clone());
@@ -81,8 +81,8 @@ fn json(reports: &Reports) -> Result<()> {
     Ok(())
 }
 
-/// Display [`Reports`] to `stdout` in the classic format.
-fn classic(reports: &Reports, color_mode: &ColorMode) -> Result<()> {
+/// Display [`LabeledReports`] to `stdout` in the classic format.
+fn classic(reports: &LabeledReports, color_mode: &ColorMode) -> Result<()> {
     let color_harness = ColorHarness::new(color_mode);
 
     let length = reports.keys().len();

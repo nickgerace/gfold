@@ -82,7 +82,7 @@ gfold ../../this/is/a/relative/path
 
 Upon execution, `gfold` will look for a config file at the following path on macOS, Linux and similar operating systems:
 
-```bash
+```shell
 $HOME/.config/gfold.toml
 ```
 
@@ -96,7 +96,7 @@ Creating and using the config file is entirely optional, and you can ignore your
 
 Here is an example creation workflow for a config file:
 
-```bash
+```shell
 gfold --classic ~/ --print > $HOME/.config/gfold.toml
 ```
 
@@ -112,7 +112,7 @@ display_mode = 'Classic'
 You can back up a config file and track its history with `git`.
 On macOS, Linux, and most systems, you can link the file back to a `git` repository.
 
-```bash
+```shell
 ln -s path/to/repository/gfold.toml $HOME/.config/gfold.toml
 ```
 
@@ -124,7 +124,7 @@ Now, you can update the config file within your repository and include the linki
 
 **macOS users:** you can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
 
-```bash
+```shell
 brew install nickgerace/nickgerace/gfold
 ```
 
@@ -132,13 +132,13 @@ _Note:_ the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-L
 
 **Arch Linux users:** you can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [community repository](https://archlinux.org/packages/community/x86_64/gfold/).
 
-```bash
+```shell
 pacman -S gfold
 ```
 
 If you'd like the [development (VCS) package](https://aur.archlinux.org/packages/gfold-git/), you can install it from the AUR.
 
-```bash
+```shell
 paru -S gfold-git
 ```
 
@@ -146,36 +146,35 @@ _Note:_ the above example uses [paru](https://github.com/Morganamilo/paru), whic
 
 **Nix and NixOS users:** you can install `gfold` from [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix):
 
-```bash
+```shell
 nix-env --install ripgrep
 ```
 
 **Rust developers and Cargo users:** you can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
 
-```bash
+```shell
 cargo install gfold
 ```
 
 Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
 
-```bash
+```shell
 cargo install cargo-update
 cargo install-update -a
 ```
 
 **Build and install from source:** if you want to install from source, and not from [crates.io](https://crates.io/crates/gfold), you can clone the repository and build `gfold`.
 
-```bash
+```shell
 (
     git clone https://github.com/nickgerace/gfold.git
-    cd gfold
-    make install
+    cargo install --locked --path gfold
 )
 ```
 
 **Download a binary:** if you do not want to use one of the above installation methods, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
 
-```bash
+```shell
 curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | bash
 ```
 
@@ -184,7 +183,7 @@ Discretion is advised, including downloading and reading the script before execu
 
 To uninstall `gfold` fully, after using this installation method, execute the following script:
 
-```bash
+```shell
 curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstall.sh | bash
 ```
 
@@ -194,7 +193,7 @@ The uninstall script can also be used for cleanup in the event of a failed insta
 
 ## Community
 
-For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./THANKS.md)** file.
+For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./docs/THANKS.md)** file.
 
 ### Projects
 
@@ -222,6 +221,6 @@ If `fold` from [GNU Coreutils](https://www.gnu.org/software/coreutils/) is insta
 You can avoid this collision with shell aliases, shell functions, and/or `PATH` changes.
 Here is an example with the `o` dropped from `gfold`:
 
-```bash
+```shell
 alias gfld=$HOME/.cargo/bin/gfold
 ```
