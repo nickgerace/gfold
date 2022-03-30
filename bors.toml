@@ -1,6 +1,5 @@
 status = [
-    "Nightly Fmt Check",
-    "Clippy Lint, Test, and Build (ubuntu-latest)",
+    "Lint, Test, and Build (ubuntu-latest)",
     "Build (windows-latest)",
     "Build (macos-latest)"
 ]

@@ -22,8 +22,12 @@ fn main() -> Result<()> {
 mod tests {
     use super::*;
 
-    use crate::config::Config;
+    use crate::config::{Config, DisplayMode};
+    use crate::report::{LabeledReports, Report};
+    use crate::status::Status;
     use git2::Repository;
+    use pretty_assertions::assert_eq;
+    use std::collections::BTreeMap;
     use std::path::Path;
     use std::{env, fs, io};
 
@@ -58,10 +62,10 @@ mod tests {
         //     ├── bar
         //     ├── baz
         //     ├── foo
-        //     │   └── newfile
+        //     │   └── newfile
         //     └── nested
         //         ├── one
-        //         │   ├── newfile
+        //         │   └── newfile
         //         ├── three
         //         └── two
 
@@ -94,7 +98,74 @@ mod tests {
 
         let mut config = Config::new().expect("could not create new config");
         config.path = test;
-
         assert!(run::run(&config).is_ok());
+
+        // Now, let's ensure our reports are what we expect.
+        let test_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("target")
+            .join("test");
+        let mut expected_reports: LabeledReports = BTreeMap::new();
+
+        let key = test_dir
+            .to_str()
+            .expect("could not convert to str")
+            .to_string();
+        let mut reports = vec![
+            Report::new(&test_dir.join("foo"), "HEAD", &Status::Unclean, None, None)
+                .expect("could not create report"),
+            Report::new(&test_dir.join("bar"), "HEAD", &Status::Clean, None, None)
+                .expect("could not create report"),
+            Report::new(&test_dir.join("baz"), "HEAD", &Status::Clean, None, None)
+                .expect("could not create report"),
+        ];
+        reports.sort_by(|a, b| a.name.cmp(&b.name));
+        expected_reports.insert(Some(key), reports);
+
+        let nested_test_dir = test_dir.join("nested");
+        let key = nested_test_dir
+            .to_str()
+            .expect("could not convert to str")
+            .to_string();
+        let mut reports = vec![
+            Report::new(
+                &nested_test_dir.join("one"),
+                "HEAD",
+                &Status::Unclean,
+                None,
+                None,
+            )
+            .expect("could not create report"),
+            Report::new(
+                &nested_test_dir.join("two"),
+                "HEAD",
+                &Status::Clean,
+                None,
+                None,
+            )
+            .expect("could not create report"),
+            Report::new(
+                &nested_test_dir.join("three"),
+                "HEAD",
+                &Status::Clean,
+                None,
+                None,
+            )
+            .expect("could not create report"),
+        ];
+        reports.sort_by(|a, b| a.name.cmp(&b.name));
+        expected_reports.insert(Some(key), reports);
+
+        // Use classic display mode to avoid collecting email results.
+        config.display_mode = DisplayMode::Classic;
+        let found_labeled_reports = report::generate_reports(&config.path, &config.display_mode)
+            .expect("could not generate reports");
+        let mut found_labeled_reports_sorted = LabeledReports::new();
+        for labeled_report in found_labeled_reports {
+            let mut value = labeled_report.1;
+            value.sort_by(|a, b| a.name.cmp(&b.name));
+            found_labeled_reports_sorted.insert(labeled_report.0.clone(), value.clone());
+        }
+
+        assert_eq!(found_labeled_reports_sorted, expected_reports);
     }
 }

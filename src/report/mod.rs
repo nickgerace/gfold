@@ -19,10 +19,10 @@ const HEAD: &str = "HEAD";
 /// parent directory for a group of reports ([`Vec<Report>`]). The values corresponding to those keys
 /// are the actual groups of reports.
 // NOTE: We use a BTreeMap over a HashMap for sorted keys.
-pub type Reports = BTreeMap<Option<String>, Vec<Report>>;
+pub type LabeledReports = BTreeMap<Option<String>, Vec<Report>>;
 
 /// A collection of results for a Git repository at a given path.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Report {
     /// The directory name of the Git repository.
     pub name: String,
@@ -41,7 +41,7 @@ pub struct Report {
 }
 
 impl Report {
-    fn new(
+    pub fn new(
         path: &Path,
         branch: &str,
         status: &Status,
@@ -71,9 +71,9 @@ impl Report {
     }
 }
 
-/// Generate [`Reports`] for a given path and its children. The [`DisplayMode`] is required because
-/// any two display modes can require differing ammounts of data to be collected.
-pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> Result<Reports> {
+/// Generate [`LabeledReports`] for a given path and its children. The [`DisplayMode`] is required
+/// because any two display modes can require differing amounts of data to be collected.
+pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> Result<LabeledReports> {
     let include_email = match display_mode {
         DisplayMode::Standard | DisplayMode::Json => true,
         DisplayMode::Classic => false,
@@ -84,7 +84,7 @@ pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> Result<Repor
         .map(|path| generate_report(path, include_email))
         .collect::<Vec<Result<Report>>>();
 
-    let mut processed = Reports::new();
+    let mut processed = LabeledReports::new();
     for wrapped_report in unprocessed {
         match wrapped_report {
             Ok(report) => {

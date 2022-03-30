@@ -5,15 +5,19 @@ This document contains all information related to release.
 ## Checklist
 
 This checklist details the `gfold` release process.
-Steps should (and frequently must) be executed in sequential order.
+Steps should be executed in sequential order.
 
 - [ ] Checkout and rebase `main` to its latest commit, then checkout a new branch
 - [ ] Change the `version` field in `Cargo.toml` to the new tag
 - [ ] **Full Releases Only**: change the version in `CHANGELOG.md` and uncomment the following line: `<!--The latest version contains all changes.-->`
-- [ ] Run final `make` targets and verify that everything looks/works as expected:
+- [ ] Verify that everything looks/works as expected:
 
-```bash
-make lint test; cargo build
+```shell
+cargo fmt --all -- --check
+cargo clippy -- -D warnings
+cargo test
+cargo doc
+cargo build
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
@@ -27,21 +31,21 @@ cargo publish --dry-run
 - [ ] Checkout and rebase `main` to its latest commit, which should be the aforementioned commit
 - [ ] Tag and push the tag:
 
-```bash
+```shell
 git tag <tag>
 git push --tags origin main
 ```
 
 - [ ] Publish the crate:
 
-```bash
+```shell
 cargo publish
 ```
 
 - [ ] Verify that the [crate](https://crates.io/crates/gfold) on `crates.io` looks correct
 - [ ] Download and install the crate:
 
-```bash
+```shell
 # Full releases
 cargo install --locked gfold
 
