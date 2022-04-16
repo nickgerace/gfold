@@ -34,10 +34,11 @@ pam ~ /home/neloth/src/pam
   neloth@solstheimcommunityserver.org
 ```
 
-The classic display mode can be toggled on with `--classic`.
+Want the classic display mode?
+Use `-d classic`.
 
 ```
-% gfold --classic
+% gfold -d classic
 astrid  unclean   main       git@github.com:db/astrid.git
 fev     bare      main       none
 gb      unpushed  dev        https://github.com/hrothgar/gb.git
@@ -69,7 +70,7 @@ Analysis is performed by leveraging the [git2-rs](https://github.com/rust-lang/g
 
 Pass in `--help` flag to see all the options for using this application.
 
-```bash
+```shell
 gfold
 gfold ..
 gfold $HOME
@@ -86,27 +87,35 @@ Upon execution, `gfold` will look for a config file at the following path on mac
 $HOME/.config/gfold.toml
 ```
 
-On Windows, the config file is located at the following path:
+On Windows, the lookup path will be in a similar location.
 
 ```powershell
 {FOLDERID_Profile}\.config\gfold.toml
 ```
 
-Creating and using the config file is entirely optional, and you can ignore your config file at any time using the `-i` flag.
+Creating and using the config file is entirely optional.
 
-Here is an example creation workflow for a config file:
+For config file creation, you can use the `--dry-run` flag to print valid TOML.
+Here is an example config file creation workflow on macOS, Linux and similar platforms:
 
 ```shell
-gfold --classic ~/ --print > $HOME/.config/gfold.toml
+gfold -d classic -c never ~/ --dry-run > $HOME/.config/gfold.toml
 ```
-
-This config file will default to the classic display mode and set the default path to `$HOME`, rather than the current working directory.
 
 Here are the contents of the resulting config file:
 
 ```toml
 path = '/home/neloth'
 display_mode = 'Classic'
+color_mode = 'Never'
+```
+
+Let's say you created a config file, but wish to execute `gfold` with entirely different settings _and_ you want to ensure that
+you do not accidentally inherit options from the config file.
+In that scenario you can ignore your config file by using the `-i` flag.
+
+```shell
+gfold -i
 ```
 
 You can back up a config file and track its history with `git`.
@@ -191,6 +200,28 @@ The uninstall script can also be used for cleanup in the event of a failed insta
 
 **Preferred package manager not listed:** please [file an issue](https://github.com/nickgerace/gfold/issues/new/choose)!
 
+## Compatibility
+
+`gfold` is intended to be ran on *any* tier one Rust 🦀 target.
+Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
+
+## Troubleshooting
+
+If you encounter unexpected behavior or a bug, please [file an issue](https://github.com/nickgerace/gfold/issues) and debug
+locally with `RUST_BACKTRACE=1 RUST_LOG=debug` prepended when executing `gfold`.
+You can also adjust each variable, as needed, to aid investigation.
+Please attach relevant logs from execution with sensitive bits redacted in order to help resolve your issue.
+
+### Coreutils Collision on macOS
+
+If `fold` from [GNU Coreutils](https://www.gnu.org/software/coreutils/) is installed on macOS via `brew`, it will be named `gfold`.
+You can avoid this collision with shell aliases, shell functions, and/or `PATH` changes.
+Here is an example with the `o` dropped from `gfold`:
+
+```shell
+alias gfld=$HOME/.cargo/bin/gfold
+```
+
 ## Community
 
 For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./docs/THANKS.md)** file.
@@ -209,18 +240,3 @@ For more information and thanks to contributors, users, and the "community" at l
 - [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix) for the `gfold` package
 - [AUR](https://github.com/orhun/PKGBUILDs) for the `gfold-git` (VCS/development) package
   - In the past, this included the `gfold` and `gfold-bin` packages as well, they those have been deprecated in favor of the official community repository package above
-
-## Compatibility
-
-`gfold` is intended to be ran on *any* tier one Rust 🦀 target.
-Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
-
-## Troubleshooting
-
-If `fold` from [GNU Coreutils](https://www.gnu.org/software/coreutils/) is installed on macOS via `brew`, it will be named `gfold`.
-You can avoid this collision with shell aliases, shell functions, and/or `PATH` changes.
-Here is an example with the `o` dropped from `gfold`:
-
-```shell
-alias gfld=$HOME/.cargo/bin/gfold
-```

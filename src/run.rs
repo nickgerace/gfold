@@ -1,8 +1,8 @@
 //! This module contains the execution logic for generating reports and displaying them to `stdout`.
 
 use crate::config::Config;
-use crate::result::Result;
 use crate::{display, report};
+use anyhow::Result;
 
 /// This function is the primary entrypoint for the crate. It takes a given config and performs
 /// the end-to-end workflow using it. At this point, all CLI and config file options should be

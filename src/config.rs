@@ -1,10 +1,10 @@
 //! This module contains the config specification and functionality for creating a config.
 
 use crate::error::Error;
-use crate::result::Result;
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::env;
 use std::path::PathBuf;
+use std::{env, fs, io};
 
 /// This struct is the actual config type consumed through the codebase. It is boostrapped via its
 /// public methods and uses [`EntryConfig`], a private struct, under the hood in order to
@@ -65,29 +65,34 @@ pub enum ColorMode {
 
 impl Config {
     /// This method tries to deserialize the config file (empty, non-existent, partial or complete)
-    /// and uses "EntryConfig" as an intermediary struct. This is the primary method used when
+    /// and uses [`EntryConfig`] as an intermediary struct. This is the primary method used when
     /// creating a config.
     pub fn try_config() -> Result<Self> {
         // Within this method, we check if the config file is empty before deserializing it. Users
-        // should be able to proceed with empty config files. If empty, then we fall back to the
-        // "EntryConfig" default before conversion.
+        // should be able to proceed with empty config files. If empty or not found, then we fall
+        // back to the "EntryConfig" default before conversion.
         let home = dirs::home_dir().ok_or(Error::HomeDirNotFound)?;
         let path = home.join(".config").join("gfold.toml");
-        let contents = std::fs::read_to_string(path)?;
-        let entry_config = match contents.is_empty() {
-            true => EntryConfig::default(),
-            false => toml::from_str(&contents)?,
+        let entry_config = match fs::read_to_string(path) {
+            Ok(contents) => match contents.is_empty() {
+                true => EntryConfig::default(),
+                false => toml::from_str(&contents)?,
+            },
+            Err(e) => match e.kind() {
+                io::ErrorKind::NotFound => EntryConfig::default(),
+                _ => return Err(e.into()),
+            },
         };
         Self::from_entry_config(&entry_config)
     }
 
-    /// This method does not look for the config file and uses "EntryConfig"'s defaults instead.
+    /// This method does not look for the config file and uses [`EntryConfig`]'s defaults instead.
     /// It is best for testing use and when the user wishes to skip config file lookup.
     pub fn new() -> Result<Self> {
         Self::from_entry_config(&EntryConfig::default())
     }
 
-    // This method prints the full config (merged with config file, as needed) as valid, pretty TOML.
+    /// This method prints the full config (merged with config file, as needed) as valid, pretty TOML.
     pub fn print(self) -> Result<()> {
         print!("{}", toml::to_string_pretty(&self)?);
         Ok(())

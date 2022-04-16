@@ -1,6 +1,6 @@
 //! This module contains target generation logic for eventually generating reports.
 
-use log::{error, warn};
+use log::{debug, error, warn};
 use rayon::prelude::*;
 use std::fs::DirEntry;
 use std::path::{Path, PathBuf};
@@ -24,7 +24,10 @@ fn process_entry(entry: &DirEntry) -> Targets {
             let path = entry.path();
             let git_sub_directory = path.join(".git");
             match git_sub_directory.exists() && git_sub_directory.is_dir() {
-                true => Ok(Some(vec![path])),
+                true => {
+                    debug!("found target: {:?}", &path);
+                    Ok(Some(vec![path]))
+                }
                 false => Ok(Some(recursive_target_gen(&path)?)),
             }
         }

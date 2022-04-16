@@ -3,26 +3,32 @@
 
 use crate::config::{ColorMode, Config, DisplayMode};
 use crate::error::Error;
-use crate::result::Result;
 use crate::run;
+use anyhow::Result;
 use argh::FromArgs;
+use log::debug;
 use std::env;
-
-mod logging;
 
 #[derive(FromArgs)]
 #[argh(description = "More information: https://github.com/nickgerace/gfold
 
-This application helps you keep track of multiple Git repositories via CLI.
-By default, it displays relevant information for all repos in the current
-working directory.
+Description:
+  This application helps you keep track of multiple Git repositories via CLI.
+  By default, it displays relevant information for all repos in the current
+  working directory.
 
-While CLI options are prioritized, default options will fallback to the config
-file if it exists. Here is the config file lookup locations for some common
-operating systems:
+Config File Usage:
+  While CLI options are prioritized, default options will fallback to the
+  config file if it exists. Here is the config file lookup locations for some
+  common platforms:
 
-  macOS/Linux       $HOME/.config/gfold.toml
-  Windows           {{FOLDERID_Profile}}\\.config\\gfold.toml")]
+    macOS, Linux, etc.    $HOME/.config/gfold.toml
+    Windows               {{FOLDERID_Profile}}\\.config\\gfold.toml
+
+Troubleshooting:
+  Investigate unexpected behavior by prepending execution with
+  \"RUST_BACKTRACE=1\"and \"RUST_LOG=debug\". You can adjust those variable's
+  values to aid investigation.")]
 struct Args {
     #[argh(
         positional,
@@ -33,23 +39,18 @@ struct Args {
     #[argh(
         option,
         short = 'c',
-        description = "specify color mode [options: \"always\", \"compatibility\", \"off\"]"
+        description = "specify color mode [options: \"always\", \"compatibility\", \"never\"]"
     )]
     color_mode: Option<String>,
     #[argh(
-        switch,
-        description = "enable debug logging (sets \"RUST_LOG\" to \"debug\")"
-    )]
-    debug: bool,
-    #[argh(
         option,
         short = 'd',
-        description = "specify display format [options: \"standard\"/\"default\", \"json\", \"classic\"]"
+        description = "specify display format [options: \"standard\" or \"default\", \"json\", \"classic\"]"
     )]
     display_mode: Option<String>,
     #[argh(
         switch,
-        description = "display config options chosen, including those from the config file if they exist"
+        description = "display finalized config options and exit (merged options from an optional config file and command line arguments)"
     )]
     dry_run: bool,
     #[argh(switch, short = 'i', description = "ignore config file settings")]
@@ -68,19 +69,20 @@ pub fn parse_and_run() -> Result<()> {
     // First and foremost, get logging up and running. We want logs as quickly as possible for
     // debugging by setting "RUST_LOG".
     let args: Args = argh::from_env();
-    logging::init(args.debug);
+    debug!("collected args");
 
     let mut config = match args.ignore_config_file {
         true => Config::new()?,
         false => Config::try_config()?,
     };
+    debug!("loaded initial config");
 
     if let Some(found_display_mode) = &args.display_mode {
         config.display_mode = match found_display_mode.to_lowercase().as_str() {
             "classic" => DisplayMode::Classic,
             "json" => DisplayMode::Json,
             "standard" | "default" => DisplayMode::Standard,
-            _ => return Err(Error::InvalidDisplayMode(found_display_mode.to_string())),
+            _ => return Err(Error::InvalidDisplayMode(found_display_mode.to_string()).into()),
         }
     }
 
@@ -99,7 +101,7 @@ pub fn parse_and_run() -> Result<()> {
             "always" => ColorMode::Always,
             "compatibility" => ColorMode::Compatibility,
             "never" => ColorMode::Never,
-            _ => return Err(Error::InvalidColorMode(found_color_mode.to_string())),
+            _ => return Err(Error::InvalidColorMode(found_color_mode.to_string()).into()),
         }
     }
 
@@ -107,6 +109,7 @@ pub fn parse_and_run() -> Result<()> {
         config.path = env::current_dir()?.join(found_path).canonicalize()?;
     }
 
+    debug!("finalized config options");
     match &args.dry_run {
         true => config.print(),
         false => run::run(&config),

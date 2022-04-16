@@ -18,9 +18,9 @@ Now, ensure that lints, tests, and builds succeed.
 ```shell
 cargo fmt --all -- --check
 cargo clippy -- -D warnings
-cargo doc
+cargo doc --all
 cargo test
-cargo build
+cargo build --all-targets
 ```
 
 > Alternatively, you can replace `cargo test` above with [cargo nextest](https://github.com/nextest-rs/nextest).

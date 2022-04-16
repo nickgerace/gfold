@@ -2,61 +2,48 @@
 //! track of multiple Git repositories. The source code uses private modules rather than leveraging
 //! a library via `lib.rs`.
 
-use crate::result::Result;
+use anyhow::Result;
+use env_logger::Builder;
+use log::debug;
+use log::LevelFilter;
+use std::env;
 
 mod cli;
 mod config;
 mod display;
 mod error;
 mod report;
-mod result;
 mod run;
 mod status;
 
-/// Calls [`cli::parse_and_run()`] to generate a [`config::Config`] and eventually call [`run::run()`];
+/// Initializes the logger based on the debug flag and `RUST_LOG` environment variable and calls
+/// [`cli::parse_and_run()`] to generate a [`config::Config`] and eventually call [`run::run()`].
 fn main() -> Result<()> {
-    cli::parse_and_run()
+    match env::var("RUST_LOG").is_err() {
+        true => Builder::new().filter_level(LevelFilter::Off).init(),
+        false => env_logger::init(),
+    }
+    debug!("initialized logger");
+
+    cli::parse_and_run()?;
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    use crate::config::{Config, DisplayMode};
+    use crate::config::{ColorMode, Config, DisplayMode};
     use crate::report::{LabeledReports, Report};
     use crate::status::Status;
+    use git2::ErrorCode;
     use git2::Repository;
-    use pretty_assertions::assert_eq;
     use std::collections::BTreeMap;
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
     use std::{env, fs, io};
 
     #[test]
     fn integration() {
-        fn create_dir_or_die(path: &Path) {
-            if let Err(e) = fs::create_dir(path) {
-                if e.kind() != io::ErrorKind::AlreadyExists {
-                    panic!(
-                        "could not create directory ({:?}) due to error kind: {:?}",
-                        path,
-                        e.kind()
-                    );
-                }
-            }
-        }
-
-        fn create_file_or_die(path: &Path) {
-            if let Err(e) = fs::File::create(path) {
-                if e.kind() != io::ErrorKind::AlreadyExists {
-                    panic!(
-                        "could not create file ({:?}) due to error kind: {:?}",
-                        path,
-                        e.kind()
-                    );
-                }
-            }
-        }
-
         // Test directory structure within "target":
         // └── test
         //     ├── bar
@@ -69,35 +56,64 @@ mod tests {
         //         ├── three
         //         └── two
 
-        let cwd = env::current_dir().expect("failed to get current working directory");
-        let target = cwd.join("target");
-        create_dir_or_die(&target);
+        let manifest_directory = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let target = manifest_directory.join("target");
+        create_directory(&target);
+
+        // Warning: setting up test directory by removing it and its contents recursively.
         let test = target.join("test");
-        create_dir_or_die(&test);
+        if let Err(e) = fs::remove_dir_all(&test) {
+            if e.kind() != io::ErrorKind::NotFound {
+                panic!(
+                    "could not remove directory and its contents ({:?}) due to error kind: {:?}",
+                    &test,
+                    e.kind()
+                );
+            }
+        }
+        create_directory(&test);
+
         for name in ["foo", "bar", "baz"] {
             let current = test.join(name);
-            create_dir_or_die(&current);
+            create_directory(&current);
             Repository::init(&current).expect("could not initialize repository");
 
             if name == "foo" {
-                create_file_or_die(&current.join("newfile"));
+                create_file(&current.join("newfile"));
             }
         }
 
         let nested = test.join("nested");
-        create_dir_or_die(&nested);
+        create_directory(&nested);
         for name in ["one", "two", "three"] {
             let current = nested.join(name);
-            create_dir_or_die(&current);
-            Repository::init(&current).expect("could not initialize repository");
+            create_directory(&current);
+            let repository = Repository::init(&current).expect("could not initialize repository");
 
             if name == "one" {
-                create_file_or_die(&current.join("newfile"));
+                create_file(&current.join("newfile"));
+            }
+
+            if name == "two" {
+                if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
+                    if e.code() != ErrorCode::Exists {
+                        panic!("{}", e);
+                    }
+                }
+            }
+
+            if name == "three" {
+                if let Err(e) = repository.remote("fork", "https://github.com/nickgerace/gfold") {
+                    if e.code() != ErrorCode::Exists {
+                        panic!("{}", e);
+                    }
+                }
             }
         }
 
         let mut config = Config::new().expect("could not create new config");
         config.path = test;
+        config.color_mode = ColorMode::Never;
         assert!(run::run(&config).is_ok());
 
         // Now, let's ensure our reports are what we expect.
@@ -139,7 +155,7 @@ mod tests {
                 &nested_test_dir.join("two"),
                 "HEAD",
                 &Status::Clean,
-                None,
+                Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
             )
             .expect("could not create report"),
@@ -147,7 +163,7 @@ mod tests {
                 &nested_test_dir.join("three"),
                 "HEAD",
                 &Status::Clean,
-                None,
+                Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
             )
             .expect("could not create report"),
@@ -167,5 +183,29 @@ mod tests {
         }
 
         assert_eq!(found_labeled_reports_sorted, expected_reports);
+    }
+
+    fn create_directory(path: &Path) {
+        if let Err(e) = fs::create_dir(path) {
+            if e.kind() != io::ErrorKind::AlreadyExists {
+                panic!(
+                    "could not create directory ({:?}) due to error kind: {:?}",
+                    path,
+                    e.kind()
+                );
+            }
+        }
+    }
+
+    fn create_file(path: &Path) {
+        if let Err(e) = fs::File::create(path) {
+            if e.kind() != io::ErrorKind::AlreadyExists {
+                panic!(
+                    "could not create file ({:?}) due to error kind: {:?}",
+                    path,
+                    e.kind()
+                );
+            }
+        }
     }
 }

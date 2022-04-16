@@ -23,7 +23,7 @@ cargo build
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
 - [ ] Test and verify the publishing workflow:
 
-```bash
+```shell
 cargo publish --dry-run
 ```
 

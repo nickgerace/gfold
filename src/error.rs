@@ -21,15 +21,4 @@ pub enum Error {
     GitReferenceShorthandInvalid,
     #[error("could not find home directory")]
     HomeDirNotFound,
-
-    #[error("git2::Error")]
-    Git2Rs(#[from] git2::Error),
-    #[error("serde_json::Error")]
-    SerdeJson(#[from] serde_json::Error),
-    #[error("std::io::Error")]
-    StdIo(#[from] std::io::Error),
-    #[error("toml::de::Error")]
-    TomlDe(#[from] toml::de::Error),
-    #[error("toml::ser::Error")]
-    TomlSe(#[from] toml::ser::Error),
 }

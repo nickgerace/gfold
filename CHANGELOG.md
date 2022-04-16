@@ -17,14 +17,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [git2-rs](https://github.com/rust-lang/git2-rs), which replaces `git` subcommand usage
   - Even though `git` subcommands were used over **git2-rs** to reduce binary size, significant speed increases could only be achieved by using the latter.
 - JSON output flag for both version and results printing
+- Troubleshooting section to CLI help
+- Troubleshooting section to README for using `RUST_LOG` and `RUST_BACKTRACE`
 
 ### Changed
 
 - Config file location from `<prefix>/gfold/gfold.json` to `<prefix>/gfold.toml`
 - Config file type from JSON to TOML
+- CLI help sections to be divided by headers
 - Major performance improvements due to moving from sequential target generation to nested, parallel iterators for target generation
 - Module layout
-  - `cli`, `display`, and `report` modules now contain their children: `logging`, `color`, and `target` respectively.
+  - `display` now contains its child, `color`
+  - `report` now contains its child, `target`
   - `target` is a new submodule of `display` since they are within the same bounded context, but the former is a subdomain of the latter.
   - `color` now uses a harness rather than individual functions.
 - Grey color default to avoid a bug where the `stdout` color is not refreshed within `tmux` when using macOS `Terminal.app`
@@ -33,7 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- `anyhow` dependency (reduced binary size) in favor of internal `Result` type
+- Debug flag in favor of using `RUST_LOG`
 - Display of `none` fields for the standard (default) display of result (i.e. now, if an optional field was not found, it is not shown)
 - Git path option for CLI and config file
 - `git` subcommand usage
