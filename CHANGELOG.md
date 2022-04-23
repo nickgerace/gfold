@@ -7,15 +7,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
+
+### [4.0.0] - 2022-05-10
 
 ### Added
 
 - [Bors](https://bors.tech/) to avoid merge skew / semantic merge conflicts
 - Color mode option with the following choices: "always", "compatibility" and "never" 
+  - "always": display with rich colors (default)
+  - "compatibility": display with portable colors
+  - "never": display with no color
+- Display flag with the following choices: "standard" (or "default"), "json" and "classic"
+  - "standard" (or "default") and "classic" output options return from the previous release
+  - "json" output is a new option that displays all results in valid JSON, which is useful for third party applications, plugins, parsers, etc.
 - Documentation comments almost everywhere for `cargo doc`
 - [git2-rs](https://github.com/rust-lang/git2-rs), which replaces `git` subcommand usage
-  - Even though `git` subcommands were used over **git2-rs** to reduce binary size, significant speed increases could only be achieved by using the latter.
+  - Even though `git` subcommands were used over **git2-rs** to reduce binary size, significant speed increases could only be achieved by using the latter
+  - More consistent behavior since git2-rs can be tested at a locked version
 - JSON output flag for both version and results printing
 - Troubleshooting section to CLI help
 - Troubleshooting section to README for using `RUST_LOG` and `RUST_BACKTRACE`
@@ -29,11 +38,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Module layout
   - `display` now contains its child, `color`
   - `report` now contains its child, `target`
-  - `target` is a new submodule of `display` since they are within the same bounded context, but the former is a subdomain of the latter.
-  - `color` now uses a harness rather than individual functions.
 - Grey color default to avoid a bug where the `stdout` color is not refreshed within `tmux` when using macOS `Terminal.app`
 - Testing for the entire crate
-  - All tests have been replaced in favor on one integration test.The old tests relied on developer's environment, which is highly variable. The new test creates multiple files, directories, and repositories in the `target` directory to simulate an actual development environment.
+  - All tests have been replaced in favor on one integration test
+  - The old tests relied on developer's environment, which is highly variable
+  - The new test creates multiple files, directories, and repositories in the `target` directory to simulate an actual development environment
+- The `color` module now uses a harness rather than individual functions
 
 ### Removed
 
@@ -45,6 +55,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Notes
 
 - Substantial performance gains should be noticeable in certain scenarios
+  - Observed range in _loose_ benchmarking "real world" usage: ~1.2x to ~5.1x faster than `gfold 3.0.0` on macOS 12.3.1
+  - Binary size has increased, but speed has taken priority for this release
 - Using `RUST_LOG` and `RUST_BACKTRACE` should be more helpful when debugging unexpected output, performance or suspected bugs
 
 ### [3.0.0] - 2022-01-06

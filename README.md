@@ -1,16 +1,10 @@
 # gfold
 
-[![build](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square&logo=github&logoColor=white)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
-[![tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=git&logoColor=white&label=version&style=flat-square&color=silver)](https://github.com/nickgerace/gfold/releases/latest)
-[![crates.io](https://img.shields.io/crates/v/gfold?style=flat-square&logo=rust&color=orange)](https://crates.io/crates/gfold)
-[![arch linux](https://img.shields.io/archlinux/v/community/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/community/x86_64/gfold/)
+[![latest release tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=git&logoColor=white&label=version&style=flat-square&color=blue)](https://github.com/nickgerace/gfold/releases/latest)
+[![crates.io version](https://img.shields.io/crates/v/gfold?style=flat-square&logo=rust&color=orange)](https://crates.io/crates/gfold)
 [![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&logo=apache&color=silver)](./LICENSE)
-[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/42509)
-
-> This **README** is for users building from `main` in anticipation of `gfold 4.0.0`.
-> Since `gfold 4.0.0` has not yet been released, contents of this **README** may be inapplicable to your version of `gfold`.
->
-> For the latest, full release (`gfold 3.0.0`), please refer to the [**README** most closely corresponding to it (`92e976b207`)](https://github.com/nickgerace/gfold/blob/92e976b207d7c1074bb87432e0e6ca3cd6575cf3/README.md).
+[![build status](https://img.shields.io/github/workflow/status/nickgerace/gfold/merge/main?style=flat-square&logo=github&logoColor=white)](https://github.com/nickgerace/gfold/actions?query=workflow%3Amerge+branch%3Amain)
+[![bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/42509)
 
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
@@ -39,21 +33,15 @@ Use `-d classic`.
 
 ```
 % gfold -d classic
-astrid  unclean   main       git@github.com:db/astrid.git
-fev     bare      main       none
-gb      unpushed  dev        https://github.com/hrothgar/gb.git
-neloth  unclean   patch      git@github.com:telvanni/neloth.git
-pam     clean     main       https://github.com/onc/pam.git
-prime   clean     issue2287  git@github.com:bos/prime.git
+another-day     unclean   main     git@github.com:motm3/another-day.git
+beautiful-trip  bare      dev      none
+damaged         unpushed  dev      https://github.com/motm3/damaged.git
+dive            unclean   patch    git@github.com:motm3/dive.git
+solo-dolo       clean     main     https://github.com/motm3/solo-dolo.git
+tpm             clean     issue15  git@github.com:motm3/the-pale-moonlight.git
 ```
 
 If you'd prefer to use the classic display mode by default, and avoid setting the flag every time, you can set it in the config file (see **Usage** section).
-
-## Upcoming Release
-
-The next version of `gfold` will be `gfold 4.0.0`.
-While it might seem odd to bump the major version field so soon, user feedback and feature requests have been front and center for the next release, and setting up `gfold` for the future requires bumping that field.
-This **README** reflects changes in between the latest release (`gfold 3.0.0`) and the next release (`gfold 4.0.0`).
 
 ## Description
 
@@ -110,13 +98,27 @@ display_mode = 'Classic'
 color_mode = 'Never'
 ```
 
-Let's say you created a config file, but wish to execute `gfold` with entirely different settings _and_ you want to ensure that
+Let's say you created a config file, but wanted to execute `gfold` with entirely different settings _and_ you want to ensure that
 you do not accidentally inherit options from the config file.
 In that scenario you can ignore your config file by using the `-i` flag.
 
 ```shell
 gfold -i
 ```
+
+You can restore the config file to its defaults by using the same flag.
+
+```shell
+gfold -i > $HOME/.config/gfold.toml
+```
+
+In addition, you can ignore the existing config file, configure specific options, and use defaults for unspecified options all at once.
+Here is an example where we want to use the classic display mode and override all other settings with their default values:
+
+```shell
+gfold -i -d classic > $HOME/.config/gfold.toml
+```
+
 
 You can back up a config file and track its history with `git`.
 On macOS, Linux, and most systems, you can link the file back to a `git` repository.
@@ -131,7 +133,9 @@ Now, you can update the config file within your repository and include the linki
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/gfold.svg)](https://repology.org/project/gfold/versions)
 
-**macOS users:** you can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
+### Homebrew Install (macOS only)
+
+You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
 
 ```shell
 brew install nickgerace/nickgerace/gfold
@@ -139,27 +143,27 @@ brew install nickgerace/nickgerace/gfold
 
 _Note:_ the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
 
-**Arch Linux users:** you can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [community repository](https://archlinux.org/packages/community/x86_64/gfold/).
+### Arch Linux
+
+[![arch linux](https://img.shields.io/archlinux/v/community/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/community/x86_64/gfold/)
+
+You can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [community repository](https://archlinux.org/packages/community/x86_64/gfold/).
 
 ```shell
 pacman -S gfold
 ```
 
-If you'd like the [development (VCS) package](https://aur.archlinux.org/packages/gfold-git/), you can install it from the AUR.
+### Nix and NixOS
+
+You can install `gfold` from [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix):
 
 ```shell
-paru -S gfold-git
+nix-env --install gfold
 ```
 
-_Note:_ the above example uses [paru](https://github.com/Morganamilo/paru), which is an [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) used to install packages from the AUR.
+### Cargo Install
 
-**Nix and NixOS users:** you can install `gfold` from [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix):
-
-```shell
-nix-env --install ripgrep
-```
-
-**Rust developers and Cargo users:** you can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
+You can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
 
 ```shell
 cargo install gfold
@@ -172,16 +176,14 @@ cargo install cargo-update
 cargo install-update -a
 ```
 
-**Build and install from source:** if you want to install from source, and not from [crates.io](https://crates.io/crates/gfold), you can clone the repository and build `gfold`.
+### Download a Binary
 
-```shell
-(
-    git clone https://github.com/nickgerace/gfold.git
-    cargo install --locked --path gfold
-)
-```
+If you do not want to use one of the above installation methods and do not want to clone the repository, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
 
-**Download a binary:** if you do not want to use one of the above installation methods, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
+#### Downloading and Installing the Binary
+
+If you would prefer to use a convenience script over downloading directly from the aforementioned releases page, we have one!
+You can execute the installation helper script on a compatible system with `bash` installed (e.g. macOS and Linux).
 
 ```shell
 curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | bash
@@ -190,7 +192,9 @@ curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.
 _Note:_ the installation convenience script _does not verify the binary with a checksum_.
 Discretion is advised, including downloading and reading the script before execution.
 
-To uninstall `gfold` fully, after using this installation method, execute the following script:
+#### Uninstalling the Downloaded Binary
+
+To uninstall `gfold` fully after using the above installation method, execute the following script:
 
 ```shell
 curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstall.sh | bash
@@ -198,7 +202,20 @@ curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstal
 
 The uninstall script can also be used for cleanup in the event of a failed install.
 
-**Preferred package manager not listed:** please [file an issue](https://github.com/nickgerace/gfold/issues/new/choose)!
+### Build From Source Locally
+
+If you want to install from source locally, and not from [crates.io](https://crates.io/crates/gfold), you can clone the repository and build `gfold`.
+
+```shell
+(
+    git clone https://github.com/nickgerace/gfold.git
+    cargo install --locked --path gfold
+)
+```
+
+### Preferred Installation Method Not Listed?
+
+Please [file an issue](https://github.com/nickgerace/gfold/issues/new)!
 
 ## Compatibility
 
@@ -226,17 +243,9 @@ alias gfld=$HOME/.cargo/bin/gfold
 
 For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./docs/THANKS.md)** file.
 
-### Projects
-
-- [nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua), a `neovim` plugin for `gfold` *([announcement Reddit post](https://www.reddit.com/r/neovim/comments/t209wy/introducing_nvimgfoldlua/))*
-
-### Articles
-
-- ["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/), which featured `gfold`
-
-### Packaging
-
-- [Arch Linux community repository](https://archlinux.org/packages/community/x86_64/gfold/) for the `gfold` package
-- [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix) for the `gfold` package
-- [AUR](https://github.com/orhun/PKGBUILDs) for the `gfold-git` (VCS/development) package
-  - In the past, this included the `gfold` and `gfold-bin` packages as well, they those have been deprecated in favor of the official community repository package above
+Name | Type | Description
+--- | --- | ---
+[Arch Linux community repository](https://archlinux.org/packages/community/x86_64/gfold/) | packaging | the `gfold` package _(note: before moving to the community repository, the [AUR](https://github.com/orhun/PKGBUILDs) was previously used for distribution)_
+["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/) | article | featured `gfold`
+[nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix) | packaging | the `gfold` package
+[nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua) | project | a `neovim` plugin for `gfold` *([announcement Reddit post](https://www.reddit.com/r/neovim/comments/t209wy/introducing_nvimgfoldlua/))*
