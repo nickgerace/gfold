@@ -42,6 +42,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Git path option for CLI and config file
 - `git` subcommand usage
 
+### Notes
+
+- Substantial performance gains should be noticeable in certain scenarios
+- Using `RUST_LOG` and `RUST_BACKTRACE` should be more helpful when debugging unexpected output, performance or suspected bugs
+
 ### [3.0.0] - 2022-01-06
 
 ### Added

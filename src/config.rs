@@ -1,7 +1,6 @@
 //! This module contains the config specification and functionality for creating a config.
 
 use crate::error::Error;
-use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{env, fs, io};
@@ -67,7 +66,7 @@ impl Config {
     /// This method tries to deserialize the config file (empty, non-existent, partial or complete)
     /// and uses [`EntryConfig`] as an intermediary struct. This is the primary method used when
     /// creating a config.
-    pub fn try_config() -> Result<Self> {
+    pub fn try_config() -> anyhow::Result<Self> {
         // Within this method, we check if the config file is empty before deserializing it. Users
         // should be able to proceed with empty config files. If empty or not found, then we fall
         // back to the "EntryConfig" default before conversion.
@@ -83,22 +82,22 @@ impl Config {
                 _ => return Err(e.into()),
             },
         };
-        Self::from_entry_config(&entry_config)
+        Ok(Self::from_entry_config(&entry_config)?)
     }
 
     /// This method does not look for the config file and uses [`EntryConfig`]'s defaults instead.
     /// It is best for testing use and when the user wishes to skip config file lookup.
-    pub fn new() -> Result<Self> {
+    pub fn new() -> io::Result<Self> {
         Self::from_entry_config(&EntryConfig::default())
     }
 
     /// This method prints the full config (merged with config file, as needed) as valid, pretty TOML.
-    pub fn print(self) -> Result<()> {
+    pub fn print(self) -> Result<(), toml::ser::Error> {
         print!("{}", toml::to_string_pretty(&self)?);
         Ok(())
     }
 
-    fn from_entry_config(entry_config: &EntryConfig) -> Result<Self> {
+    fn from_entry_config(entry_config: &EntryConfig) -> io::Result<Self> {
         Ok(Config {
             path: match &entry_config.path {
                 Some(s) => s.clone(),

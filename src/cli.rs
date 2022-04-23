@@ -4,7 +4,6 @@
 use crate::config::{ColorMode, Config, DisplayMode};
 use crate::error::Error;
 use crate::run;
-use anyhow::Result;
 use argh::FromArgs;
 use log::debug;
 use std::env;
@@ -65,7 +64,7 @@ struct Args {
 
 /// Parse CLI arguments, initialize the logger, merge configurations as needed, and call
 /// [`run::run()`] with the resulting [`Config`].
-pub fn parse_and_run() -> Result<()> {
+pub fn parse_and_run() -> anyhow::Result<()> {
     // First and foremost, get logging up and running. We want logs as quickly as possible for
     // debugging by setting "RUST_LOG".
     let args: Args = argh::from_env();
@@ -111,7 +110,8 @@ pub fn parse_and_run() -> Result<()> {
 
     debug!("finalized config options");
     match &args.dry_run {
-        true => config.print(),
-        false => run::run(&config),
+        true => config.print()?,
+        false => run::run(&config)?,
     }
+    Ok(())
 }
