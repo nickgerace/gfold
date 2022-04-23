@@ -3,16 +3,19 @@
 use log::{debug, error, warn};
 use rayon::prelude::*;
 use std::fs::DirEntry;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::{fs, io};
 
-/// This type represents bundled target Git directories that were generated from a given [`DirEntry`].
-type Targets = io::Result<Option<Vec<PathBuf>>>;
+enum TargetOption {
+    Multiple(Vec<PathBuf>),
+    Single(PathBuf),
+    None,
+}
 
 /// Ensure the entry is a directory and is not hidden. Then, check if a Git sub directory exists,
 /// which will indicate if the entry is a repository. Finally, generate targets based on that
 /// repository.
-fn process_entry(entry: &DirEntry) -> Targets {
+fn process_entry(entry: &DirEntry) -> io::Result<TargetOption> {
     match entry.file_type()?.is_dir()
         && !entry
             .file_name()
@@ -26,17 +29,18 @@ fn process_entry(entry: &DirEntry) -> Targets {
             match git_sub_directory.exists() && git_sub_directory.is_dir() {
                 true => {
                     debug!("found target: {:?}", &path);
-                    Ok(Some(vec![path]))
+                    Ok(TargetOption::Single(path))
                 }
-                false => Ok(Some(recursive_target_gen(&path)?)),
+                false => Ok(TargetOption::Multiple(generate_targets(path)?)),
             }
         }
-        false => Ok(None),
+        false => Ok(TargetOption::None),
     }
 }
 
-/// Recursive function for generating targets in a child directory.
-pub fn recursive_target_gen(path: &Path) -> io::Result<Vec<PathBuf>> {
+/// Generate targets from a given [`PathBuf`] based on its children (recursively).
+/// We use recursion paired with [`rayon`] since we prioritize speed over memory use.
+pub fn generate_targets(path: PathBuf) -> io::Result<Vec<PathBuf>> {
     let entries: Vec<DirEntry> = match fs::read_dir(&path) {
         Ok(o) => o.filter_map(|r| r.ok()).collect(),
         Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
@@ -49,22 +53,18 @@ pub fn recursive_target_gen(path: &Path) -> io::Result<Vec<PathBuf>> {
         }
     };
 
-    let targets = entries
+    let processed = entries
         .par_iter()
         .map(process_entry)
-        .collect::<Vec<Targets>>();
+        .collect::<Vec<io::Result<TargetOption>>>();
 
-    let mut results = vec![];
-    for target in targets {
-        match target {
-            Ok(v) => {
-                if let Some(mut v) = v {
-                    if !v.is_empty() {
-                        results.append(&mut v);
-                    }
-                }
-            }
-            Err(e) => return Err(e),
+    let mut results = Vec::new();
+    for entry in processed {
+        let entry = entry?;
+        if let TargetOption::Multiple(targets) = entry {
+            results.extend(targets);
+        } else if let TargetOption::Single(target) = entry {
+            results.push(target);
         }
     }
     Ok(results)

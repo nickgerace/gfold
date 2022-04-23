@@ -29,6 +29,13 @@ cargo build --all-targets
 > cargo nextest run
 > ```
 
+If you'd like to mass "fix" everything, you should commit/save existing work and execute the following:
+
+```shell
+cargo fix --all-targets --all-features --allow-dirty --allow-staged
+cargo clippy --fix --all-features --all-targets --allow-dirty --allow-staged
+```
+
 ## Performance Checks
 
 Navigate to the [README in the `scripts` directory](../scripts/README.md) for more information on
@@ -37,7 +44,6 @@ how to run performance checks.
 ## Optional Checks
 
 The following checks are optional and should be run occasionally.
-
 
 ```shell
 # This command requires a nightly toolchain to be installed.

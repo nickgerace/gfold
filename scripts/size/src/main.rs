@@ -16,6 +16,7 @@ fn main() {
     let output = Command::new("cargo")
         .arg("build")
         .arg("--release")
+        .current_dir(repo)
         .output()
         .expect("could not execute command");
     if !output.status.success() {

@@ -3,7 +3,6 @@
 use crate::config::DisplayMode;
 use crate::error::Error;
 use crate::status::Status;
-use anyhow::Result;
 use git2::{ErrorCode, Reference, Remote, Repository, StatusOptions};
 use log::{debug, trace};
 use rayon::prelude::*;
@@ -47,23 +46,21 @@ impl Report {
         status: &Status,
         url: Option<String>,
         email: Option<String>,
-    ) -> Result<Self> {
+    ) -> Result<Self, crate::error::Error> {
         Ok(Self {
             name: match path.file_name() {
                 Some(s) => match s.to_str() {
                     Some(s) => s.to_string(),
-                    None => {
-                        return Err(Error::FileNameToStrConversionFailure(path.to_path_buf()).into())
-                    }
+                    None => return Err(Error::FileNameToStrConversionFailure(path.to_path_buf())),
                 },
-                None => return Err(Error::FileNameNotFound(path.to_path_buf()).into()),
+                None => return Err(Error::FileNameNotFound(path.to_path_buf())),
             },
             branch: (*branch).into(),
             status: *status,
             parent: match path.parent() {
                 Some(s) => match s.to_str() {
                     Some(s) => Some(s.to_string()),
-                    None => return Err(Error::PathToStrConversionFailure(s.to_path_buf()).into()),
+                    None => return Err(Error::PathToStrConversionFailure(s.to_path_buf())),
                 },
                 None => None,
             },
@@ -75,24 +72,26 @@ impl Report {
 
 /// Generate [`LabeledReports`] for a given path and its children. The [`DisplayMode`] is required
 /// because any two display modes can require differing amounts of data to be collected.
-pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> Result<LabeledReports> {
+pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> anyhow::Result<LabeledReports> {
     let include_email = match display_mode {
         DisplayMode::Standard | DisplayMode::Json => true,
         DisplayMode::Classic => false,
     };
 
-    let unprocessed = target::recursive_target_gen(path)?
+    let unprocessed = target::generate_targets(path.to_path_buf())?
         .par_iter()
         .map(|path| generate_report(path, include_email))
-        .collect::<Vec<Result<Report>>>();
+        .collect::<Vec<anyhow::Result<Report>>>();
 
     let mut processed = LabeledReports::new();
     for wrapped_report in unprocessed {
         match wrapped_report {
             Ok(report) => {
-                if let Some(mut v) = processed.insert(report.parent.clone(), vec![report.clone()]) {
-                    v.push(report.clone());
-                    processed.insert(report.parent, v);
+                if let Some(mut reports) =
+                    processed.insert(report.parent.clone(), vec![report.clone()])
+                {
+                    reports.push(report.clone());
+                    processed.insert(report.parent, reports);
                 }
             }
             Err(e) => return Err(e),
@@ -102,7 +101,7 @@ pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> Result<Label
 }
 
 /// Generates a report with a given path.
-fn generate_report(repo_path: &Path, include_email: bool) -> Result<Report> {
+fn generate_report(repo_path: &Path, include_email: bool) -> anyhow::Result<Report> {
     debug!(
         "attemping to generate report for repository at path: {:?}",
         repo_path
@@ -164,11 +163,15 @@ fn generate_report(repo_path: &Path, include_email: bool) -> Result<Report> {
         "finalized report collection for repository at path: {:?}",
         repo_path
     );
-    Report::new(repo_path, branch, &status, url, email)
+    Ok(Report::new(repo_path, branch, &status, url, email)?)
 }
 
 /// Checks if local commit(s) on the current branch have not yet been pushed to the remote.
-fn is_unpushed(repo: &Repository, head: &Reference, remote_name: &str) -> Result<bool> {
+fn is_unpushed(
+    repo: &Repository,
+    head: &Reference,
+    remote_name: &str,
+) -> Result<bool, git2::Error> {
     let local_head = head.peel_to_commit()?;
     let remote = format!(
         "{}/{}",
@@ -227,7 +230,9 @@ fn get_email(repository: &Repository) -> Option<String> {
     None
 }
 
-fn choose_remote_greedily(repository: &Repository) -> Result<(Option<Remote>, Option<String>)> {
+fn choose_remote_greedily(
+    repository: &Repository,
+) -> Result<(Option<Remote>, Option<String>), git2::Error> {
     let remotes = repository.remotes()?;
     Ok(match remotes.get(0) {
         Some(remote_name) => (

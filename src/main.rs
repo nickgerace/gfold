@@ -2,7 +2,6 @@
 //! track of multiple Git repositories. The source code uses private modules rather than leveraging
 //! a library via `lib.rs`.
 
-use anyhow::Result;
 use env_logger::Builder;
 use log::debug;
 use log::LevelFilter;
@@ -18,7 +17,7 @@ mod status;
 
 /// Initializes the logger based on the debug flag and `RUST_LOG` environment variable and calls
 /// [`cli::parse_and_run()`] to generate a [`config::Config`] and eventually call [`run::run()`].
-fn main() -> Result<()> {
+fn main() -> anyhow::Result<()> {
     match env::var("RUST_LOG").is_err() {
         true => Builder::new().filter_level(LevelFilter::Off).init(),
         false => env_logger::init(),
