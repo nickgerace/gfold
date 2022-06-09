@@ -4,42 +4,47 @@
 //! gfold is via CLI and not a library. Thus, this loose bench executes gfold as a CLI similarly
 //! to real world use. This benchmark is not precise and is designed to give a high level overview.
 
+const RUNS: usize = 20;
+
 // TODO: add consistency deviation. We should see how far each result strays from the average. We
 // want gfold to perform consistently as well as quickly.
 
+use anyhow::anyhow;
+use anyhow::Result;
 use std::path::Path;
 use std::process::Command;
 use std::time::{Duration, Instant};
 
-fn main() {
+fn main() -> Result<()> {
     let global_instant = Instant::now();
 
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
     let repo = manifest_dir
         .parent()
-        .expect("could not get parent")
+        .ok_or_else(|| anyhow!("could not get parent"))?
         .parent()
-        .expect("could not get parent");
+        .ok_or_else(|| anyhow!("could not get parent"))?;
 
-    println!("Running \"cargo build --release\"...");
+    println!("running \"cargo build --release\"...");
     let output = Command::new("cargo")
         .arg("build")
         .arg("--release")
         .current_dir(repo)
-        .output()
-        .expect("could not execute command");
+        .output()?;
     if !output.status.success() {
-        panic!("command failed: \"cargo build --release\"");
+        return Err(anyhow!("command failed: \"cargo build --release\""));
     }
 
     let binary = repo.join("target").join("release").join("gfold");
-    let home_path = dirs::home_dir().expect("could not find home directory");
+    let home_path = dirs::home_dir().ok_or_else(|| anyhow!("could not get home dir"))?;
     let installed = home_path.join(".cargo").join("bin").join("gfold");
-    let home = home_path.to_str().expect("could not convert to str");
+    let home = home_path
+        .to_str()
+        .ok_or_else(|| anyhow!("could not get convert to str"))?;
 
     // Add "1" to total runs to ensure caching does not skew results. We need one
     // "warm up" run.
-    let runs = 41;
+    let runs = RUNS + 1;
 
     // Loosely bench using the home directory as the target.
     let mut home_new_durations = Vec::new();
@@ -51,7 +56,7 @@ fn main() {
         // Alternate at the halfway point. Though, it is doubtful that this would actually change anything.
         // Only calculate the average after the first run to avoid caching skewing results.
         if run > runs / 2 {
-            let (old_duration, new_duration) = loose_bench(&installed, &binary, &home_path);
+            let (old_duration, new_duration) = loose_bench(&installed, &binary, &home_path)?;
             if first {
                 first = false;
             } else {
@@ -59,7 +64,7 @@ fn main() {
                 home_old_durations.push(old_duration);
             }
         } else {
-            let (new_duration, old_duration) = loose_bench(&binary, &installed, &home_path);
+            let (new_duration, old_duration) = loose_bench(&binary, &installed, &home_path)?;
             if first {
                 first = false;
             } else {
@@ -70,8 +75,12 @@ fn main() {
     }
 
     // Loosely bench with the parent directory of the repository as the target.
-    let parent_of_repo = repo.parent().expect("could not get parent");
-    let parent = parent_of_repo.to_str().expect("could not convert to str");
+    let parent_of_repo = repo
+        .parent()
+        .ok_or_else(|| anyhow!("could not get parent"))?;
+    let parent = parent_of_repo
+        .to_str()
+        .ok_or_else(|| anyhow!("could not conver to str"))?;
     let mut parent_new_durations = Vec::new();
     let mut parent_old_durations = Vec::new();
     let mut first = true;
@@ -81,7 +90,7 @@ fn main() {
         // Alternate at the halfway point. Though, it is doubtful that this would actually change anything.
         // Only calculate the average after the first run to avoid caching skewing results.
         if run > runs / 2 {
-            let (old_duration, new_duration) = loose_bench(&installed, &binary, parent_of_repo);
+            let (old_duration, new_duration) = loose_bench(&installed, &binary, parent_of_repo)?;
             if first {
                 first = false;
             } else {
@@ -89,7 +98,7 @@ fn main() {
                 parent_old_durations.push(old_duration);
             }
         } else {
-            let (new_duration, old_duration) = loose_bench(&binary, &installed, parent_of_repo);
+            let (new_duration, old_duration) = loose_bench(&binary, &installed, parent_of_repo)?;
             if first {
                 first = false;
             } else {
@@ -130,11 +139,13 @@ fn main() {
     // print.
     println!();
     println!("Total duration: {:?}", global_instant.elapsed());
+
+    Ok(())
 }
 
-fn loose_bench(first: &Path, second: &Path, target: &Path) -> (Duration, Duration) {
-    let first_duration = execute(first, target);
-    let second_duration = execute(second, target);
+fn loose_bench(first: &Path, second: &Path, target: &Path) -> Result<(Duration, Duration)> {
+    let first_duration = execute(first, target)?;
+    let second_duration = execute(second, target)?;
     let (first_text, second_text) = match first_duration {
         first_duration if first_duration > second_duration => ("LOST", "WON "),
         first_duration if first_duration < second_duration => ("WON ", "LOST"),
@@ -145,32 +156,32 @@ fn loose_bench(first: &Path, second: &Path, target: &Path) -> (Duration, Duratio
         "  {} @ {:?} - {}",
         first_text,
         first_duration,
-        first.to_str().expect("could not convert to str"),
+        first
+            .to_str()
+            .ok_or_else(|| anyhow!("could not convert to str"))?
     );
     println!(
         "  {} @ {:?} - {}",
         second_text,
         second_duration,
-        second.to_str().expect("could not convert to str"),
+        second
+            .to_str()
+            .ok_or_else(|| anyhow!("could not convert to str"))?,
     );
-    (first_duration, second_duration)
+    Ok((first_duration, second_duration))
 }
 
-fn execute(binary: &Path, target: &Path) -> Duration {
+fn execute(binary: &Path, target: &Path) -> Result<Duration> {
     let start = Instant::now();
-    let output = Command::new(binary)
-        .arg("-i")
-        .arg(target)
-        .output()
-        .expect("could not execute command");
+    let output = Command::new(binary).arg("-i").arg(target).output()?;
     let duration = start.elapsed();
 
     // Check for failure _after_ the bench finishes.
     if !output.status.success() {
-        panic!("bench failed");
+        return Err(anyhow!("bench execution failed"));
     }
 
-    duration
+    Ok(duration)
 }
 
 fn average_duration(durations: &[Duration]) -> Duration {

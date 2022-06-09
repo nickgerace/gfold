@@ -1,7 +1,8 @@
 [package]
-name = "size"
+name = "compare-size"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1"
 dirs = "4"

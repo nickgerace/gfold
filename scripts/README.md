@@ -1,10 +1,10 @@
-# Scripts
+# Performance Testing Scripts
 
 Run a script by executing `cargo run` in its directory.
 
 ```shell
 cd ./scripts/<script>/
-cargo run
+cargo run -q
 ```
 
 Alternatively, you can run `cargo run` from another directory.

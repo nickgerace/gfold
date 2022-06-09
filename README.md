@@ -179,39 +179,11 @@ cargo install-update -a
 ### Download a Binary
 
 If you do not want to use one of the above installation methods and do not want to clone the repository, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
+For an example on how to do that, refer to the [manual install](./docs/MANUAL_INSTALL.md) guide.
 
-#### Downloading and Installing the Binary
+### Build From Source
 
-If you would prefer to use a convenience script over downloading directly from the aforementioned releases page, we have one!
-You can execute the installation helper script on a compatible system with `bash` installed (e.g. macOS and Linux).
-
-```shell
-curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/install.sh | bash
-```
-
-_Note:_ the installation convenience script _does not verify the binary with a checksum_.
-Discretion is advised, including downloading and reading the script before execution.
-
-#### Uninstalling the Downloaded Binary
-
-To uninstall `gfold` fully after using the above installation method, execute the following script:
-
-```shell
-curl -s https://raw.githubusercontent.com/nickgerace/gfold/main/scripts/uninstall.sh | bash
-```
-
-The uninstall script can also be used for cleanup in the event of a failed install.
-
-### Build From Source Locally
-
-If you want to install from source locally, and not from [crates.io](https://crates.io/crates/gfold), you can clone the repository and build `gfold`.
-
-```shell
-(
-    git clone https://github.com/nickgerace/gfold.git
-    cargo install --locked --path gfold
-)
-```
+If you would like an example on how to build from source, refer to the [manual install](./docs/MANUAL_INSTALL.md) guide.
 
 ### Preferred Installation Method Not Listed?
 
