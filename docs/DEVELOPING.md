@@ -18,16 +18,10 @@ Now, ensure that lints, tests, and builds succeed.
 ```shell
 cargo fmt --all -- --check
 cargo clippy -- -D warnings
-cargo doc --all
-cargo test
+RUSTDOCFLAGS="-Dwarnings" cargo doc --all
+cargo test -- --nocapture
 cargo build --all-targets
 ```
-
-> Alternatively, you can replace `cargo test` above with [cargo nextest](https://github.com/nextest-rs/nextest).
->
-> ```shell
-> cargo nextest run
-> ```
 
 If you'd like to mass "fix" everything, you should commit/save existing work and execute the following:
 
@@ -36,10 +30,9 @@ cargo fix --all-targets --all-features --allow-dirty --allow-staged
 cargo clippy --fix --all-features --all-targets --allow-dirty --allow-staged
 ```
 
-## Performance Checks
+## Running Performance Testing Scripts
 
-Navigate to the [README in the `scripts` directory](../scripts/README.md) for more information on
-how to run performance checks.
+For performance testing, navigate to the [README](../scripts/README.md) to get start.
 
 ## Optional Checks
 
