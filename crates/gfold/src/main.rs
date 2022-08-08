@@ -56,7 +56,14 @@ mod tests {
         //         └── two
 
         let manifest_directory = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let target = manifest_directory.join("target");
+        let target = manifest_directory
+            .parent()
+            .expect("could not get parent")
+            .parent()
+            .expect("could not get parent")
+            .parent()
+            .expect("could not get parent")
+            .join("target");
         create_directory(&target);
 
         // Warning: setting up test directory by removing it and its contents recursively.
@@ -117,6 +124,12 @@ mod tests {
 
         // Now, let's ensure our reports are what we expect.
         let test_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .expect("could not get parent")
+            .parent()
+            .expect("could not get parent")
+            .parent()
+            .expect("could not get parent")
             .join("target")
             .join("test");
         let mut expected_reports: LabeledReports = BTreeMap::new();

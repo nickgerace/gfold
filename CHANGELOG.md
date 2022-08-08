@@ -7,7 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Added
+
+- Debug symbol stripping for `cargo install` users (result: ~79% of the size of `4.0.1`)
+
+### Changed
+
+- Switched to `cargo` workspaces
 
 ### [4.0.1] - 2022-07-05
 

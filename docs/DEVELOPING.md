@@ -30,9 +30,13 @@ cargo fix --all-targets --all-features --allow-dirty --allow-staged
 cargo clippy --fix --all-features --all-targets --allow-dirty --allow-staged
 ```
 
-## Running Performance Testing Scripts
+## Running Performance Tests
 
-For performance testing, navigate to the [README](../scripts/README.md) to get start.
+See available packages with the following command:
+
+```shell
+cargo run -p
+```
 
 ## Optional Checks
 
