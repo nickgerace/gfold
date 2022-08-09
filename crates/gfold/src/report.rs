@@ -204,7 +204,7 @@ fn get_email(repository: &Repository) -> Option<String> {
             return None;
         }
     };
-    let entries = match config.entries(None) {
+    let mut entries = match config.entries(None) {
         Ok(v) => v,
         Err(e) => {
             trace!("ignored error: {}", e);
@@ -213,7 +213,7 @@ fn get_email(repository: &Repository) -> Option<String> {
     };
 
     // Greedily find our "user.email" value. Return the first result found.
-    for entry in &entries {
+    while let Some(entry) = entries.next() {
         match entry {
             Ok(entry) => {
                 if let Some(name) = entry.name() {

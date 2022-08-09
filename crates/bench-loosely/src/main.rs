@@ -21,7 +21,7 @@ fn main() {
         .parent()
         .expect("could not get parent");
 
-    println!("Running \"cargo build --release\"...");
+    println!("running in {:?}: cargo build --release", &repo);
     let output = Command::new("cargo")
         .arg("build")
         .arg("--release")
