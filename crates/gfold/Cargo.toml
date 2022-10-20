@@ -10,11 +10,11 @@ readme = "README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
 edition = "2021"
-version = "4.0.1"
+version = "4.1.0"
 
 [dependencies]
 anyhow = { version = "1", features = ["backtrace"] }
-argh = "0"
+clap = { version = "4", features = ["derive"] }
 dirs = "4"
 git2 = { version = "0", default_features = false }
 log = "0"
@@ -28,3 +28,6 @@ toml = "0"
 # Source: https://github.com/env-logger-rs/env_logger/blob/v0.9.0/Cargo.toml#L47
 # Removed features: ["regex", "termcolor"]
 env_logger = { version = "0", features = ["atty", "humantime"], default_features = false }
+
+[dev-dependencies]
+pretty_assertions = "1"

@@ -16,7 +16,7 @@ Steps should be executed in sequential order.
 cargo fmt --all -- --check
 cargo clippy -- -D warnings
 cargo test
-cargo doc
+RUSTDOCFLAGS="-Dwarnings" cargo doc --all
 cargo build
 ```
 
