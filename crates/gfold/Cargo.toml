@@ -6,7 +6,7 @@ homepage = "https://nickgerace.dev"
 keywords = ["git", "cli"]
 license = "Apache-2.0"
 name = "gfold"
-readme = "README.md"
+readme = "../../README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
 edition = "2021"

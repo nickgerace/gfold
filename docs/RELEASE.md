@@ -24,7 +24,7 @@ cargo build
 - [ ] Test and verify the publishing workflow:
 
 ```shell
-cargo publish --dry-run
+cargo publish --dry-run -p gfold
 ```
 
 - [ ] Merge the preparation commit into `main`
@@ -39,7 +39,7 @@ git push --tags origin main
 - [ ] Publish the crate:
 
 ```shell
-cargo publish
+cargo publish -p gfold
 ```
 
 - [ ] Verify that the [crate](https://crates.io/crates/gfold) on `crates.io` looks correct
