@@ -21,7 +21,7 @@ const HEAD: &str = "HEAD";
 pub type LabeledReports = BTreeMap<Option<String>, Vec<Report>>;
 
 /// A collection of results for a Git repository at a given path.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Report {
     /// The directory name of the Git repository.
     pub name: String,

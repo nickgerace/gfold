@@ -35,14 +35,20 @@ mod tests {
     use crate::config::{ColorMode, Config, DisplayMode};
     use crate::report::{LabeledReports, Report};
     use crate::status::Status;
+
+    use anyhow::{anyhow, Result};
     use git2::ErrorCode;
     use git2::Repository;
+    use pretty_assertions::assert_eq;
     use std::collections::BTreeMap;
     use std::path::{Path, PathBuf};
     use std::{env, fs, io};
 
+    /// This integration test for `gfold` covers an end-to-end usage scenario. It does not
+    /// _remove_ anything in the filesystem (for saftey), so you must delete the `test`
+    /// directory underneath `target` to regenerate a clean dataset.
     #[test]
-    fn integration() {
+    fn integration() -> Result<()> {
         // Test directory structure within "target":
         // └── test
         //     ├── bar
@@ -54,56 +60,34 @@ mod tests {
         //         │   └── newfile
         //         ├── three
         //         └── two
-
-        let manifest_directory = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let target = manifest_directory
-            .parent()
-            .expect("could not get parent")
-            .parent()
-            .expect("could not get parent")
-            .parent()
-            .expect("could not get parent")
-            .join("target");
-        create_directory(&target);
-
-        // Warning: setting up test directory by removing it and its contents recursively.
-        let test = target.join("test");
-        if let Err(e) = fs::remove_dir_all(&test) {
-            if e.kind() != io::ErrorKind::NotFound {
-                panic!(
-                    "could not remove directory and its contents ({:?}) due to error kind: {:?}",
-                    &test,
-                    e.kind()
-                );
-            }
-        }
-        create_directory(&test);
+        let test_directory = integration_init()?;
+        create_directory(&test_directory)?;
 
         for name in ["foo", "bar", "baz"] {
-            let current = test.join(name);
-            create_directory(&current);
-            Repository::init(&current).expect("could not initialize repository");
+            let current = test_directory.join(name);
+            create_directory(&current)?;
+            Repository::init(&current)?;
 
             if name == "foo" {
-                create_file(&current.join("newfile"));
+                create_file(&current.join("newfile"))?;
             }
         }
 
-        let nested = test.join("nested");
-        create_directory(&nested);
+        let nested = test_directory.join("nested");
+        create_directory(&nested)?;
         for name in ["one", "two", "three"] {
             let current = nested.join(name);
-            create_directory(&current);
-            let repository = Repository::init(&current).expect("could not initialize repository");
+            create_directory(&current)?;
+            let repository = Repository::init(&current)?;
 
             if name == "one" {
-                create_file(&current.join("newfile"));
+                create_file(&current.join("newfile"))?;
             }
 
             if name == "two" {
                 if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
                     if e.code() != ErrorCode::Exists {
-                        panic!("{}", e);
+                        return Err(e.into());
                     }
                 }
             }
@@ -111,48 +95,54 @@ mod tests {
             if name == "three" {
                 if let Err(e) = repository.remote("fork", "https://github.com/nickgerace/gfold") {
                     if e.code() != ErrorCode::Exists {
-                        panic!("{}", e);
+                        return Err(e.into());
                     }
                 }
             }
         }
 
-        let mut config = Config::new().expect("could not create new config");
-        config.path = test;
+        let mut config = Config::new()?;
+        config.path = test_directory.clone();
         config.color_mode = ColorMode::Never;
         assert!(run::run(&config).is_ok());
 
         // Now, let's ensure our reports are what we expect.
-        let test_dir = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .parent()
-            .expect("could not get parent")
-            .parent()
-            .expect("could not get parent")
-            .parent()
-            .expect("could not get parent")
-            .join("target")
-            .join("test");
         let mut expected_reports: LabeledReports = BTreeMap::new();
 
-        let key = test_dir
+        let key = test_directory
             .to_str()
-            .expect("could not convert to str")
+            .ok_or_else(|| anyhow!("could not convert PathBuf to &str"))?
             .to_string();
         let mut reports = vec![
-            Report::new(&test_dir.join("foo"), "HEAD", &Status::Unclean, None, None)
-                .expect("could not create report"),
-            Report::new(&test_dir.join("bar"), "HEAD", &Status::Clean, None, None)
-                .expect("could not create report"),
-            Report::new(&test_dir.join("baz"), "HEAD", &Status::Clean, None, None)
-                .expect("could not create report"),
+            Report::new(
+                &test_directory.join("foo"),
+                "HEAD",
+                &Status::Unclean,
+                None,
+                None,
+            )?,
+            Report::new(
+                &test_directory.join("bar"),
+                "HEAD",
+                &Status::Clean,
+                None,
+                None,
+            )?,
+            Report::new(
+                &test_directory.join("baz"),
+                "HEAD",
+                &Status::Clean,
+                None,
+                None,
+            )?,
         ];
         reports.sort_by(|a, b| a.name.cmp(&b.name));
         expected_reports.insert(Some(key), reports);
 
-        let nested_test_dir = test_dir.join("nested");
+        let nested_test_dir = test_directory.join("nested");
         let key = nested_test_dir
             .to_str()
-            .expect("could not convert to str")
+            .ok_or_else(|| anyhow!("could not convert PathBuf to &str"))?
             .to_string();
         let mut reports = vec![
             Report::new(
@@ -161,32 +151,28 @@ mod tests {
                 &Status::Unclean,
                 None,
                 None,
-            )
-            .expect("could not create report"),
+            )?,
             Report::new(
                 &nested_test_dir.join("two"),
                 "HEAD",
                 &Status::Clean,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
-            )
-            .expect("could not create report"),
+            )?,
             Report::new(
                 &nested_test_dir.join("three"),
                 "HEAD",
                 &Status::Clean,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
-            )
-            .expect("could not create report"),
+            )?,
         ];
         reports.sort_by(|a, b| a.name.cmp(&b.name));
         expected_reports.insert(Some(key), reports);
 
         // Use classic display mode to avoid collecting email results.
         config.display_mode = DisplayMode::Classic;
-        let found_labeled_reports = report::generate_reports(&config.path, &config.display_mode)
-            .expect("could not generate reports");
+        let found_labeled_reports = report::generate_reports(&config.path, &config.display_mode)?;
         let mut found_labeled_reports_sorted = LabeledReports::new();
         for labeled_report in found_labeled_reports {
             let mut value = labeled_report.1;
@@ -195,29 +181,48 @@ mod tests {
         }
 
         assert_eq!(found_labeled_reports_sorted, expected_reports);
+        Ok(())
     }
 
-    fn create_directory(path: &Path) {
+    /// Ensure we are underneath the repository root. Safely create the test directory.
+    fn integration_init() -> Result<PathBuf> {
+        let manifest_directory = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let repo_root = manifest_directory
+            .parent()
+            .ok_or_else(|| anyhow!("could not get parent"))?
+            .parent()
+            .ok_or_else(|| anyhow!("could not get parent"))?;
+        assert!(Repository::open(repo_root).is_ok());
+
+        let target = repo_root.join("target");
+        create_directory(&target)?;
+        let test = target.join("test");
+        Ok(test)
+    }
+
+    fn create_directory(path: &Path) -> Result<()> {
         if let Err(e) = fs::create_dir(path) {
             if e.kind() != io::ErrorKind::AlreadyExists {
-                panic!(
+                return Err(anyhow!(
                     "could not create directory ({:?}) due to error kind: {:?}",
                     path,
                     e.kind()
-                );
+                ));
             }
         }
+        Ok(())
     }
 
-    fn create_file(path: &Path) {
+    fn create_file(path: &Path) -> Result<()> {
         if let Err(e) = fs::File::create(path) {
             if e.kind() != io::ErrorKind::AlreadyExists {
-                panic!(
+                return Err(anyhow!(
                     "could not create file ({:?}) due to error kind: {:?}",
                     path,
                     e.kind()
-                );
+                ));
             }
         }
+        Ok(())
     }
 }

@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A summarized interpretation of the status of a Git working tree.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Status {
     Bare,
     Clean,
