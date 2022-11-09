@@ -39,6 +39,8 @@ mod tests {
     use anyhow::{anyhow, Result};
     use git2::ErrorCode;
     use git2::Repository;
+    use git2::Signature;
+    use git2::Oid;
     use pretty_assertions::assert_eq;
     use std::collections::BTreeMap;
     use std::path::{Path, PathBuf};
@@ -98,6 +100,8 @@ mod tests {
                         return Err(e.into());
                     }
                 }
+
+                create_branch(&repository, "feat")?;
             }
         }
 
@@ -224,5 +228,43 @@ mod tests {
             }
         }
         Ok(())
+    }
+
+    fn create_branch(repository: &Repository, name: &str) -> Result<()> {
+        // we need to commit something before branching
+        let commit_oid = commit(repository)?;
+        repository.branch(name, &repository.find_commit(commit_oid).unwrap(), true).unwrap();
+
+        Ok(())
+    }
+
+    // taken from https://github.com/rust-lang/git2-rs/pull/885
+    fn commit(repository: &Repository) -> Result<Oid> {
+        // We will commit the content of the index
+        let mut index = repository.index()?;
+        let tree_oid = index.write_tree()?;
+        let tree = repository.find_tree(tree_oid)?;
+
+        let parent_commit = match repository.revparse_single("HEAD") {
+            Ok(obj) => Some(obj.into_commit().unwrap()),
+            // First commit so no parent commit
+            Err(e) if e.code() == ErrorCode::NotFound => None,
+            Err(_e) => panic!(),
+        };
+
+        let mut parents = Vec::new();
+        if parent_commit.is_some() {
+            parents.push(parent_commit.as_ref().unwrap());
+        }
+
+        let sig = Signature::now("Bob", "bob@bob").unwrap();
+        Ok(repository.commit(
+            Some("HEAD"),
+            &sig,
+            &sig,
+            "hello",
+            &tree,
+            &parents[..],
+        )?)
     }
 }
