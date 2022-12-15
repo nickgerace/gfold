@@ -16,18 +16,18 @@ version = "4.1.0"
 anyhow = { version = "1", features = ["backtrace"] }
 clap = { version = "4", features = ["derive"] }
 dirs = "4"
-git2 = { version = "0", default_features = false }
-log = "0"
+git2 = { version = "0.15", default_features = false }
+log = "0.4"
 rayon = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 termcolor = "1"
 thiserror = "1"
-toml = "0"
+toml = "0.5"
 
 # Source: https://github.com/env-logger-rs/env_logger/blob/v0.9.0/Cargo.toml#L47
 # Removed features: ["regex", "termcolor"]
-env_logger = { version = "0", features = ["atty", "humantime"], default_features = false }
+env_logger = { version = "0.9", features = ["atty", "humantime"], default_features = false }
 
 [dev-dependencies]
 pretty_assertions = "1"
