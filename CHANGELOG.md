@@ -10,6 +10,17 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 The latest version contains all changes.
 
+## 4.1.1 - 2022-12-19
+
+### Changed
+
+- Ensure dependencies have their minor version fields locked
+- Update dependencies
+
+### Notes
+
+- This `CHANGELOG` entry was accidentally not included in the `4.1.1` tag
+
 ## 4.1.0 - 2022-10-20
 
 - Add debug symbol stripping for `cargo install` users (result: ~79% of the size of `4.0.1`)
