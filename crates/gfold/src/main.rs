@@ -37,142 +37,148 @@ mod tests {
     use crate::status::Status;
 
     use anyhow::{anyhow, Result};
+
     use git2::ErrorCode;
+    use git2::Oid;
     use git2::Repository;
     use git2::Signature;
-    use git2::Oid;
+
     use pretty_assertions::assert_eq;
     use std::collections::BTreeMap;
+    use std::fs::File;
     use std::path::{Path, PathBuf};
-    use std::{env, fs, io};
+    use std::{fs, io};
+    use tempfile::tempdir;
 
-    /// This integration test for `gfold` covers an end-to-end usage scenario. It does not
-    /// _remove_ anything in the filesystem (for saftey), so you must delete the `test`
-    /// directory underneath `target` to regenerate a clean dataset.
+    /// This integration test for `gfold` covers an end-to-end usage scenario. It uses the
+    /// [`tempfile`](tempfile) crate to create some repositories with varying states and levels
+    /// of nesting.
     #[test]
     fn integration() -> Result<()> {
-        // Test directory structure within "target":
-        // └── test
-        //     ├── bar
-        //     ├── baz
-        //     ├── foo
-        //     │   └── newfile
+        env_logger::builder()
+            .is_test(true)
+            .filter_level(LevelFilter::Info)
+            .try_init()?;
+
+        // Temporary directory structure:
+        // └── root
+        //     ├── one (repo)
+        //     │   └── file
+        //     ├── two (repo)
+        //     ├── three (repo)
         //     └── nested
-        //         ├── one
-        //         │   └── newfile
-        //         ├── three
-        //         └── two
-        let test_directory = integration_init()?;
-        create_directory(&test_directory)?;
+        //         ├── four (repo)
+        //         ├── five (repo)
+        //         │   └── file
+        //         ├── six (repo)
+        //         └── seven (repo)
+        let root = tempdir()?;
+        let repo_one = create_directory(&root, "one")?;
+        let repo_two = create_directory(&root, "two")?;
+        let repo_three = create_directory(&root, "three")?;
 
-        for name in ["foo", "bar", "baz"] {
-            let current = test_directory.join(name);
-            create_directory(&current)?;
-            Repository::init(&current)?;
+        let nested = create_directory(&root, "nested")?;
+        let repo_four = create_directory(&nested, "four")?;
+        let repo_five = create_directory(&nested, "five")?;
+        let repo_six = create_directory(&nested, "six")?;
+        let repo_seven = create_directory(&nested, "seven")?;
 
-            if name == "foo" {
-                create_file(&current.join("newfile"))?;
+        // Repo One
+        Repository::init(&repo_one)?;
+        create_file(&repo_one)?;
+
+        // Repo Two
+        Repository::init(&repo_two)?;
+
+        // Repo Three
+        Repository::init(&repo_three)?;
+
+        // Repo Four
+        let repository = Repository::init(&repo_four)?;
+        if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
+            if e.code() != ErrorCode::Exists {
+                return Err(e.into());
             }
         }
 
-        let nested = test_directory.join("nested");
-        create_directory(&nested)?;
-        for name in ["one", "two", "three"] {
-            let current = nested.join(name);
-            create_directory(&current)?;
-            let repository = Repository::init(&current)?;
+        // Repo Five
+        Repository::init(&repo_five)?;
+        create_file(&repo_five)?;
 
-            if name == "one" {
-                create_file(&current.join("newfile"))?;
-            }
-
-            if name == "two" {
-                if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
-                    if e.code() != ErrorCode::Exists {
-                        return Err(e.into());
-                    }
-                }
-            }
-
-            if name == "three" {
-                if let Err(e) = repository.remote("fork", "https://github.com/nickgerace/gfold") {
-                    if e.code() != ErrorCode::Exists {
-                        return Err(e.into());
-                    }
-                }
-
-                create_branch(&repository, "feat")?;
+        // Repo Six
+        let repository = Repository::init(&repo_six)?;
+        if let Err(e) = repository.remote("fork", "https://github.com/nickgerace/gfold") {
+            if e.code() != ErrorCode::Exists {
+                return Err(e.into());
             }
         }
+        commit_head_and_create_branch(&repository, "feat")?;
 
-        let mut config = Config::new()?;
-        config.path = test_directory.clone();
+        // Repo Seven
+        let repository = Repository::init(&repo_seven)?;
+        if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
+            if e.code() != ErrorCode::Exists {
+                return Err(e.into());
+            }
+        }
+        commit_head_and_create_branch(&repository, "needtopush")?;
+        repository.set_head("refs/heads/needtopush")?;
+
+        // Run once with default display mode.
+        let mut config = Config::try_config_default()?;
+        config.path = root.path().to_path_buf();
         config.color_mode = ColorMode::Never;
-        assert!(run::run(&config).is_ok());
+        run::run(&config)?;
 
         // Now, let's ensure our reports are what we expect.
         let mut expected_reports: LabeledReports = BTreeMap::new();
-
-        let key = test_directory
+        let expected_reports_key = root
+            .path()
             .to_str()
             .ok_or_else(|| anyhow!("could not convert PathBuf to &str"))?
             .to_string();
-        let mut reports = vec![
-            Report::new(
-                &test_directory.join("foo"),
-                "HEAD",
-                &Status::Unclean,
-                None,
-                None,
-            )?,
-            Report::new(
-                &test_directory.join("bar"),
-                "HEAD",
-                &Status::Clean,
-                None,
-                None,
-            )?,
-            Report::new(
-                &test_directory.join("baz"),
-                "HEAD",
-                &Status::Clean,
-                None,
-                None,
-            )?,
+        let mut expected_reports_raw = vec![
+            Report::new(&repo_one, "HEAD", &Status::Unclean, None, None)?,
+            Report::new(&repo_two, "HEAD", &Status::Clean, None, None)?,
+            Report::new(&repo_three, "HEAD", &Status::Clean, None, None)?,
         ];
-        reports.sort_by(|a, b| a.name.cmp(&b.name));
-        expected_reports.insert(Some(key), reports);
+        expected_reports_raw.sort_by(|a, b| a.name.cmp(&b.name));
+        expected_reports.insert(Some(expected_reports_key), expected_reports_raw);
 
-        let nested_test_dir = test_directory.join("nested");
-        let key = nested_test_dir
+        // Add nested reports to the expected reports map.
+        let nested_expected_reports_key = nested
             .to_str()
             .ok_or_else(|| anyhow!("could not convert PathBuf to &str"))?
             .to_string();
-        let mut reports = vec![
+        let mut nested_expected_reports_raw = vec![
             Report::new(
-                &nested_test_dir.join("one"),
-                "HEAD",
-                &Status::Unclean,
-                None,
-                None,
-            )?,
-            Report::new(
-                &nested_test_dir.join("two"),
+                &repo_four,
                 "HEAD",
                 &Status::Clean,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
             )?,
+            Report::new(&repo_five, "HEAD", &Status::Unclean, None, None)?,
             Report::new(
-                &nested_test_dir.join("three"),
-                "HEAD",
-                &Status::Clean,
+                &repo_six,
+                "master",
+                &Status::Unpushed,
+                Some("https://github.com/nickgerace/gfold".to_string()),
+                None,
+            )?,
+            Report::new(
+                &repo_seven,
+                "needtopush",
+                &Status::Unpushed,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
             )?,
         ];
-        reports.sort_by(|a, b| a.name.cmp(&b.name));
-        expected_reports.insert(Some(key), reports);
+        nested_expected_reports_raw.sort_by(|a, b| a.name.cmp(&b.name));
+        expected_reports.insert(
+            Some(nested_expected_reports_key),
+            nested_expected_reports_raw,
+        );
 
         // Use classic display mode to avoid collecting email results.
         config.display_mode = DisplayMode::Classic;
@@ -184,87 +190,75 @@ mod tests {
             found_labeled_reports_sorted.insert(labeled_report.0.clone(), value.clone());
         }
 
-        assert_eq!(found_labeled_reports_sorted, expected_reports);
+        assert_eq!(
+            expected_reports,             // expected
+            found_labeled_reports_sorted  // actual
+        );
         Ok(())
     }
 
-    /// Ensure we are underneath the repository root. Safely create the test directory.
-    fn integration_init() -> Result<PathBuf> {
-        let manifest_directory = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let repo_root = manifest_directory
-            .parent()
-            .ok_or_else(|| anyhow!("could not get parent"))?
-            .parent()
-            .ok_or_else(|| anyhow!("could not get parent"))?;
-        assert!(Repository::open(repo_root).is_ok());
+    fn create_directory<P: AsRef<Path>>(parent: P, name: &str) -> Result<PathBuf> {
+        let parent = parent.as_ref();
+        let new_directory = parent.join(name);
 
-        let target = repo_root.join("target");
-        create_directory(&target)?;
-        let test = target.join("test");
-        Ok(test)
-    }
-
-    fn create_directory(path: &Path) -> Result<()> {
-        if let Err(e) = fs::create_dir(path) {
+        if let Err(e) = fs::create_dir(&new_directory) {
             if e.kind() != io::ErrorKind::AlreadyExists {
                 return Err(anyhow!(
                     "could not create directory ({:?}) due to error kind: {:?}",
-                    path,
+                    &new_directory,
                     e.kind()
                 ));
             }
         }
+        Ok(new_directory)
+    }
+
+    fn create_file<P: AsRef<Path>>(parent: P) -> Result<()> {
+        let parent = parent.as_ref();
+        File::create(parent.join("file"))?;
         Ok(())
     }
 
-    fn create_file(path: &Path) -> Result<()> {
-        if let Err(e) = fs::File::create(path) {
-            if e.kind() != io::ErrorKind::AlreadyExists {
-                return Err(anyhow!(
-                    "could not create file ({:?}) due to error kind: {:?}",
-                    path,
-                    e.kind()
-                ));
-            }
-        }
+    fn commit_head_and_create_branch(repository: &Repository, name: &str) -> Result<()> {
+        // We need to commit at least once before branching.
+        let commit_oid = commit(repository, "HEAD")?;
+        let commit = repository.find_commit(commit_oid)?;
+        repository.branch(name, &commit, true)?;
         Ok(())
     }
 
-    fn create_branch(repository: &Repository, name: &str) -> Result<()> {
-        // we need to commit something before branching
-        let commit_oid = commit(repository)?;
-        repository.branch(name, &repository.find_commit(commit_oid).unwrap(), true).unwrap();
-
-        Ok(())
-    }
-
-    // taken from https://github.com/rust-lang/git2-rs/pull/885
-    fn commit(repository: &Repository) -> Result<Oid> {
-        // We will commit the content of the index
+    // Source: https://github.com/rust-lang/git2-rs/pull/885
+    fn commit(repository: &Repository, update_ref: &str) -> Result<Oid> {
+        // We will commit the contents of the index.
         let mut index = repository.index()?;
         let tree_oid = index.write_tree()?;
         let tree = repository.find_tree(tree_oid)?;
 
-        let parent_commit = match repository.revparse_single("HEAD") {
-            Ok(obj) => Some(obj.into_commit().unwrap()),
-            // First commit so no parent commit
+        // If this is the first commit, there is no parent. If the object returned by
+        // "revparse_single" cannot be converted into a commit, then it isn't a commit and we know
+        // there is no parent _commit_.
+        let maybe_parent = match repository.revparse_single("HEAD") {
+            Ok(object) => match object.into_commit() {
+                Ok(commit) => Some(commit),
+                Err(_) => None,
+            },
             Err(e) if e.code() == ErrorCode::NotFound => None,
-            Err(_e) => panic!(),
+            Err(e) => return Err(e.into()),
         };
 
         let mut parents = Vec::new();
-        if parent_commit.is_some() {
-            parents.push(parent_commit.as_ref().unwrap());
-        }
+        if let Some(parent) = maybe_parent.as_ref() {
+            parents.push(parent);
+        };
 
-        let sig = Signature::now("Bob", "bob@bob").unwrap();
+        let signature = Signature::now("Bob", "bob@bob")?;
         Ok(repository.commit(
-            Some("HEAD"),
-            &sig,
-            &sig,
+            Some(update_ref),
+            &signature,
+            &signature,
             "hello",
             &tree,
-            &parents[..],
+            parents.as_ref(),
         )?)
     }
 }
