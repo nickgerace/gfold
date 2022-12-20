@@ -8,7 +8,7 @@ This checklist details the `gfold` release process.
 Steps should be executed in sequential order.
 
 - [ ] Checkout and rebase `main` to its latest commit, then checkout a new branch
-- [ ] Change the `version` field in `Cargo.toml` to the new tag
+- [ ] Change the `version` field in [`Cargo.toml`](../crates/gfold/Cargo.toml) to the new tag
 - [ ] **Full Releases Only**: change the version in `CHANGELOG.md` and uncomment the following line: `<!--The latest version contains all changes.-->`
 - [ ] Verify that everything looks/works as expected:
 

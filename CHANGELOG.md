@@ -8,12 +8,14 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
+
+## 4.1.2 - 2022-12-20
 
 ### Changed
 
 - Bump dependencies
-- When checking if unpushed and attempting to resolve the reference from a short name, ignore the error and assume we need to push
+- When checking if "unpushed" and attempting to resolve the reference from a short name, ignore the error and assume we need to push
 
 ## 4.1.1 - 2022-12-19
 
