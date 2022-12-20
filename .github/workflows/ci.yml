@@ -2,11 +2,10 @@ name: ci
 on:
   push:
     branches:
-      - staging
-      - trying
+      - "main"
   pull_request:
     branches:
-      - main
+      - "main"
     paths:
       - "**.rs"
       - "Cargo.*"

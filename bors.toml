@@ -1,8 +1,0 @@
-status = [
-    "Lint / Test / Build (ubuntu-latest)",
-    "Test / Build (windows-latest)",
-    "Test / Build (macos-latest)"
-]
-timeout_sec = 900
-delete_merged_branches = true
-update_base_for_deletes	= true

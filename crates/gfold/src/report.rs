@@ -103,7 +103,7 @@ pub fn generate_reports(path: &Path, display_mode: &DisplayMode) -> anyhow::Resu
 /// Generates a report with a given path.
 fn generate_report(repo_path: &Path, include_email: bool) -> anyhow::Result<Report> {
     debug!(
-        "attemping to generate report for repository at path: {:?}",
+        "attempting to generate report for repository at path: {:?}",
         repo_path
     );
     let repo = Repository::open(repo_path)?;
@@ -179,14 +179,18 @@ fn is_unpushed(
         match head.shorthand() {
             Some(v) => v,
             None => {
-                trace!("assuming unpushed; could not determine shorthand for head");
+                debug!("assuming unpushed; could not determine shorthand for head");
                 return Ok(true);
             }
         }
     );
-    let remote_head = repo
-        .resolve_reference_from_short_name(&remote)?
-        .peel_to_commit()?;
+    let remote_head = match repo.resolve_reference_from_short_name(&remote) {
+        Ok(reference) => reference.peel_to_commit()?,
+        Err(e) => {
+            debug!("assuming unpushed; could not resolve remote reference from short name (ignored error: {})", e);
+            return Ok(true);
+        }
+    };
     Ok(
         matches!(repo.graph_ahead_behind(local_head.id(), remote_head.id()), Ok(number_unique_commits) if number_unique_commits.0 > 0),
     )

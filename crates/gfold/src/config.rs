@@ -86,8 +86,8 @@ impl Config {
     }
 
     /// This method does not look for the config file and uses [`EntryConfig`]'s defaults instead.
-    /// It is best for testing use and when the user wishes to skip config file lookup.
-    pub fn new() -> io::Result<Self> {
+    /// Use this method when the user wishes to skip config file lookup.
+    pub fn try_config_default() -> io::Result<Self> {
         Self::from_entry_config(&EntryConfig::default())
     }
 

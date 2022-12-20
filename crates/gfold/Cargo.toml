@@ -31,3 +31,4 @@ env_logger = { version = "0.9", features = ["atty", "humantime"], default_featur
 
 [dev-dependencies]
 pretty_assertions = "1.3"
+tempfile = "3.3"

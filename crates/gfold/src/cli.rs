@@ -65,7 +65,7 @@ pub fn parse_and_run() -> anyhow::Result<()> {
     debug!("collected args");
 
     let mut config = match cli.ignore_config_file {
-        true => Config::new()?,
+        true => Config::try_config_default()?,
         false => Config::try_config()?,
     };
     debug!("loaded initial config");
