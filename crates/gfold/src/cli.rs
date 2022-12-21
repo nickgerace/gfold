@@ -6,7 +6,7 @@ use log::debug;
 use std::env;
 
 use crate::config::{ColorMode, Config, DisplayMode};
-use crate::error::Error;
+use crate::error::{AnyhowResult, Error};
 use crate::run;
 
 const HELP: &str = "\
@@ -59,7 +59,7 @@ struct Cli {
 
 /// Parse CLI arguments, initialize the logger, merge configurations as needed, and call
 /// [`run::run()`] with the resulting [`Config`].
-pub fn parse_and_run() -> anyhow::Result<()> {
+pub fn parse_and_run() -> AnyhowResult<()> {
     // First and foremost, get logging up and running. We want logs as quickly as possible for
     // debugging by setting "RUST_LOG".
     let cli = Cli::parse();

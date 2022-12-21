@@ -2,12 +2,11 @@
 
 use log::debug;
 use log::warn;
-use std::io;
 use std::path::Path;
 
 use crate::config::{ColorMode, DisplayMode};
 use crate::display::color::ColorHarness;
-use crate::error::Error;
+use crate::error::{AnyhowResult, Error, IoResult, SerdeJsonResult};
 use crate::report::LabeledReports;
 
 mod color;
@@ -20,7 +19,7 @@ pub fn display(
     display_mode: &DisplayMode,
     reports: &LabeledReports,
     color_mode: &ColorMode,
-) -> anyhow::Result<()> {
+) -> AnyhowResult<()> {
     match display_mode {
         DisplayMode::Standard => standard(reports, color_mode)?,
         DisplayMode::Json => json(reports)?,
@@ -30,7 +29,7 @@ pub fn display(
 }
 
 /// Display [`LabeledReports`] to `stdout` in the standard (default) format.
-fn standard(reports: &LabeledReports, color_mode: &ColorMode) -> anyhow::Result<()> {
+fn standard(reports: &LabeledReports, color_mode: &ColorMode) -> AnyhowResult<()> {
     debug!("detected standard display mode");
     let mut all_reports = Vec::new();
     for grouped_report in reports {
@@ -74,7 +73,7 @@ fn standard(reports: &LabeledReports, color_mode: &ColorMode) -> anyhow::Result<
 }
 
 /// Display [`LabeledReports`] to `stdout` in JSON format.
-fn json(reports: &LabeledReports) -> serde_json::error::Result<()> {
+fn json(reports: &LabeledReports) -> SerdeJsonResult<()> {
     debug!("detected json display mode");
     let mut all_reports = Vec::new();
     for grouped_report in reports {
@@ -87,14 +86,14 @@ fn json(reports: &LabeledReports) -> serde_json::error::Result<()> {
 }
 
 /// Display [`LabeledReports`] to `stdout` in the classic format.
-fn classic(reports: &LabeledReports, color_mode: &ColorMode) -> io::Result<()> {
+fn classic(reports: &LabeledReports, color_mode: &ColorMode) -> IoResult<()> {
     debug!("detected classic display mode");
     let color_harness = ColorHarness::new(color_mode);
 
     let length = reports.keys().len();
     let mut first = true;
     for (title, group) in reports {
-        // FIXME: make group title matching less cumbersome.
+        // FIXME(nick): make group title matching less cumbersome.
         if length > 1 {
             match first {
                 true => {

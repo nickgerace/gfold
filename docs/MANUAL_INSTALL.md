@@ -78,12 +78,16 @@ rm /usr/local/bin/gfold
 rm $HOME/.config/gfold.toml
  ```
 
-## Build From Source Locally with Cargo
+## Build From Source Locally On All Platforms
 
 If you want to install from source locally, and not from [crates.io](https://crates.io/crates/gfold), you can clone the repository and build `gfold`.
 This should work on all major platforms.
 
-```shell
+```bash
 git clone https://github.com/nickgerace/gfold.git
-cargo install --path gfold
+cd gfold; cargo install --path crates/gfold
 ```
+
+The commands above were tested on macOS.
+Slight modification may be required for your platform, but the flow should be the same: clone, change directory and run
+`cargo install`.

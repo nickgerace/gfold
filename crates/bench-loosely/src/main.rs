@@ -4,8 +4,8 @@
 //! gfold is via CLI and not a library. Thus, this loose bench executes gfold as a CLI similarly
 //! to real world use. This benchmark is not precise and is designed to give a high level overview.
 
-// TODO: add consistency deviation. We should see how far each result strays from the average. We
-// want gfold to perform consistently as well as quickly.
+// TODO(nick): add consistency deviation. We should see how far each result strays from the average.
+// We want gfold to perform consistently as well as quickly.
 
 use std::path::Path;
 use std::process::Command;
