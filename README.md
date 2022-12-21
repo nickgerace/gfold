@@ -168,6 +168,12 @@ You can use [cargo](https://crates.io) to install the [crate](https://crates.io/
 cargo install gfold
 ```
 
+Use the `--locked` flag if you'd like Cargo to use `Cargo.lock`.
+
+```shell
+cargo install --locked gfold
+```
+
 Keeping the crate up to date is easy with [cargo-update](https://crates.io/crates/cargo-update).
 
 ```shell
@@ -193,12 +199,24 @@ Please [file an issue](https://github.com/nickgerace/gfold/issues/new)!
 `gfold` is intended to be ran on *any* tier one Rust 🦀 target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
-## Troubleshooting
+## Troubleshooting and Known Issues
 
-If you encounter unexpected behavior or a bug, please [file an issue](https://github.com/nickgerace/gfold/issues) and debug
-locally with `RUST_BACKTRACE=1 RUST_LOG=debug` prepended when executing `gfold`.
-You can also adjust each variable, as needed, to aid investigation.
-Please attach relevant logs from execution with sensitive bits redacted in order to help resolve your issue.
+If you encounter unexpected behavior or a bug and would like to see more details, please run `gfold` with the following
+environment variables:
+
+```shell
+# You may also want to add relevant arg(s) and flag(s).
+RUST_BACKTRACE=1 RUST_LOG=debug gfold
+```
+
+If the issue persists, please [file an issue](https://github.com/nickgerace/gfold/issues).
+
+### Tuning Environment Variables
+
+Since [`RUST_BACKTRACE`](https://doc.rust-lang.org/std/backtrace/index.html) and
+[`RUST_LOG`](https://docs.rs/env_logger/latest/env_logger/), do not have `gfold`-specific behaviors, you can adjust
+them just as you would in other projects to aid investigation.
+Please attach relevant logs from execution with _sensitive bits redacted_ in order to help resolve your issue.
 
 ### Coreutils Collision on macOS
 
@@ -209,6 +227,13 @@ Here is an example with the `o` dropped from `gfold`:
 ```shell
 alias gfld=$HOME/.cargo/bin/gfold
 ```
+
+### Upstream `libgit2` Issue
+
+If you are seeing `unsupported extension name extensions.worktreeconfig` or similar errors, it may be related to
+[libgit2/libgit2#6044](https://github.com/libgit2/libgit2/issues/6044).
+
+This repository's tracking issue is [#205](https://github.com/nickgerace/gfold/issues/205).
 
 ## Community
 
