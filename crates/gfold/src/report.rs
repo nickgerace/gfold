@@ -1,14 +1,15 @@
 //! This module contains the functionality for generating reports.
 
-use crate::config::DisplayMode;
-use crate::error::Error;
-use crate::status::Status;
 use git2::{ErrorCode, Reference, Remote, Repository, StatusOptions};
-use log::{debug, trace};
+use log::{debug, error, trace};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::Path;
+
+use crate::config::DisplayMode;
+use crate::error::Error;
+use crate::status::Status;
 
 mod target;
 
@@ -106,7 +107,17 @@ fn generate_report(repo_path: &Path, include_email: bool) -> anyhow::Result<Repo
         "attempting to generate report for repository at path: {:?}",
         repo_path
     );
-    let repo = Repository::open(repo_path)?;
+
+    let repo = match Repository::open(repo_path) {
+        Ok(repo) => repo,
+        Err(e) if e.message() == "unsupported extension name extensions.worktreeconfig" => {
+            error!("skipping error ({e}) until upstream libgit2 issue is resolved: https://github.com/libgit2/libgit2/issues/6044");
+            let unknown_report = Report::new(repo_path, "unknown", &Status::Unknown, None, None)?;
+            return Ok(unknown_report);
+        }
+        Err(e) => return Err(e.into()),
+    };
+
     let head = match repo.head() {
         Ok(head) => Some(head),
         Err(ref e) if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound => {
@@ -114,6 +125,7 @@ fn generate_report(repo_path: &Path, include_email: bool) -> anyhow::Result<Repo
         }
         Err(e) => return Err(e.into()),
     };
+
     let branch = match &head {
         Some(head) => head
             .shorthand()

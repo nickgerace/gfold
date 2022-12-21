@@ -8,7 +8,14 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Changed
+
+- Add "unknown" status for repositories hitting the "extensions.worktreeconfig" error
+- Bump dependencies
+- Change "unpushed" color to blue
+- Ignore the "extensions.worktreeconfig" error until the corresponding upstream issue is resolved: https://github.com/libgit2/libgit2/issues/6044
 
 ## 4.1.2 - 2022-12-20
 

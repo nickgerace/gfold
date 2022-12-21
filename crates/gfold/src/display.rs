@@ -1,13 +1,14 @@
 //! This module contains the functionality for displaying reports to `stdout`.
 
-use crate::config::{ColorMode, DisplayMode};
-use crate::display::color::ColorHarness;
-use crate::error::Error;
-use crate::report::LabeledReports;
 use log::debug;
 use log::warn;
 use std::io;
 use std::path::Path;
+
+use crate::config::{ColorMode, DisplayMode};
+use crate::display::color::ColorHarness;
+use crate::error::Error;
+use crate::report::LabeledReports;
 
 mod color;
 
