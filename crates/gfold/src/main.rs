@@ -7,6 +7,8 @@ use log::debug;
 use log::LevelFilter;
 use std::env;
 
+use crate::error::AnyhowResult;
+
 mod cli;
 mod config;
 mod display;
@@ -17,7 +19,7 @@ mod status;
 
 /// Initializes the logger based on the debug flag and `RUST_LOG` environment variable and calls
 /// [`cli::parse_and_run()`] to generate a [`config::Config`] and eventually call [`run::run()`].
-fn main() -> anyhow::Result<()> {
+fn main() -> AnyhowResult<()> {
     match env::var("RUST_LOG").is_err() {
         true => Builder::new().filter_level(LevelFilter::Off).init(),
         false => env_logger::init(),
@@ -36,13 +38,11 @@ mod tests {
     use crate::report::{LabeledReports, Report};
     use crate::status::Status;
 
-    use anyhow::{anyhow, Result};
-
+    use anyhow::anyhow;
     use git2::ErrorCode;
     use git2::Oid;
     use git2::Repository;
     use git2::Signature;
-
     use pretty_assertions::assert_eq;
     use std::collections::BTreeMap;
     use std::fs::File;
@@ -54,7 +54,7 @@ mod tests {
     /// [`tempfile`](tempfile) crate to create some repositories with varying states and levels
     /// of nesting.
     #[test]
-    fn integration() -> Result<()> {
+    fn integration() -> AnyhowResult<()> {
         env_logger::builder()
             .is_test(true)
             .filter_level(LevelFilter::Info)
@@ -138,9 +138,30 @@ mod tests {
             .ok_or_else(|| anyhow!("could not convert PathBuf to &str"))?
             .to_string();
         let mut expected_reports_raw = vec![
-            Report::new(&repo_one, "HEAD", &Status::Unclean, None, None)?,
-            Report::new(&repo_two, "HEAD", &Status::Clean, None, None)?,
-            Report::new(&repo_three, "HEAD", &Status::Clean, None, None)?,
+            Report::new(
+                &repo_one,
+                "HEAD",
+                &Status::Unclean,
+                None,
+                None,
+                Vec::with_capacity(0),
+            )?,
+            Report::new(
+                &repo_two,
+                "HEAD",
+                &Status::Clean,
+                None,
+                None,
+                Vec::with_capacity(0),
+            )?,
+            Report::new(
+                &repo_three,
+                "HEAD",
+                &Status::Clean,
+                None,
+                None,
+                Vec::with_capacity(0),
+            )?,
         ];
         expected_reports_raw.sort_by(|a, b| a.name.cmp(&b.name));
         expected_reports.insert(Some(expected_reports_key), expected_reports_raw);
@@ -157,14 +178,23 @@ mod tests {
                 &Status::Clean,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
+                Vec::with_capacity(0),
             )?,
-            Report::new(&repo_five, "HEAD", &Status::Unclean, None, None)?,
+            Report::new(
+                &repo_five,
+                "HEAD",
+                &Status::Unclean,
+                None,
+                None,
+                Vec::with_capacity(0),
+            )?,
             Report::new(
                 &repo_six,
                 "master",
                 &Status::Unpushed,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
+                Vec::with_capacity(0),
             )?,
             Report::new(
                 &repo_seven,
@@ -172,6 +202,7 @@ mod tests {
                 &Status::Unpushed,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
+                Vec::with_capacity(0),
             )?,
         ];
         nested_expected_reports_raw.sort_by(|a, b| a.name.cmp(&b.name));
@@ -197,7 +228,7 @@ mod tests {
         Ok(())
     }
 
-    fn create_directory<P: AsRef<Path>>(parent: P, name: &str) -> Result<PathBuf> {
+    fn create_directory<P: AsRef<Path>>(parent: P, name: &str) -> AnyhowResult<PathBuf> {
         let parent = parent.as_ref();
         let new_directory = parent.join(name);
 
@@ -213,13 +244,13 @@ mod tests {
         Ok(new_directory)
     }
 
-    fn create_file<P: AsRef<Path>>(parent: P) -> Result<()> {
+    fn create_file<P: AsRef<Path>>(parent: P) -> AnyhowResult<()> {
         let parent = parent.as_ref();
         File::create(parent.join("file"))?;
         Ok(())
     }
 
-    fn commit_head_and_create_branch(repository: &Repository, name: &str) -> Result<()> {
+    fn commit_head_and_create_branch(repository: &Repository, name: &str) -> AnyhowResult<()> {
         // We need to commit at least once before branching.
         let commit_oid = commit(repository, "HEAD")?;
         let commit = repository.find_commit(commit_oid)?;
@@ -228,7 +259,7 @@ mod tests {
     }
 
     // Source: https://github.com/rust-lang/git2-rs/pull/885
-    fn commit(repository: &Repository, update_ref: &str) -> Result<Oid> {
+    fn commit(repository: &Repository, update_ref: &str) -> AnyhowResult<Oid> {
         // We will commit the contents of the index.
         let mut index = repository.index()?;
         let tree_oid = index.write_tree()?;

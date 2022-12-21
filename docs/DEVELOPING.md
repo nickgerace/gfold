@@ -10,7 +10,7 @@ First, update dependencies and tidy your changes.
 cargo fmt
 cargo update
 cargo fix --edition-idioms --allow-dirty --allow-staged
-cargo clippy --all-features --all-targets
+cargo clippy --all-features --all-targets --no-deps
 ```
 
 Now, ensure that lints, tests, and builds succeed.
@@ -18,7 +18,7 @@ Now, ensure that lints, tests, and builds succeed.
 ```shell
 cargo fmt --all -- --check
 cargo clippy -- -D warnings
-RUSTDOCFLAGS="-Dwarnings" cargo doc --all
+RUSTDOCFLAGS="-Dwarnings" cargo doc --all --no-deps
 cargo test -- --nocapture
 cargo build --all-targets
 ```

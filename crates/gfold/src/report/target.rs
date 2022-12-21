@@ -6,6 +6,8 @@ use std::fs::DirEntry;
 use std::path::PathBuf;
 use std::{fs, io};
 
+use crate::error::IoResult;
+
 enum TargetOption {
     Multiple(Vec<PathBuf>),
     Single(PathBuf),
@@ -15,7 +17,7 @@ enum TargetOption {
 /// Ensure the entry is a directory and is not hidden. Then, check if a Git sub directory exists,
 /// which will indicate if the entry is a repository. Finally, generate targets based on that
 /// repository.
-fn process_entry(entry: &DirEntry) -> io::Result<TargetOption> {
+fn process_entry(entry: &DirEntry) -> IoResult<TargetOption> {
     match entry.file_type()?.is_dir()
         && !entry
             .file_name()
@@ -40,7 +42,7 @@ fn process_entry(entry: &DirEntry) -> io::Result<TargetOption> {
 
 /// Generate targets from a given [`PathBuf`] based on its children (recursively).
 /// We use recursion paired with [`rayon`] since we prioritize speed over memory use.
-pub fn generate_targets(path: PathBuf) -> io::Result<Vec<PathBuf>> {
+pub fn generate_targets(path: PathBuf) -> IoResult<Vec<PathBuf>> {
     let entries: Vec<DirEntry> = match fs::read_dir(&path) {
         Ok(o) => o.filter_map(|r| r.ok()).collect(),
         Err(e) if e.kind() == io::ErrorKind::PermissionDenied => {
@@ -56,7 +58,7 @@ pub fn generate_targets(path: PathBuf) -> io::Result<Vec<PathBuf>> {
     let processed = entries
         .par_iter()
         .map(process_entry)
-        .collect::<Vec<io::Result<TargetOption>>>();
+        .collect::<Vec<IoResult<TargetOption>>>();
 
     let mut results = Vec::new();
     for entry in processed {

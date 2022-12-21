@@ -16,8 +16,8 @@ Steps should be executed in sequential order.
 cargo fmt --all -- --check
 cargo clippy -- -D warnings
 cargo test
-RUSTDOCFLAGS="-Dwarnings" cargo doc --all
-cargo build
+RUSTDOCFLAGS="-Dwarnings" cargo doc --all --no-deps
+cargo build --all-targets
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`

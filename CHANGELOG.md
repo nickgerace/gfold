@@ -8,7 +8,11 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Added
+
+- Submodule information in the `json` display mode
 
 ## 4.2.0 - 2022-12-21
 
