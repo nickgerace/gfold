@@ -1,9 +1,10 @@
 //! This module provides a harness for non-trivial displays of information to `stdout`.
 
-use crate::config::ColorMode;
-use crate::status::Status;
 use std::io::{self, Write};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
+
+use crate::config::ColorMode;
+use crate::status::Status;
 
 /// This harness provides methods to write to `stdout`. It maps the internal [`ColorMode`] type to
 /// our dependency's [`ColorChoice`] type due to discrepancies in behavior and naming.
@@ -26,9 +27,10 @@ impl ColorHarness {
     pub fn write_status(&self, status: &Status, status_width: usize) -> io::Result<()> {
         let mut stdout = StandardStream::stdout(self.color_choice);
         stdout.set_color(ColorSpec::new().set_fg(Some(match status {
-            Status::Bare => Color::Red,
+            Status::Bare | Status::Unknown => Color::Red,
             Status::Clean => Color::Green,
-            _ => Color::Yellow,
+            Status::Unpushed => Color::Blue,
+            Status::Unclean => Color::Yellow,
         })))?;
         write!(
             &mut stdout,

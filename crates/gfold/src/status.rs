@@ -8,6 +8,7 @@ pub enum Status {
     Bare,
     Clean,
     Unclean,
+    Unknown,
     Unpushed,
 }
 
@@ -17,6 +18,7 @@ impl Status {
             Self::Bare => "bare",
             Self::Clean => "clean",
             Self::Unclean => "unclean",
+            Self::Unknown => "unknown",
             Self::Unpushed => "unpushed",
         }
     }

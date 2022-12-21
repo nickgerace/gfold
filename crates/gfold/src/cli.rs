@@ -1,12 +1,13 @@
 //! This module contains the CLI entrypoint, CLI options and config generation based on the user's
 //! settings and environment.
 
-use crate::config::{ColorMode, Config, DisplayMode};
-use crate::error::Error;
-use crate::run;
 use clap::Parser;
 use log::debug;
 use std::env;
+
+use crate::config::{ColorMode, Config, DisplayMode};
+use crate::error::Error;
+use crate::run;
 
 const HELP: &str = "\
 More information: https://github.com/nickgerace/gfold

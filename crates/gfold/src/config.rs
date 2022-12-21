@@ -1,9 +1,10 @@
 //! This module contains the config specification and functionality for creating a config.
 
-use crate::error::Error;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{env, fs, io};
+
+use crate::error::Error;
 
 /// This struct is the actual config type consumed through the codebase. It is boostrapped via its
 /// public methods and uses [`EntryConfig`], a private struct, under the hood in order to
