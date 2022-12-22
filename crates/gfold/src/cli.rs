@@ -4,10 +4,10 @@
 use clap::Parser;
 use log::debug;
 use std::env;
+use thiserror::Error;
 
 use crate::config::{ColorMode, Config, DisplayMode};
-use crate::error::{AnyhowResult, Error};
-use crate::run;
+use crate::run::RunHarness;
 
 const HELP: &str = "\
 More information: https://github.com/nickgerace/gfold
@@ -29,6 +29,14 @@ Troubleshooting:
   Investigate unexpected behavior by prepending execution with
   \"RUST_BACKTRACE=1\"and \"RUST_LOG=debug\". You can adjust those variable's
   values to aid investigation.";
+
+#[derive(Error, Debug)]
+pub enum CliError {
+    #[error("invalid color mode provided (exec \"--help\" for options): {0}")]
+    InvalidColorMode(String),
+    #[error("invalid display mode provided (exec \"--help\" for options): {0}")]
+    InvalidDisplayMode(String),
+}
 
 #[derive(Parser)]
 #[command(version, about = HELP, long_about = None)]
@@ -57,46 +65,59 @@ struct Cli {
     ignore_config_file: bool,
 }
 
-/// Parse CLI arguments, initialize the logger, merge configurations as needed, and call
-/// [`run::run()`] with the resulting [`Config`].
-pub fn parse_and_run() -> AnyhowResult<()> {
-    // First and foremost, get logging up and running. We want logs as quickly as possible for
-    // debugging by setting "RUST_LOG".
-    let cli = Cli::parse();
-    debug!("collected args");
+pub struct CliHarness {
+    cli: Cli,
+}
 
-    let mut config = match cli.ignore_config_file {
-        true => Config::try_config_default()?,
-        false => Config::try_config()?,
-    };
-    debug!("loaded initial config");
+impl CliHarness {
+    /// Parse CLI arguments and store the result on the [`self`](Self).
+    pub fn new() -> Self {
+        let cli = Cli::parse();
+        debug!("collected args");
+        Self { cli }
+    }
 
-    if let Some(found_display_mode) = &cli.display_mode {
-        config.display_mode = match found_display_mode.to_lowercase().as_str() {
-            "classic" => DisplayMode::Classic,
-            "json" => DisplayMode::Json,
-            "standard" | "default" => DisplayMode::Standard,
-            _ => return Err(Error::InvalidDisplayMode(found_display_mode.to_string()).into()),
+    /// Merge configurations as needed, and call
+    /// [`RunHarness::run()`](crate::run::RunHarness::run()) with the resulting [`Config`].
+    pub fn run(&self) -> anyhow::Result<()> {
+        let mut config = match self.cli.ignore_config_file {
+            true => Config::try_config_default()?,
+            false => Config::try_config()?,
+        };
+        debug!("loaded initial config");
+
+        if let Some(found_display_mode) = &self.cli.display_mode {
+            config.display_mode = match found_display_mode.to_lowercase().as_str() {
+                "classic" => DisplayMode::Classic,
+                "json" => DisplayMode::Json,
+                "standard" | "default" => DisplayMode::Standard,
+                _ => {
+                    return Err(CliError::InvalidDisplayMode(found_display_mode.to_string()).into())
+                }
+            }
         }
-    }
 
-    if let Some(found_color_mode) = &cli.color_mode {
-        config.color_mode = match found_color_mode.to_lowercase().as_str() {
-            "always" => ColorMode::Always,
-            "compatibility" => ColorMode::Compatibility,
-            "never" => ColorMode::Never,
-            _ => return Err(Error::InvalidColorMode(found_color_mode.to_string()).into()),
+        if let Some(found_color_mode) = &self.cli.color_mode {
+            config.color_mode = match found_color_mode.to_lowercase().as_str() {
+                "always" => ColorMode::Always,
+                "compatibility" => ColorMode::Compatibility,
+                "never" => ColorMode::Never,
+                _ => return Err(CliError::InvalidColorMode(found_color_mode.to_string()).into()),
+            }
         }
-    }
 
-    if let Some(found_path) = &cli.path {
-        config.path = env::current_dir()?.join(found_path).canonicalize()?;
-    }
+        if let Some(found_path) = &self.cli.path {
+            config.path = env::current_dir()?.join(found_path).canonicalize()?;
+        }
 
-    debug!("finalized config options");
-    match &cli.dry_run {
-        true => config.print()?,
-        false => run::run(&config)?,
+        debug!("finalized config options");
+        match &self.cli.dry_run {
+            true => config.print()?,
+            false => {
+                let run_harness = RunHarness::new(&config);
+                run_harness.run()?;
+            }
+        }
+        Ok(())
     }
-    Ok(())
 }

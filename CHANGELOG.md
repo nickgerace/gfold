@@ -14,6 +14,10 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 - Submodule information in the `json` display mode
 
+### Changed
+
+- Bump dependencies
+
 ## 4.2.0 - 2022-12-21
 
 ### Changed
