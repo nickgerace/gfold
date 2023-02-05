@@ -7,38 +7,7 @@
 
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
-```
-% gfold
-astrid ~ /home/neloth/src/astrid
-  unclean (main)
-  git@github.com:db/astrid.git
-  neloth@housetelvanni.dev
-fev ~ /home/neloth/src/fev
-  bare (issue2277)
-  none
-  neloth@housetelvanni.dev
-gb ~ /home/neloth/src/gb
-  unpushed (dev)
-  https://github.com/hrothgar/gb.git
-  neloth@housetelvanni.dev
-pam ~ /home/neloth/src/pam
-  clean (main)
-  https://github.com/onc/pam.git
-  neloth@solstheimcommunityserver.org
-```
-
-Want the classic display mode?
-Use `-d classic`.
-
-```
-% gfold -d classic
-another-day     unclean   main     git@github.com:motm3/another-day.git
-beautiful-trip  bare      dev      none
-damaged         unpushed  dev      https://github.com/motm3/damaged.git
-dive            unclean   patch    git@github.com:motm3/dive.git
-solo-dolo       clean     main     https://github.com/motm3/solo-dolo.git
-tpm             clean     issue15  git@github.com:motm3/the-pale-moonlight.git
-```
+![A GIF showcasing gfold in action](assets/demo.gif)
 
 If you'd prefer to use the classic display mode by default, and avoid setting the flag every time, you can set it in the config file (see **Usage** section).
 
@@ -118,7 +87,6 @@ Here is an example where we want to use the classic display mode and override al
 gfold -i -d classic > $HOME/.config/gfold.toml
 ```
 
-
 You can back up a config file and track its history with `git`.
 On macOS, Linux, and most systems, you can link the file back to a `git` repository.
 
@@ -196,7 +164,7 @@ Please [file an issue](https://github.com/nickgerace/gfold/issues/new)!
 
 ## Compatibility
 
-`gfold` is intended to be ran on *any* tier one Rust 🦀 target.
+`gfold` is intended to be ran on _any_ tier one Rust 🦀 target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
 ## Troubleshooting and Known Issues
@@ -244,4 +212,4 @@ Name | Type | Description
 [Arch Linux community repository](https://archlinux.org/packages/community/x86_64/gfold/) | packaging | the `gfold` package _(note: before moving to the community repository, the [AUR](https://github.com/orhun/PKGBUILDs) was previously used for distribution)_
 ["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/) | article | featured `gfold`
 [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix) | packaging | the `gfold` package
-[nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua) | project | a `neovim` plugin for `gfold` *([announcement Reddit post](https://www.reddit.com/r/neovim/comments/t209wy/introducing_nvimgfoldlua/))*
+[nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua) | project | a `neovim` plugin for `gfold` _([announcement Reddit post](https://www.reddit.com/r/neovim/comments/t209wy/introducing_nvimgfoldlua/))_
