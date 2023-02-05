@@ -69,8 +69,8 @@ impl ColorHarness {
         let mut stdout = StandardStream::stdout(self.color_choice);
         stdout.set_color(color_spec)?;
         match newline {
-            true => writeln!(&mut stdout, "{}", input)?,
-            false => write!(&mut stdout, "{}", input)?,
+            true => writeln!(&mut stdout, "{input}")?,
+            false => write!(&mut stdout, "{input}")?,
         }
         stdout.reset()
     }
