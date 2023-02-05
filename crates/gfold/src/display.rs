@@ -80,10 +80,10 @@ impl DisplayHarness {
             color_harness.write_status(&report.status, PAD)?;
             println!(" ({})", report.branch);
             if let Some(url) = &report.url {
-                println!("  {}", url);
+                println!("  {url}");
             }
             if let Some(email) = &report.email {
-                println!("  {}", email);
+                println!("  {email}");
             }
         }
         Ok(())
