@@ -8,15 +8,25 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
+
+## 4.3.0 - 2023-02-05
 
 ### Added
 
-- Submodule information in the `json` display mode
+- Add submodule information to the `json` display mode (i.e. `gfold -d json`)
+  - This information is not yet accessible in other display modes
 
 ### Changed
 
 - Bump dependencies
+
+### Note
+
+- Add demo GIF to README
+- Performed significant refactor to reduce the usage of "floating" functions
+  (i.e. ensure functions are members of unit structs at minimum) as well as
+  remove reliance on a single generic error enum
 
 ## 4.2.0 - 2022-12-21
 
