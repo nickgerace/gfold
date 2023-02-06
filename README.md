@@ -122,10 +122,16 @@ pacman -S gfold
 
 ### Nix and NixOS
 
-You can install `gfold` from [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/git-and-tools/gfold/default.nix):
+You can install `gfold` from [nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/gfold/default.nix):
 
 ```shell
 nix-env --install gfold
+```
+
+If you are using [flakes](https://nixos.wiki/wiki/Flakes), you can install using the `nix` command directly.
+
+```shell
+nix profile install "nixpkgs#gfold"
 ```
 
 ### Cargo Install
