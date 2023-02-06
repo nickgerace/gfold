@@ -10,6 +10,13 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 The latest version contains all changes.
 
+## 4.3.1 - 2023-02-05
+
+### Changed
+
+- Bump dependencies
+- Bump LICENSE year
+
 ## 4.3.0 - 2023-02-05
 
 ### Added
