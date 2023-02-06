@@ -1,6 +1,6 @@
 # Demo
 
-This document contains information related to the [demo GIF](../assets/demo.gif).
+This document contains information related to the [demo GIF](https://raw.githubusercontent.com/nickgerace/gfold/main/assets/demo.gif).
 
 ## Attribution
 

@@ -7,7 +7,7 @@
 
 `gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
 
-![A GIF showcasing gfold in action](assets/demo.gif)
+[![A GIF showcasing gfold in action](https://raw.githubusercontent.com/nickgerace/gfold/main/assets/demo.gif)](https://raw.githubusercontent.com/nickgerace/gfold/main/assets/demo.gif)
 
 If you'd prefer to use the classic display mode by default, and avoid setting the flag every time, you can set it in the config file (see **Usage** section).
 
