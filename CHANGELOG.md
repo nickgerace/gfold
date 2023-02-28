@@ -4,11 +4,20 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 - All notable changes to this project will be documented in this file
 - All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwise specified
-- The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+- The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+- This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## Unreleased
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Changed
+
+- Bump dependencies
+
+### Notes
+
+- Add `flake.nix` for more local development options
 
 ## 4.3.1 - 2023-02-05
 
@@ -28,7 +37,7 @@ The latest version contains all changes.
 
 - Bump dependencies
 
-### Note
+### Notes
 
 - Add demo GIF to README
 - Performed significant refactor to reduce the usage of "floating" functions
