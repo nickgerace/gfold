@@ -17,10 +17,10 @@ Now, ensure that lints, tests, and builds succeed.
 
 ```shell
 cargo fmt --all -- --check
+cargo build --all-targets
 cargo clippy -- -D warnings
 RUSTDOCFLAGS="-Dwarnings" cargo doc --all --no-deps
 cargo test -- --nocapture
-cargo build --all-targets
 ```
 
 If you'd like to mass "fix" everything, you should commit/save existing work and execute the following:
@@ -48,4 +48,30 @@ cargo +nightly udeps
 cargo bloat --release
 cargo bloat --release --crates
 cargo audit
+```
+
+## Nix Flake (macOS and Linux only)
+
+If you prefer to avoid mutating your local environment, you can use the `nix` [flake](./flake.nix)!
+
+> If you do not have `nix` installed and are unsure where to start, you can check out the
+> [Zero to Nix installation guide](https://zero-to-nix.com/start/install).
+
+You can enter a `nix` environment with everything you need.
+
+```shell
+nix develop
+```
+
+If you prefer to not enter the environment and run a single command, you can use the
+`--command` flag.
+
+```shell
+nix develop --command cargo test
+```
+
+Update dependencies with the following command:
+
+```shell
+nix flake update
 ```
