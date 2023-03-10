@@ -9,7 +9,7 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
 
 ### Changed
 
