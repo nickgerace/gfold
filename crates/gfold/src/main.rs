@@ -2,6 +2,8 @@
 //! track of multiple Git repositories. The source code uses private modules rather than leveraging
 //! a library via `lib.rs`.
 
+#![warn(missing_docs, clippy::missing_errors_doc, clippy::missing_panics_doc)]
+
 use env_logger::Builder;
 use log::debug;
 use log::LevelFilter;

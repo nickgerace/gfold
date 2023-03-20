@@ -15,7 +15,7 @@ version = "4.3.2"
 [dependencies]
 anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.1", features = ["derive"] }
-dirs = "4.0"
+dirs = "5.0"
 env_logger = { version = "0.10", features = ["humantime"], default_features = false }
 git2 = { version = "0.16", default_features = false }
 log = "0.4"
