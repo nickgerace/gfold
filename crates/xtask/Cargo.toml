@@ -1,0 +1,12 @@
+[package]
+name = "xtask"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+clap = { version = "4.2", features = ["derive"] }
+dirs = "5.0"
+strum = { version = "0.24", features = ["derive"] }
+termcolor = "1.2"
+thiserror = "1.0"

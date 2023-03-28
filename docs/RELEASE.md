@@ -13,11 +13,7 @@ Steps should be executed in sequential order.
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
-cargo fmt --all -- --check
-cargo clippy -- -D warnings
-cargo test
-RUSTDOCFLAGS="-Dwarnings" cargo doc --all --no-deps
-cargo build --all-targets
+cargo xtask ci
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
