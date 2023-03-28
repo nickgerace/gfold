@@ -26,28 +26,11 @@ jobs:
           toolchain: stable
           override: true
           components: rustfmt, clippy
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         with:
-          command: clippy
-          args: -- -D warnings
-      - uses: actions-rs/cargo@v1
-        with:
-          command: doc
-          args: --all
-        env:
-          RUSTDOCFLAGS: "-Dwarnings"
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --locked
+          command: xtask
+          args: ci
   build:
     name: "Test / Build"
     runs-on: ${{ matrix.os }}
@@ -68,4 +51,4 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --locked
+          args: --all-targets --locked

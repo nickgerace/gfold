@@ -50,9 +50,8 @@ mod tests {
     use tempfile::tempdir;
 
     use crate::collector::{RepositoryCollection, RepositoryCollector};
-    use crate::config::{ColorMode, Config, DisplayMode};
+    use crate::config::{Config, DisplayMode};
     use crate::repository_view::RepositoryView;
-    use crate::run::RunHarness;
     use crate::status::Status;
 
     /// This integration test for `gfold` covers an end-to-end usage scenario. It uses the
@@ -129,15 +128,8 @@ mod tests {
         commit_head_and_create_branch(&repository, "needtopush")?;
         repository.set_head("refs/heads/needtopush")?;
 
-        // Run once with default display mode.
-        let mut config = Config::try_config_default()?;
-        config.path = root.path().to_path_buf();
-        config.color_mode = ColorMode::Never;
-        let run_harness = RunHarness::new(&config);
-        run_harness.run()?;
-
-        // Now, let's run a second time, but generate the collection directly and ensure the
-        // resulting views match what we expect.
+        // Generate the collection directly with a default config and ensure the resulting views
+        // match what we expect.
         let mut expected_collection = RepositoryCollection::new();
         let expected_views_key = root
             .path()
@@ -216,6 +208,8 @@ mod tests {
         expected_collection.insert(Some(nested_expected_views_key), nested_expected_views_raw);
 
         // Generate a collection. Use classic display mode to avoid collecting email results.
+        let mut config = Config::try_config_default()?;
+        config.path = root.path().to_path_buf();
         config.display_mode = DisplayMode::Classic;
         let found_collection = RepositoryCollector::run(&config.path, config.display_mode)?;
 
