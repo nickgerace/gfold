@@ -9,7 +9,9 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
+
+## 4.3.3 - 2023-04-07
 
 ### Changed
 
@@ -17,7 +19,7 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ### Notes
 
-- Remove `flake.nix` for more local development options
+- Remove `flake.nix` due to lack of use (might return in the future)
 - Fix missing `4.3.2` title in the `CHANGELOG`
 
 ## 4.3.2 - 2023-03-09
