@@ -5,7 +5,6 @@ use std::collections::BTreeMap;
 use std::path::Path;
 use target::TargetCollector;
 
-use crate::config::DisplayMode;
 use crate::repository_view::RepositoryView;
 
 mod target;
@@ -24,16 +23,12 @@ type UnprocessedRepositoryView = anyhow::Result<RepositoryView>;
 pub struct RepositoryCollector;
 
 impl RepositoryCollector {
-    /// Generate [`RepositoryCollection`] for a given path and its children. The [`DisplayMode`] is
-    /// required because any two display modes can require differing amounts of data to be
-    /// collected.
-    pub fn run(path: &Path, display_mode: DisplayMode) -> anyhow::Result<RepositoryCollection> {
-        let (include_email, include_submodules) = match display_mode {
-            DisplayMode::Classic => (false, false),
-            DisplayMode::Json => (true, true),
-            DisplayMode::Standard => (true, false),
-        };
-
+    /// Generate [`RepositoryCollection`] for a given path and its children.
+    pub fn run(
+        path: &Path,
+        include_email: bool,
+        include_submodules: bool,
+    ) -> anyhow::Result<RepositoryCollection> {
         let unprocessed = TargetCollector::run(path.to_path_buf())?
             .par_iter()
             .map(|path| RepositoryView::new(path, include_email, include_submodules))

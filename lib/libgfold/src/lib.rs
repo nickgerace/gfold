@@ -1,38 +1,13 @@
-//! [gfold](https://github.com/nickgerace/gfold) is a CLI-driven application that helps you keep
-//! track of multiple Git repositories. The source code uses private modules rather than leveraging
-//! a library via `lib.rs`.
+// #![warn(missing_docs, clippy::missing_errors_doc, clippy::missing_panics_doc)]
 
-#![warn(missing_docs, clippy::missing_errors_doc, clippy::missing_panics_doc)]
+pub mod collector;
+pub mod repository_view;
+pub mod status;
 
-use env_logger::Builder;
-use log::debug;
-use log::LevelFilter;
-use std::env;
-
-use crate::cli::CliHarness;
-
-mod cli;
-mod collector;
-mod config;
-mod display;
-mod repository_view;
-mod run;
-mod status;
-
-/// Initializes the logger based on the debug flag and `RUST_LOG` environment variable and uses
-/// the [`CliHarness`] to generate a [`Config`](config::Config). Then, this calls
-/// [`CliHarness::run()`].
-fn main() -> anyhow::Result<()> {
-    match env::var("RUST_LOG").is_err() {
-        true => Builder::new().filter_level(LevelFilter::Off).init(),
-        false => env_logger::init(),
-    }
-    debug!("initialized logger");
-
-    let cli_harness = CliHarness::new();
-    cli_harness.run()?;
-    Ok(())
-}
+pub use collector::RepositoryCollection;
+pub use collector::RepositoryCollector;
+pub use repository_view::RepositoryView;
+pub use status::Status;
 
 #[cfg(test)]
 mod tests {
@@ -43,22 +18,18 @@ mod tests {
     use git2::Oid;
     use git2::Repository;
     use git2::Signature;
+    use log::LevelFilter;
     use pretty_assertions::assert_eq;
     use std::fs::File;
     use std::path::{Path, PathBuf};
     use std::{fs, io};
     use tempfile::tempdir;
 
-    use crate::collector::{RepositoryCollection, RepositoryCollector};
-    use crate::config::{Config, DisplayMode};
-    use crate::repository_view::RepositoryView;
-    use crate::status::Status;
-
     /// This integration test for `gfold` covers an end-to-end usage scenario. It uses the
     /// [`tempfile`](tempfile) crate to create some repositories with varying states and levels
     /// of nesting.
     #[test]
-    fn integration() -> anyhow::Result<()> {
+    fn poop() -> anyhow::Result<()> {
         env_logger::builder()
             .is_test(true)
             .filter_level(LevelFilter::Info)
@@ -207,11 +178,8 @@ mod tests {
         nested_expected_views_raw.sort_by(|a, b| a.name.cmp(&b.name));
         expected_collection.insert(Some(nested_expected_views_key), nested_expected_views_raw);
 
-        // Generate a collection. Use classic display mode to avoid collecting email results.
-        let mut config = Config::try_config_default()?;
-        config.path = root.path().to_path_buf();
-        config.display_mode = DisplayMode::Classic;
-        let found_collection = RepositoryCollector::run(&config.path, config.display_mode)?;
+        // Generate a collection.
+        let found_collection = RepositoryCollector::run(root.path(), false, false)?;
 
         // Ensure the found collection matches our expected one. Sort the collection for the
         // assertion.

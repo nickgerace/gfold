@@ -1,0 +1,28 @@
+[package]
+name = "libgfold"
+version = "0.1.0"
+edition = "2021"
+
+# NOTE(nick): Temporary until libgfold is ready for release
+publish = false
+
+# TODO(nick): add categories and description
+authors = ["Nick Gerace <nickagerace@gmail.com>"]
+homepage = "https://nickgerace.dev"
+keywords = ["git"]
+license = "Apache-2.0"
+readme = "../../README.md"
+repository = "https://github.com/nickgerace/gfold/"
+
+[dependencies]
+anyhow = { version = "1.0", features = ["backtrace"] }
+git2 = { version = "0.17", default_features = false }
+log = "0.4"
+rayon = "1.7"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+
+[dev-dependencies]
+env_logger = { version = "0.10", features = ["humantime"], default_features = false }
+pretty_assertions = "1.3"
+tempfile = "3.5"
