@@ -1,31 +1,27 @@
 [package]
+name = "gfold"
+version = "4.3.3"
+edition = "2021"
+
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 categories = ["command-line-utilities", "command-line-interface"]
 description = "CLI tool to help keep track of your Git repositories."
 homepage = "https://nickgerace.dev"
 keywords = ["git", "cli"]
 license = "Apache-2.0"
-name = "gfold"
 readme = "../../README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
-edition = "2021"
-version = "4.3.3"
-
 [dependencies]
+libgfold = { path = "../../lib/libgfold" }
+
 anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.2", features = ["derive"] }
 dirs = "5.0"
 env_logger = { version = "0.10", features = ["humantime"], default_features = false }
-git2 = { version = "0.16", default_features = false }
 log = "0.4"
-rayon = "1.7"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 termcolor = "1.2"
 thiserror = "1.0"
 toml = "0.7"
-
-[dev-dependencies]
-pretty_assertions = "1.3"
-tempfile = "3.5"

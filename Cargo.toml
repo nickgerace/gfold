@@ -1,6 +1,6 @@
 [workspace]
-members = ["crates/gfold", "crates/xtask"]
-default-members = ["crates/gfold"]
+members = ["bin/gfold", "bin/xtask", "lib/libgfold"]
+default-members = ["bin/gfold"]
 
 [profile.release.package.gfold]
 codegen-units = 1

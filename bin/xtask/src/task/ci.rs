@@ -12,7 +12,7 @@ impl TaskRunner for RunCi {
             None,
         )?;
         harness.cargo("doc --all --no-deps", Some(("RUSTDOCFLAGS", "-Dwarnings")))?;
-        harness.cargo("test --all-targets", None)?;
+        harness.cargo("test --all-targets --workspace", None)?;
         harness.cargo("build --locked --all-targets", None)?;
         Ok(())
     }

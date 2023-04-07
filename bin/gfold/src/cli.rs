@@ -2,12 +2,13 @@
 //! settings and environment.
 
 use clap::Parser;
+use libgfold::RepositoryCollector;
 use log::debug;
 use std::env;
 use thiserror::Error;
 
 use crate::config::{ColorMode, Config, DisplayMode};
-use crate::run::RunHarness;
+use crate::display::DisplayHarness;
 
 const HELP: &str = "\
 More information: https://github.com/nickgerace/gfold
@@ -77,8 +78,7 @@ impl CliHarness {
         Self { cli }
     }
 
-    /// Merge configurations as needed, and call
-    /// [`RunHarness::run()`](crate::run::RunHarness::run()) with the resulting [`Config`].
+    /// Merge configurations as needed, collect results and display them.
     pub fn run(&self) -> anyhow::Result<()> {
         let mut config = match self.cli.ignore_config_file {
             true => Config::try_config_default()?,
@@ -114,8 +114,15 @@ impl CliHarness {
         match &self.cli.dry_run {
             true => config.print()?,
             false => {
-                let run_harness = RunHarness::new(&config);
-                run_harness.run()?;
+                let (include_email, include_submodules) = match config.display_mode {
+                    DisplayMode::Classic => (false, false),
+                    DisplayMode::Json => (true, true),
+                    DisplayMode::Standard => (true, false),
+                };
+                let repository_collection =
+                    RepositoryCollector::run(&config.path, include_email, include_submodules)?;
+                let display_harness = DisplayHarness::new(config.display_mode, config.color_mode);
+                display_harness.run(&repository_collection)?;
             }
         }
         Ok(())

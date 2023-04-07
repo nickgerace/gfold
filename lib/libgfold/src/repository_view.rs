@@ -36,12 +36,7 @@ pub struct RepositoryView {
     /// The remote origin URL. The value will be `None` if the URL cannot be found.
     pub url: Option<String>,
 
-    /// The "user.email" of a Git config that's only collected when using
-    /// [`DisplayMode::Standard`](crate::config::DisplayMode::Standard)
-    /// and [`DisplayMode::Json`](crate::config::DisplayMode::Json).
     pub email: Option<String>,
-    /// The submodules of a repository_view that are only collected when using
-    /// [`DisplayMode::Json`](crate::config::DisplayMode::Json).
     pub submodules: Vec<SubmoduleView>,
 }
 

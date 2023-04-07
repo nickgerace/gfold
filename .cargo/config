@@ -2,4 +2,4 @@
 rustdocflags = "--document-private-items"
 
 [alias]
-xtask = "run -q --manifest-path ./crates/xtask/Cargo.toml --"
+xtask = "run -q --manifest-path ./bin/xtask/Cargo.toml --"

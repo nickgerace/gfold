@@ -1,13 +1,13 @@
 //! This module contains the functionality for displaying reports to `stdout`.
 
 use color::ColorHarness;
+use libgfold::RepositoryCollection;
 use log::debug;
 use log::warn;
 use std::io;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 
-use crate::collector::RepositoryCollection;
 use crate::config::{ColorMode, DisplayMode};
 
 mod color;
