@@ -15,12 +15,13 @@ readme = "../../README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
 [dependencies]
-anyhow = { version = "1.0", features = ["backtrace"] }
+anyhow = { workspace = true }
+log = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+
 git2 = { version = "0.17", default_features = false }
-log = "0.4"
 rayon = "1.7"
-serde = { version = "1.0", features = ["derive"] }
-thiserror = "1.0"
 
 [dev-dependencies]
 env_logger = { version = "0.10", features = ["humantime"], default_features = false }
