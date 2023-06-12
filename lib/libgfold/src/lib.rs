@@ -29,7 +29,7 @@ mod tests {
     /// [`tempfile`](tempfile) crate to create some repositories with varying states and levels
     /// of nesting.
     #[test]
-    fn poop() -> anyhow::Result<()> {
+    fn integration() -> anyhow::Result<()> {
         env_logger::builder()
             .is_test(true)
             .filter_level(LevelFilter::Info)
