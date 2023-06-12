@@ -3,20 +3,11 @@ on:
   push:
     branches:
       - "main"
-  pull_request:
-    branches:
-      - "main"
-    paths:
-      - "**.rs"
-      - "Cargo.*"
-      - "*.toml"
-      - ".github/workflows/ci.yml"
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
-  cancel-in-progress: true
 jobs:
   ci:
-    name: "CI"
+    name: "Post Merge Checks" 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
