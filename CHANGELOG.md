@@ -9,7 +9,16 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Changed
+
+- Bump dependencies
+
+### Notes
+
+- Split gfold into two crates: a library and a binary
+- Use cargo workspace dependencies
 
 ## 4.3.3 - 2023-04-07
 
