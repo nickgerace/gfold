@@ -11,12 +11,12 @@ use std::{fs, io};
 type UnprocessedTarget = io::Result<MaybeTarget>;
 
 /// A unit struct used to centralizing target collection method(s).
-pub struct TargetCollector;
+pub(crate) struct TargetCollector;
 
 impl TargetCollector {
     /// Generate targets for a given [`PathBuf`] based on its children (recursively). We use
     /// recursion paired with [`rayon`] since we prioritize speed over memory use.
-    pub fn run(path: PathBuf) -> io::Result<Vec<PathBuf>> {
+    pub(crate) fn run(path: PathBuf) -> io::Result<Vec<PathBuf>> {
         let entries: Vec<DirEntry> = match fs::read_dir(&path) {
             Ok(read_dir) => read_dir.filter_map(|r| r.ok()).collect(),
             Err(e) => {

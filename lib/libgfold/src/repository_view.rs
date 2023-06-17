@@ -1,16 +1,30 @@
-use git2::{ErrorCode, Reference, Remote, Repository, StatusOptions};
+//! This module contains [`RepositoryView`], which provides the [`Status`](crate::status::Status)
+//! and general overview of the state of a given Git repository.
+
+use git2::Repository;
 use log::{debug, error, trace};
 use serde::{Deserialize, Serialize};
+use std::io;
 use std::path::{Path, PathBuf};
 use submodule_view::SubmoduleView;
 use thiserror::Error;
 
-use crate::status::Status;
+use crate::repository_view::submodule_view::SubmoduleError;
+use crate::status::{Status, StatusError};
 
 mod submodule_view;
 
+#[allow(missing_docs)]
 #[derive(Error, Debug)]
 pub enum RepositoryViewError {
+    #[error(transparent)]
+    FromGit2(#[from] git2::Error),
+    #[error(transparent)]
+    FromStdIo(#[from] io::Error),
+    #[error(transparent)]
+    FromSubmodule(#[from] SubmoduleError),
+    #[error(transparent)]
+    FromStatus(#[from] StatusError),
     #[error("received None (Option<&OsStr>) for file name: {0}")]
     FileNameNotFound(PathBuf),
     #[error("could not convert file name (&OsStr) to &str: {0}")]
@@ -20,6 +34,9 @@ pub enum RepositoryViewError {
     #[error("could not convert path (Path) to &str: {0}")]
     PathToStrConversionFailure(PathBuf),
 }
+
+#[allow(missing_docs)]
+pub type RepositoryViewResult<T> = Result<T, RepositoryViewError>;
 
 /// A collection of results for a Git repository at a given path.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -36,7 +53,9 @@ pub struct RepositoryView {
     /// The remote origin URL. The value will be `None` if the URL cannot be found.
     pub url: Option<String>,
 
+    /// The email used in either the local or global config for the repository.
     pub email: Option<String>,
+    /// Views of submodules found within the repository.
     pub submodules: Vec<SubmoduleView>,
 }
 
@@ -46,7 +65,7 @@ impl RepositoryView {
         repo_path: &Path,
         include_email: bool,
         include_submodules: bool,
-    ) -> anyhow::Result<RepositoryView> {
+    ) -> RepositoryViewResult<RepositoryView> {
         debug!(
             "attempting to generate collector for repository_view at path: {:?}",
             repo_path
@@ -68,7 +87,7 @@ impl RepositoryView {
             }
             Err(e) => return Err(e.into()),
         };
-        let (status, head, remote) = RepositoryView::find_status(&repo)?;
+        let (status, head, remote) = Status::find(&repo)?;
 
         let submodules = if include_submodules {
             SubmoduleView::list(&repo)?
@@ -97,16 +116,17 @@ impl RepositoryView {
             "finalized collector collection for repository_view at path: {:?}",
             repo_path
         );
-        Ok(RepositoryView::finalize(
+        RepositoryView::finalize(
             repo_path,
             Some(branch.to_string()),
             status,
             url,
             email,
             submodules,
-        )?)
+        )
     }
 
+    /// Assemble a [`RepositoryView`] with metadata for a given repository.
     pub fn finalize(
         path: &Path,
         branch: Option<String>,
@@ -121,7 +141,7 @@ impl RepositoryView {
                 None => {
                     return Err(RepositoryViewError::FileNameToStrConversionFailure(
                         path.to_path_buf(),
-                    ))
+                    ));
                 }
             },
             None => return Err(RepositoryViewError::FileNameNotFound(path.to_path_buf())),
@@ -132,7 +152,7 @@ impl RepositoryView {
                 None => {
                     return Err(RepositoryViewError::PathToStrConversionFailure(
                         s.to_path_buf(),
-                    ))
+                    ));
                 }
             },
             None => None,
@@ -151,98 +171,6 @@ impl RepositoryView {
             email,
             submodules,
         })
-    }
-
-    /// Find the [`Status`] for a given [`Repository`](git2::Repository). The
-    /// [`head`](Option<git2::Reference>) and [`remote`](Option<git2::Remote>) are also returned.
-    pub fn find_status(
-        repo: &Repository,
-    ) -> anyhow::Result<(Status, Option<Reference>, Option<Remote>)> {
-        let head = match repo.head() {
-            Ok(head) => Some(head),
-            Err(ref e)
-                if e.code() == ErrorCode::UnbornBranch || e.code() == ErrorCode::NotFound =>
-            {
-                None
-            }
-            Err(e) => return Err(e.into()),
-        };
-
-        // Greedily chooses a remote if "origin" is not found.
-        let (remote, remote_name) = match repo.find_remote("origin") {
-            Ok(origin) => (Some(origin), Some("origin".to_string())),
-            Err(e) if e.code() == ErrorCode::NotFound => Self::choose_remote_greedily(repo)?,
-            Err(e) => return Err(e.into()),
-        };
-
-        // We'll include all untracked files and directories in the status options.
-        let mut opts = StatusOptions::new();
-        opts.include_untracked(true).recurse_untracked_dirs(true);
-
-        // If "head" is "None" and statuses are empty, then the repository_view must be clean because there
-        // are no commits to push.
-        let status = match repo.statuses(Some(&mut opts)) {
-            Ok(v) if v.is_empty() => match &head {
-                Some(head) => match remote_name {
-                    Some(remote_name) => {
-                        match RepositoryView::is_unpushed(repo, head, &remote_name)? {
-                            true => Status::Unpushed,
-                            false => Status::Clean,
-                        }
-                    }
-                    None => Status::Clean,
-                },
-                None => Status::Clean,
-            },
-            Ok(_) => Status::Unclean,
-            Err(e) if e.code() == ErrorCode::BareRepo => Status::Bare,
-            Err(e) => return Err(e.into()),
-        };
-
-        Ok((status, head, remote))
-    }
-
-    fn choose_remote_greedily(
-        repository: &Repository,
-    ) -> Result<(Option<Remote>, Option<String>), git2::Error> {
-        let remotes = repository.remotes()?;
-        Ok(match remotes.get(0) {
-            Some(remote_name) => (
-                Some(repository.find_remote(remote_name)?),
-                Some(remote_name.to_string()),
-            ),
-            None => (None, None),
-        })
-    }
-
-    /// Checks if local commit(s) on the current branch have not yet been pushed to the remote.
-    fn is_unpushed(
-        repo: &Repository,
-        head: &Reference,
-        remote_name: &str,
-    ) -> Result<bool, git2::Error> {
-        let local_head = head.peel_to_commit()?;
-        let remote = format!(
-            "{}/{}",
-            remote_name,
-            match head.shorthand() {
-                Some(v) => v,
-                None => {
-                    debug!("assuming unpushed; could not determine shorthand for head");
-                    return Ok(true);
-                }
-            }
-        );
-        let remote_head = match repo.resolve_reference_from_short_name(&remote) {
-            Ok(reference) => reference.peel_to_commit()?,
-            Err(e) => {
-                debug!("assuming unpushed; could not resolve remote reference from short name (ignored error: {})", e);
-                return Ok(true);
-            }
-        };
-        Ok(
-            matches!(repo.graph_ahead_behind(local_head.id(), remote_head.id()), Ok(number_unique_commits) if number_unique_commits.0 > 0),
-        )
     }
 
     /// Find the "user.email" value in the local or global Git config. The
