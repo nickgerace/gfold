@@ -1,4 +1,31 @@
-// #![warn(missing_docs, clippy::missing_errors_doc, clippy::missing_panics_doc)]
+//! **libgfold** provides the ability to find a minimal set of user-relevant information for git
+//! repositories on a local filesystem.
+//!
+//! This library powers [**gfold**](https://github.com/nickgerace/gfold).
+
+#![warn(
+    missing_debug_implementations,
+    missing_docs,
+    missing_doc_code_examples,
+    rust_2018_idioms,
+    unreachable_pub,
+    bad_style,
+    dead_code,
+    improper_ctypes,
+    non_shorthand_field_patterns,
+    no_mangle_generic_items,
+    overflowing_literals,
+    path_statements,
+    patterns_in_fns_without_body,
+    private_in_public,
+    unconditional_recursion,
+    unused,
+    unused_allocation,
+    unused_comparisons,
+    unused_parens,
+    while_true,
+    clippy::missing_panics_doc
+)]
 
 pub mod collector;
 pub mod repository_view;
@@ -13,7 +40,6 @@ pub use status::Status;
 mod tests {
     use super::*;
 
-    use anyhow::anyhow;
     use git2::ErrorCode;
     use git2::Oid;
     use git2::Repository;
@@ -105,7 +131,7 @@ mod tests {
         let expected_views_key = root
             .path()
             .to_str()
-            .ok_or_else(|| anyhow!("could not convert PathBuf to &str"))?
+            .expect("could not convert PathBuf to &str")
             .to_string();
         let mut expected_views = vec![
             RepositoryView::finalize(
@@ -139,7 +165,7 @@ mod tests {
         // Add nested views to the expected collection.
         let nested_expected_views_key = nested
             .to_str()
-            .ok_or_else(|| anyhow!("could not convert PathBuf to &str"))?
+            .expect("could not convert PathBuf to &str")
             .to_string();
         let mut nested_expected_views_raw = vec![
             RepositoryView::finalize(
@@ -195,23 +221,19 @@ mod tests {
         Ok(())
     }
 
-    fn create_directory<P: AsRef<Path>>(parent: P, name: &str) -> anyhow::Result<PathBuf> {
+    fn create_directory<P: AsRef<Path>>(parent: P, name: &str) -> io::Result<PathBuf> {
         let parent = parent.as_ref();
         let new_directory = parent.join(name);
 
         if let Err(e) = fs::create_dir(&new_directory) {
             if e.kind() != io::ErrorKind::AlreadyExists {
-                return Err(anyhow!(
-                    "could not create directory ({:?}) due to error kind: {:?}",
-                    &new_directory,
-                    e.kind()
-                ));
+                return Err(e);
             }
         }
         Ok(new_directory)
     }
 
-    fn create_file<P: AsRef<Path>>(parent: P) -> anyhow::Result<()> {
+    fn create_file<P: AsRef<Path>>(parent: P) -> io::Result<()> {
         let parent = parent.as_ref();
         File::create(parent.join("file"))?;
         Ok(())
