@@ -112,9 +112,9 @@ _Note:_ the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-L
 
 ### Arch Linux
 
-[![arch linux](https://img.shields.io/archlinux/v/community/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/community/x86_64/gfold/)
+[![arch linux](https://img.shields.io/archlinux/v/extra/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/extra/x86_64/gfold/)
 
-You can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [community repository](https://archlinux.org/packages/community/x86_64/gfold/).
+You can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [Extra repository](https://archlinux.org/packages/extra/x86_64/gfold/).
 
 ```shell
 pacman -S gfold
