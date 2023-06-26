@@ -100,19 +100,30 @@ Now, you can update the config file within your repository and include the linki
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/gfold.svg)](https://repology.org/project/gfold/versions)
 
-### Homebrew Install (macOS only)
+### Homebrew
 
-You can use [Homebrew](https://brew.sh) to install the [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb).
+You can use [Homebrew](https://brew.sh) to install `gfold` with a choice of two methods.
+
+#### Core (macOS and Linux)
+
+`gfold` is now available in the [core formulae](https://formulae.brew.sh/formula/gfold)!
+However, you may run into a naming collision on macOS if [coreutils](https://formulae.brew.sh/formula/coreutils) is installed via `brew`.
+See the [troubleshooting](#troubleshooting-and-known-issues) section for a workaround and more information.
+
+```shell
+brew install gfold
+```
+
+#### Tap (macOS only)
+
+The [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb) is still available if you would like to use it.
+This is subject to change.
 
 ```shell
 brew install nickgerace/nickgerace/gfold
 ```
 
-_Note:_ the tap may not work with [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux).
-
 ### Arch Linux
-
-[![arch linux](https://img.shields.io/archlinux/v/extra/x86_64/gfold?logo=archlinux&logoColor=white&style=flat-square&color=blue)](https://archlinux.org/packages/extra/x86_64/gfold/)
 
 You can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [Extra repository](https://archlinux.org/packages/extra/x86_64/gfold/).
 
@@ -134,7 +145,7 @@ If you are using [flakes](https://nixos.wiki/wiki/Flakes), you can install using
 nix profile install "nixpkgs#gfold"
 ```
 
-### Cargo Install
+### Cargo
 
 You can use [cargo](https://crates.io) to install the [crate](https://crates.io/crates/gfold) on almost any platform.
 
