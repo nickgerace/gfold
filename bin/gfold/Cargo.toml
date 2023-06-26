@@ -18,11 +18,10 @@ libgfold = { path = "../../lib/libgfold" }
 anyhow = { workspace = true }
 clap = { workspace = true }
 dirs = { workspace = true }
+env_logger = { workspace = true }
 log = { workspace = true }
 serde = { workspace = true }
+serde_json = { workspace = true }
 termcolor = { workspace = true }
 thiserror = { workspace = true }
-
-env_logger = { version = "0.10", features = ["humantime"], default_features = false }
-serde_json = "1.0"
-toml = "0.7"
+toml = { workspace = true }

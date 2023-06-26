@@ -5,9 +5,8 @@ edition = "2021"
 publish = false
 
 [dependencies]
-thiserror = { workspace = true }
 clap = { workspace = true }
 dirs = { workspace = true }
+strum = { workspace = true }
 termcolor = { workspace = true }
-
-strum = { version = "0.24", features = ["derive"] }
+thiserror = { workspace = true }
