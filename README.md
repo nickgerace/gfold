@@ -125,7 +125,7 @@ brew install nickgerace/nickgerace/gfold
 
 ### Arch Linux
 
-You can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [Extra repository](https://archlinux.org/packages/extra/x86_64/gfold/).
+You can use [pacman](https://wiki.archlinux.org/title/Pacman) to install `gfold` from the [extra repository](https://archlinux.org/packages/extra/x86_64/gfold/).
 
 ```shell
 pacman -S gfold
@@ -224,9 +224,6 @@ This repository's tracking issue is [#205](https://github.com/nickgerace/gfold/i
 
 For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./docs/THANKS.md)** file.
 
-Name | Type | Description
---- | --- | ---
-[Arch Linux community repository](https://archlinux.org/packages/community/x86_64/gfold/) | packaging | the `gfold` package _(note: before moving to the community repository, the [AUR](https://github.com/orhun/PKGBUILDs) was previously used for distribution)_
-["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/) | article | featured `gfold`
-[nixpkgs](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/version-management/gfold/default.nix) | packaging | the `gfold` package
-[nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua) | project | a `neovim` plugin for `gfold` _([announcement Reddit post](https://www.reddit.com/r/neovim/comments/t209wy/introducing_nvimgfoldlua/))_
+- [Packages for NixOS, Arch Linux and more](https://repology.org/project/gfold/versions)
+- ["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/), an article that featured `gfold`
+- [nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua), a `neovim` plugin for `gfold` _([announcement Reddit post](https://www.reddit.com/r/neovim/comments/t209wy/introducing_nvimgfoldlua/))_
