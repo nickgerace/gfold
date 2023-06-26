@@ -13,7 +13,7 @@ readme = "../../README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
 [dependencies]
-libgfold = { path = "../../lib/libgfold" }
+libgfold = { version = "0.1.1", path = "../../lib/libgfold" }
 
 anyhow = { workspace = true }
 clap = { workspace = true }
