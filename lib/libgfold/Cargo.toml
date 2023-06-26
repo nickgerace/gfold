@@ -1,17 +1,15 @@
 [package]
 name = "libgfold"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
-# NOTE(nick): Temporary until libgfold is ready for release
-publish = false
-
-# TODO(nick): add categories and description
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
+categories = ["development-tools"]
+description = "Provides the ability to find a minimal set of user-relevant information for Git repositories on a local filesystem."
 homepage = "https://nickgerace.dev"
 keywords = ["git"]
 license = "Apache-2.0"
-readme = "../../README.md"
+readme = "README.md"
 repository = "https://github.com/nickgerace/gfold/"
 
 [dependencies]
