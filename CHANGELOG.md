@@ -9,7 +9,9 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
+
+## 4.4.0 - 2023-06-26
 
 ### Changed
 
@@ -17,7 +19,12 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ### Notes
 
-- Split gfold into two crates: a library and a binary
+- Bump the minor version field instead of the patch field because the dependency tree has significantly changed
+  - Technically, the sole user-facing change is that the external dependencies have been bumped
+  - For context, `libgfold` was newly introduced and contains the majority of the original `gfold` source code
+- Only run CI checks on merge
+- Publish and use `libgfold` for the first time
+- Split `gfold` into two crates: a library and a binary
 - Use cargo workspace dependencies
 
 ## 4.3.3 - 2023-04-07

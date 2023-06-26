@@ -319,7 +319,7 @@ dependencies = [
 
 [[package]]
 name = "gfold"
-version = "4.3.3"
+version = "4.4.0"
 dependencies = [
  "anyhow",
  "clap",
