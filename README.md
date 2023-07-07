@@ -199,6 +199,13 @@ Please [file an issue](https://github.com/nickgerace/gfold/issues/new)!
 `gfold` is intended to be ran on _any_ tier one Rust 🦀 target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
 
+## Usage as a Library
+
+There are two ways to use `gfold` as a "library".
+
+1) Use the [`libgfold`](./lib/libgfold/README.md) crate that powers `gfold`
+1) Consume valid JSON results from `gfold -d json` (not a library, but useful for non-Rust applications)
+
 ## Troubleshooting and Known Issues
 
 If you encounter unexpected behavior or a bug and would like to see more details, please run `gfold` with the following
@@ -234,13 +241,6 @@ If you are seeing `unsupported extension name extensions.worktreeconfig` or simi
 [libgit2/libgit2#6044](https://github.com/libgit2/libgit2/issues/6044).
 
 This repository's tracking issue is [#205](https://github.com/nickgerace/gfold/issues/205).
-
-## Usage as a Library
-
-There are two ways to use `gfold` as a "library".
-
-1) Use the [`libgfold`](./lib/libgfold/README.md) crate that powers `gfold`
-1) Consume valid JSON results from `gfold -d json` (not a library, but useful for non-Rust applications)
 
 ## Community
 
