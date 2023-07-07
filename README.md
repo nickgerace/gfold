@@ -235,6 +235,13 @@ If you are seeing `unsupported extension name extensions.worktreeconfig` or simi
 
 This repository's tracking issue is [#205](https://github.com/nickgerace/gfold/issues/205).
 
+## Usage as a Library
+
+There are two ways to use `gfold` as a "library".
+
+1) Use the [`libgfold`](./lib/libgfold/README.md) crate that powers `gfold`
+1) Consume valid JSON results from `gfold -d json` (not a library, but useful for non-Rust applications)
+
 ## Community
 
 For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./docs/THANKS.md)** file.
