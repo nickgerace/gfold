@@ -1,5 +1,5 @@
-//! [gfold](https://github.com/nickgerace/gfold) is a CLI-driven application that helps you keep
-//! track of multiple Git repositories. The source code uses private modules rather than leveraging
+//! [gfold](https://github.com/nickgerace/gfold) is a CLI tool that helps you keep track of
+//! multiple Git repositories. The source code uses private modules rather than leveraging
 //! a library via `lib.rs`.
 
 #![warn(missing_docs, clippy::missing_errors_doc, clippy::missing_panics_doc)]

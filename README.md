@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/github/license/nickgerace/gfold?style=flat-square&logo=apache&color=silver)](./LICENSE)
 [![build status](https://img.shields.io/github/actions/workflow/status/nickgerace/gfold/ci.yml?branch=main&style=flat-square&logo=github&logoColor=white)](https://github.com/nickgerace/gfold/actions)
 
-`gfold` is a CLI-driven application that helps you keep track of multiple Git repositories.
+`gfold` is a CLI tool that helps you keep track of multiple Git repositories.
 
 [![A GIF showcasing gfold in action](https://raw.githubusercontent.com/nickgerace/gfold/main/assets/demo.gif)](https://raw.githubusercontent.com/nickgerace/gfold/main/assets/demo.gif)
 
@@ -14,6 +14,7 @@ If you'd prefer to use the classic display mode by default, and avoid setting th
 ## Description
 
 This app displays relevant information for multiple Git repositories in one to many directories.
+It only reads from the filesystem and will never write to it.
 While this tool might seem limited in scope and purpose, that is by design.
 
 By default, `gfold` looks at every Git repository via traversal from the current working directory.
@@ -24,20 +25,36 @@ Analysis is performed by leveraging the [git2-rs](https://github.com/rust-lang/g
 
 ## Usage
 
-Pass in `--help` flag to see all the options for using this application.
+Provide the `-h/--help` flag to see all the options for using this application.
 
 ```shell
+# Operate in the current working directory or in the location provided by a config file, if one exists.
 gfold
+
+# Operate in the parent directory.
 gfold ..
+
+# Operate in the home directory (first method).
 gfold $HOME
+
+# Operate in the home directory (second method).
 gfold ~/
+
+# Operate with an absolute path.
 gfold /this/is/an/absolute/path
+
+# Operate with a relative path.
 gfold ../../this/is/a/relative/path
 ```
 
 ### Config File
 
-Upon execution, `gfold` will look for a config file at the following path on macOS, Linux and similar operating systems:
+If you find yourself providing the same arguments frequently, you can create and use a config file.
+`gfold` does not come with a config file by default and config files are entirely optional.
+
+How does it work?
+Upon execution, `gfold` will look for a config file at the following path on macOS, Linux and similar operating systems.
+
 
 ```shell
 $HOME/.config/gfold.toml
@@ -48,8 +65,6 @@ On Windows, the lookup path will be in a similar location.
 ```powershell
 {FOLDERID_Profile}\.config\gfold.toml
 ```
-
-Creating and using the config file is entirely optional.
 
 For config file creation, you can use the `--dry-run` flag to print valid TOML.
 Here is an example config file creation workflow on macOS, Linux and similar platforms:
@@ -91,7 +106,7 @@ You can back up a config file and track its history with `git`.
 On macOS, Linux, and most systems, you can link the file back to a `git` repository.
 
 ```shell
-ln -s path/to/repository/gfold.toml $HOME/.config/gfold.toml
+ln -s <path-to-repository>/gfold.toml $HOME/.config/gfold.toml
 ```
 
 Now, you can update the config file within your repository and include the linking as part of your environment setup workflow.
@@ -199,7 +214,7 @@ If the issue persists, please [file an issue](https://github.com/nickgerace/gfol
 ### Tuning Environment Variables
 
 Since [`RUST_BACKTRACE`](https://doc.rust-lang.org/std/backtrace/index.html) and
-[`RUST_LOG`](https://docs.rs/env_logger/latest/env_logger/), do not have `gfold`-specific behaviors, you can adjust
+[`RUST_LOG`](https://docs.rs/env_logger/latest/env_logger/) do not have `gfold`-specific behaviors, you can adjust
 them just as you would in other projects to aid investigation.
 Please attach relevant logs from execution with _sensitive bits redacted_ in order to help resolve your issue.
 
