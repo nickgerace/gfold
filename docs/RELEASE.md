@@ -2,6 +2,14 @@
 
 This document contains all information related to release.
 
+## Versioning Scheme
+
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Generally, the versioning scheme looks like the following formats where `X` is an unsigned integer:
+
+- **Release candidates (RCs):** `X.X.X-rc.X`
+- **Full releases:** `X.X.X`
+
 ## Overview
 
 If only `gfold` has changed, release `gfold` alone.
@@ -36,14 +44,6 @@ cargo publish -p libgfold
 
 - [ ] Verify that the [crate](https://crates.io/crates/libgfol) on `crates.io` looks correct
 - [ ] Ensure that the [docs](https://docs.rs/libgfold/latest/libgfold/) on `docs.rs` look correct
-
-## Versioning Scheme
-
-This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-Generally, the versioning scheme looks like the following formats where `X` is an unsigned integer:
-
-- **Release candidates (RCs):** `X.X.X-rc.X`
-- **Full releases:** `X.X.X`
 
 ## Checklist for `gfold`
 

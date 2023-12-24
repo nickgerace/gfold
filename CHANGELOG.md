@@ -7,7 +7,9 @@
 
 ## Unreleased
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
+
+## 4.4.1 - 2023-12-23
 
 ### Changed
 
