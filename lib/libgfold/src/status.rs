@@ -42,7 +42,7 @@ impl Status {
         }
     }
 
-    /// Find the [`Status`] for a given [`Repository`](git2::Repository). The
+    /// Find the [`Status`] for a given [`Repository`]. The
     /// [`head`](Option<git2::Reference>) and [`remote`](Option<git2::Remote>) are also returned.
     pub fn find(
         repo: &Repository,

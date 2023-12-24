@@ -1,4 +1,4 @@
-//! This module contains [`RepositoryView`], which provides the [`Status`](crate::status::Status)
+//! This module contains [`RepositoryView`], which provides the [`Status`]
 //! and general overview of the state of a given Git repository.
 
 use git2::Repository;

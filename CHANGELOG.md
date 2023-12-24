@@ -1,7 +1,5 @@
 # Changelog
 
-For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHANGELOG_PRE_V4.md).
-
 - All notable changes to this project will be documented in this file
 - All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwise specified
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
@@ -9,7 +7,11 @@ For new changes prior to version 4.0.0, please see [CHANGELOG_PRE_V4](./docs/CHA
 
 ## Unreleased
 
-The latest version contains all changes.
+<!-- The latest version contains all changes. -->
+
+### Changed
+
+- Bump dependencies
 
 ## 4.4.0 - 2023-06-26
 

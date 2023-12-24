@@ -1,4 +1,4 @@
-# Changelog ([libgfold](./README.md))
+# Changelog
 
 - All notable changes to this project will be documented in this file
 - All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwise specified
@@ -7,11 +7,14 @@
 
 ## Unreleased
 
-<!-- The latest version contains all changes. -->
+The latest version contains all changes.
+
+## 0.1.2 - 2023-12-23
 
 ### Changed
 
-- Bump deps
+- Bump dependencies
+- Modify documentation comments to conform with new `clippy` lints
 
 ## 0.1.1 - 2023-06-26
 
