@@ -21,7 +21,7 @@ Steps should be executed in sequential order.
 
 - [ ] Checkout and rebase `main` to its latest commit and checkout a new branch
 - [ ] Change the `version` field in [`Cargo.toml`](../lib/libgfold/Cargo.toml) to the new tag
-- [ ] **Full Releases Only**: change the version in [`CHANGELOG.md`](../lib/libgfold/CHANGELOG.md) and uncomment the following line: `<!--The latest version contains all changes.-->`
+- [ ] Change the version in [`CHANGELOG.md`](../CHANGELOG.md) and uncomment the following line: `<!--The latest version contains all changes.-->` (skip this for release candidates)
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
@@ -42,7 +42,7 @@ cargo publish --dry-run -p libgfold
 cargo publish -p libgfold
 ```
 
-- [ ] Verify that the [crate](https://crates.io/crates/libgfol) on `crates.io` looks correct
+- [ ] Verify that the [crate](https://crates.io/crates/libgfold) on `crates.io` looks correct
 - [ ] Ensure that the [docs](https://docs.rs/libgfold/latest/libgfold/) on `docs.rs` look correct
 
 ## Checklist for `gfold`
@@ -51,7 +51,7 @@ Steps should be executed in sequential order.
 
 - [ ] Checkout and rebase `main` to its latest commit, then checkout a new branch
 - [ ] Change the `version` field in [`Cargo.toml`](../bin/gfold/Cargo.toml) to the new tag
-- [ ] **Full Releases Only**: change the version in [`CHANGELOG.md`](../CHANGELOG.md) and uncomment the following line: `<!--The latest version contains all changes.-->`
+- [ ] Change the version in [`CHANGELOG.md`](../CHANGELOG.md) and uncomment the following line: `<!--The latest version contains all changes.-->` (skip this for release candidates)
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
@@ -92,4 +92,3 @@ cargo install --locked --version <tag> gfold
 ```
 
 - [ ] Verify that the [GitHub release](https://github.com/nickgerace/gfold/releases) on the repository's releases page looks correct
-- [ ] **Full Releases Only**: Update the formula for the [Homebrew tap](https://github.com/nickgerace/homebrew-nickgerace)
