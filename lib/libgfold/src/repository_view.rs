@@ -15,20 +15,21 @@ use crate::status::{Status, StatusError};
 mod submodule_view;
 
 #[allow(missing_docs)]
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum RepositoryViewError {
-    #[error(transparent)]
-    FromGit2(#[from] git2::Error),
-    #[error(transparent)]
-    FromStdIo(#[from] io::Error),
-    #[error(transparent)]
-    FromSubmodule(#[from] SubmoduleError),
-    #[error(transparent)]
-    FromStatus(#[from] StatusError),
     #[error("received None (Option<&OsStr>) for file name: {0}")]
     FileNameNotFound(PathBuf),
     #[error("could not convert file name (&OsStr) to &str: {0}")]
     FileNameToStrConversionFailure(PathBuf),
+    #[error(transparent)]
+    FromGit2(#[from] git2::Error),
+    #[error(transparent)]
+    FromStatus(#[from] StatusError),
+    #[error(transparent)]
+    FromStdIo(#[from] io::Error),
+    #[error(transparent)]
+    FromSubmodule(#[from] SubmoduleError),
     #[error("full shorthand for Git reference is invalid UTF-8")]
     GitReferenceShorthandInvalid,
     #[error("could not convert path (Path) to &str: {0}")]

@@ -15,6 +15,7 @@ mod color;
 const PAD: usize = 2;
 const NONE: &str = "none";
 
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum DisplayError {
     #[error("could not convert path (Path) to &str: {0}")]
@@ -38,7 +39,8 @@ impl DisplayHarness {
     /// This function chooses the display execution function based on the [`DisplayMode`] provided.
     pub fn run(&self, reports: &RepositoryCollection) -> anyhow::Result<()> {
         match self.display_mode {
-            DisplayMode::Standard => Self::standard(reports, self.color_mode)?,
+            DisplayMode::Standard => Self::standard(reports, self.color_mode, false)?,
+            DisplayMode::StandardAlphabetical => Self::standard(reports, self.color_mode, true)?,
             DisplayMode::Json => Self::json(reports)?,
             DisplayMode::Classic => Self::classic(reports, self.color_mode)?,
         }
@@ -46,14 +48,21 @@ impl DisplayHarness {
     }
 
     /// Display [`RepositoryCollection`] to `stdout` in the standard (default) format.
-    fn standard(reports: &RepositoryCollection, color_mode: ColorMode) -> anyhow::Result<()> {
+    fn standard(
+        reports: &RepositoryCollection,
+        color_mode: ColorMode,
+        alphabetical_sort_only: bool,
+    ) -> anyhow::Result<()> {
         debug!("detected standard display mode");
         let mut all_reports = Vec::new();
         for grouped_report in reports {
             all_reports.append(&mut grouped_report.1.clone());
         }
+
         all_reports.sort_by(|a, b| a.name.cmp(&b.name));
-        all_reports.sort_by(|a, b| a.status.as_str().cmp(b.status.as_str()));
+        if !alphabetical_sort_only {
+            all_reports.sort_by(|a, b| a.status.as_str().cmp(b.status.as_str()));
+        }
 
         let color_harness = ColorHarness::new(&color_mode);
 

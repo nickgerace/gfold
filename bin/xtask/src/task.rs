@@ -35,9 +35,10 @@ pub trait TaskRunner {
     fn run(harness: &mut TaskHarness) -> TaskResult<()>;
 }
 
+#[remain::sorted]
 enum WriteKind {
-    Stdout,
     Stderr,
+    Stdout,
 }
 
 impl TaskHarness {

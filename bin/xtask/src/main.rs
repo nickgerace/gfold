@@ -11,11 +11,9 @@ use thiserror::Error;
 pub use task::TaskHarness;
 pub use task::TaskRunner;
 
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum TaskError {
-    #[error(transparent)]
-    Io(#[from] io::Error),
-
     #[error("cargo command failed")]
     CargoCommandFailed,
     #[error("could not determine repository root")]
@@ -24,6 +22,8 @@ pub enum TaskError {
     HomeDirectoryNotFound,
     #[error("invalid task provided: {0}")]
     InvalidTaskProvided(String),
+    #[error(transparent)]
+    Io(#[from] io::Error),
     #[error("repository does not have parent directory (this should be impossible)")]
     RepositoryDoesNotHaveParentDirectory,
     #[error("command during loose bench was not successful: {0:?}")]
@@ -39,6 +39,7 @@ struct Cli {
     command: Task,
 }
 
+#[remain::sorted]
 #[derive(Display, Subcommand)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Task {

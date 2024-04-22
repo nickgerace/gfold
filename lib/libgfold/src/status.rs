@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[allow(missing_docs)]
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum StatusError {
     #[error(transparent)]
@@ -16,6 +17,7 @@ pub enum StatusError {
 pub type StatusResult<T> = Result<T, StatusError>;
 
 /// A summarized interpretation of the status of a Git working tree.
+#[remain::sorted]
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Status {
     /// Corresponds to a "bare" working tree.

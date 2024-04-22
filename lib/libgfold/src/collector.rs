@@ -11,6 +11,7 @@ use crate::repository_view::{RepositoryView, RepositoryViewError, RepositoryView
 mod target;
 
 #[allow(missing_docs)]
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum CollectorError {
     #[error(transparent)]

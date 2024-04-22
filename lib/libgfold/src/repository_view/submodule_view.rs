@@ -9,16 +9,17 @@ use thiserror::Error;
 
 use crate::status::{Status, StatusError};
 
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum SubmoduleError {
-    #[error("submodule name is invalid UTF-8")]
-    SubmoduleNameInvalid,
     #[error(transparent)]
     FromGit2(#[from] git2::Error),
     #[error(transparent)]
-    FromStdIo(#[from] io::Error),
-    #[error(transparent)]
     FromStatus(#[from] StatusError),
+    #[error(transparent)]
+    FromStdIo(#[from] io::Error),
+    #[error("submodule name is invalid UTF-8")]
+    SubmoduleNameInvalid,
 }
 
 type SubmoduleResult<T> = Result<T, SubmoduleError>;
