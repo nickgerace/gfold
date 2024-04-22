@@ -73,11 +73,12 @@ impl TargetCollector {
 }
 
 /// An enum that contains 0 to N targets based on the variant.
+#[remain::sorted]
 enum MaybeTarget {
     /// Contains multiple targets from recursive call(s) of [`TargetCollector::run()`].
     Multiple(Vec<PathBuf>),
-    /// Contains a single target.
-    Single(PathBuf),
     /// Does not contain a target.
     None,
+    /// Contains a single target.
+    Single(PathBuf),
 }

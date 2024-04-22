@@ -3,6 +3,13 @@ members = ["bin/gfold", "bin/xtask", "lib/libgfold"]
 default-members = ["bin/gfold"]
 resolver = "2"
 
+[workspace.package]
+authors = ["Nick Gerace <nickagerace@gmail.com>"]
+edition = "2021"
+homepage = "https://github.com/nickgerace/gfold"
+license = "Apache-2.0"
+repository = "https://github.com/nickgerace/gfold"
+
 [profile.release.package.gfold]
 codegen-units = 1
 opt-level = 3
@@ -14,17 +21,18 @@ panic = "abort"
 
 [workspace.dependencies]
 anyhow = { version = "1.0", features = ["backtrace"] }
-clap = { version = "4.4", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 dirs = "5.0"
-env_logger = { version = "0.10", features = ["humantime"], default_features = false }
+env_logger = { version = "0.11", features = ["humantime"], default_features = false }
 git2 = { version = "0.18", default_features = false }
 log = "0.4"
 pretty_assertions = "1.4"
-rayon = "1.8"
+rayon = "1.10"
+remain = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-strum = { version = "0.25", features = ["derive"] }
-tempfile = "3.8"
+strum = { version = "0.26", features = ["derive"] }
+tempfile = "3.10"
 termcolor = "1.4"
 thiserror = "1.0"
 toml = "0.8"

@@ -31,6 +31,7 @@ Troubleshooting:
   \"RUST_BACKTRACE=1\"and \"RUST_LOG=debug\". You can adjust those variable's
   values to aid investigation.";
 
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum CliError {
     #[error("invalid color mode provided (exec \"--help\" for options): {0}")]
@@ -54,7 +55,7 @@ struct Cli {
     #[arg(
         short,
         long,
-        help = "specify display format (options: [\"standard\", \"default\", \"json\", \"classic\"])"
+        help = "specify display format (options: [\"standard\", \"standard-alphabetical\", \"json\", \"classic\", \"default\"])"
     )]
     display_mode: Option<String>,
     #[arg(
@@ -86,13 +87,14 @@ impl CliHarness {
         };
         debug!("loaded initial config");
 
-        if let Some(found_display_mode) = &self.cli.display_mode {
-            config.display_mode = match found_display_mode.to_lowercase().as_str() {
-                "classic" => DisplayMode::Classic,
-                "json" => DisplayMode::Json,
-                "standard" | "default" => DisplayMode::Standard,
-                _ => {
-                    return Err(CliError::InvalidDisplayMode(found_display_mode.to_string()).into())
+        if let Some(found_display_mode_raw) = &self.cli.display_mode {
+            config.display_mode = match DisplayMode::from_str(found_display_mode_raw.to_lowercase())
+            {
+                Some(found_display_mode) => found_display_mode,
+                None => {
+                    return Err(
+                        CliError::InvalidDisplayMode(found_display_mode_raw.to_string()).into(),
+                    );
                 }
             }
         }
@@ -118,6 +120,7 @@ impl CliHarness {
                     DisplayMode::Classic => (false, false),
                     DisplayMode::Json => (true, true),
                     DisplayMode::Standard => (true, false),
+                    DisplayMode::StandardAlphabetical => (true, false),
                 };
                 let repository_collection =
                     RepositoryCollector::run(&config.path, include_email, include_submodules)?;

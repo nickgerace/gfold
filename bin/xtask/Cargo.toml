@@ -1,12 +1,18 @@
 [package]
 name = "xtask"
 version = "0.1.0"
-edition = "2021"
 publish = false
+
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [dependencies]
 clap = { workspace = true }
 dirs = { workspace = true }
+remain = { workspace = true }
 strum = { workspace = true }
 termcolor = { workspace = true }
 thiserror = { workspace = true }

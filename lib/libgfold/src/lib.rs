@@ -49,11 +49,11 @@ mod tests {
     use std::{fs, io};
     use tempfile::tempdir;
 
-    /// This integration test for `gfold` covers an end-to-end usage scenario. It uses the
+    /// This scenario test for `gfold` covers an end-to-end usage scenario. It uses the
     /// [`tempfile`](tempfile) crate to create some repositories with varying states and levels
     /// of nesting.
     #[test]
-    fn integration() -> anyhow::Result<()> {
+    fn scenario() -> anyhow::Result<()> {
         env_logger::builder()
             .is_test(true)
             .filter_level(LevelFilter::Info)

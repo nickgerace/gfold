@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use std::{env, fs, io};
 use thiserror::Error;
 
+#[remain::sorted]
 #[derive(Error, Debug)]
 pub enum ConfigError {
     #[error("could not find home directory")]
@@ -99,17 +100,35 @@ struct EntryConfig {
 /// less information to be displayed, then some commands and functions might get skipped.
 /// In summary, while this setting is primarily for cosmetics, it may also affect runtime
 /// performance based on what needs to be displayed.
+#[remain::sorted]
 #[derive(Serialize, Deserialize, Clone, Copy)]
 pub enum DisplayMode {
-    /// Informs the caller to display results in the standard (default) format.
-    Standard,
     /// Informs the caller to display results in the classic format.
     Classic,
     /// Informs the caller to display results in JSON format.
     Json,
+    /// Informs the caller to display results in the standard (default) format. All results are
+    /// sorted alphabetically and then sorted by status.
+    Standard,
+    /// Informs the caller to display results in the standard (default) format with a twist: all
+    /// results are solely sorted alphabetically (i.e. no additional sort by status).
+    StandardAlphabetical,
+}
+
+impl DisplayMode {
+    pub fn from_str(input: impl AsRef<str>) -> Option<Self> {
+        match input.as_ref() {
+            "classic" => Some(Self::Classic),
+            "json" => Some(Self::Json),
+            "standard" | "default" => Some(Self::Standard),
+            "standard-alphabetical" => Some(Self::StandardAlphabetical),
+            _ => None,
+        }
+    }
 }
 
 /// Set the color mode of results printed to `stdout`.
+#[remain::sorted]
 #[derive(Serialize, Deserialize, Clone, Copy)]
 pub enum ColorMode {
     /// Attempt to display colors as intended (default behavior).
