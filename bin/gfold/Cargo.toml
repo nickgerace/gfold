@@ -1,6 +1,6 @@
 [package]
 name = "gfold"
-version = "4.4.1"
+version = "4.5.0"
 
 categories = ["command-line-utilities", "command-line-interface"]
 description = "CLI tool to help keep track of your Git repositories."

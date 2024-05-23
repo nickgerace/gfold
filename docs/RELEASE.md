@@ -59,7 +59,7 @@ Steps should be executed in sequential order.
 cargo xtask ci
 ```
 
-- [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
+- [ ] Create and _do not merge_ a commit with the following message: `Update gfold to <tag>`
 - [ ] Test and verify the publishing workflow:
 
 ```shell

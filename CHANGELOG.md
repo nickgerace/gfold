@@ -9,6 +9,16 @@
 
 The latest version contains all changes.
 
+## 4.5.0 - 2024-05-23
+
+### Added
+
+- Ability to use the standard display mode, but the results are purely alphabetical and not sorted by repository status
+
+### Changed
+
+- Bump dependencies
+
 ## 4.4.1 - 2023-12-23
 
 ### Changed
