@@ -1,6 +1,6 @@
 [package]
 name = "libgfold"
-version = "0.1.2"
+version = "0.1.3"
 
 categories = ["development-tools"]
 description = "Provides the ability to find a minimal set of user-relevant information for Git repositories on a local filesystem."

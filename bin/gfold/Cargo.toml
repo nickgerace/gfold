@@ -14,7 +14,7 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
-libgfold = { version = "0.1.2", path = "../../lib/libgfold" }
+libgfold = { version = "0.1.3", path = "../../lib/libgfold" }
 
 anyhow = { workspace = true }
 clap = { workspace = true }

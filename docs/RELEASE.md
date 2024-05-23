@@ -21,6 +21,7 @@ Steps should be executed in sequential order.
 
 - [ ] Checkout and rebase `main` to its latest commit and checkout a new branch
 - [ ] Change the `version` field in [`Cargo.toml`](../lib/libgfold/Cargo.toml) to the new tag
+- [ ] Use the new version in the `gfold` [`Cargo.toml`](../lib/gfold/Cargo.toml) file
 - [ ] Change the version in [`CHANGELOG.md`](../CHANGELOG.md) and uncomment the following line: `<!--The latest version contains all changes.-->` (skip this for release candidates)
 - [ ] Verify that everything looks/works as expected:
 
