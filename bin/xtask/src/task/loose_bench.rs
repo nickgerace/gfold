@@ -26,9 +26,15 @@ impl TaskRunner for RunLooseBench {
 
         harness.task(Task::BuildRelease)?;
 
-        let release = harness.root.join("target").join("release").join("gfold");
-        let home = dirs::home_dir().ok_or(TaskError::HomeDirectoryNotFound)?;
-        let installed = home.join(".cargo").join("bin").join("gfold");
+        let release = harness
+            .root
+            .join("target")
+            .join("release")
+            .join("gfold")
+            .to_str()
+            .unwrap()
+            .to_string();
+        // let home = dirs::home_dir().ok_or(TaskError::HomeDirectoryNotFound)?;
         let target = harness
             .root
             .parent()
@@ -50,7 +56,7 @@ impl TaskRunner for RunLooseBench {
             // skewing results.
             if run > RUNS / 2 {
                 let (old_duration, new_duration) =
-                    harness.loose_bench(&installed, &release, target)?;
+                    harness.loose_bench("gfold", &release, target)?;
                 if first {
                     first = false;
                 } else {
@@ -59,7 +65,7 @@ impl TaskRunner for RunLooseBench {
                 }
             } else {
                 let (new_duration, old_duration) =
-                    harness.loose_bench(&release, &installed, target)?;
+                    harness.loose_bench(&release, "gfold", target)?;
                 if first {
                     first = false;
                 } else {
@@ -87,14 +93,12 @@ impl TaskRunner for RunLooseBench {
             "
 target: {}
 
-  release     {release_average:.2?}  {}
-  installed   {installed_average:.2?}  {}
+  release     {release_average:.2?}
+  installed   {installed_average:.2?}
   difference  {difference:.2?}  ({label})
 
 loose bench duration: {:.2?}",
             target.display(),
-            &release.display(),
-            &installed.display(),
             global_instant.elapsed()
         );
         Ok(())
@@ -104,10 +108,13 @@ loose bench duration: {:.2?}",
 impl TaskHarness {
     fn loose_bench(
         &self,
-        first: &Path,
-        second: &Path,
+        first: impl AsRef<str>,
+        second: impl AsRef<str>,
         target: &Path,
     ) -> TaskResult<(Duration, Duration)> {
+        let first = first.as_ref();
+        let second = second.as_ref();
+
         let first_duration = self.execute_gfold(first, target)?;
         let second_duration = self.execute_gfold(second, target)?;
 
@@ -117,17 +124,17 @@ impl TaskHarness {
             Ordering::Equal => ("tied  ", "tied  "),
         };
 
-        println!("  {first_text}  {first_duration:.2?}  {}", first.display(),);
-        println!(
-            "  {second_text}  {second_duration:.2?}  {}",
-            second.display(),
-        );
+        println!("  {first_text}  {first_duration:.2?}  {first}");
+        println!("  {second_text}  {second_duration:.2?}  {second}");
         Ok((first_duration, second_duration))
     }
 
-    fn execute_gfold(&self, binary: &Path, target: &Path) -> TaskResult<Duration> {
+    fn execute_gfold(&self, binary: impl AsRef<str>, target: &Path) -> TaskResult<Duration> {
         let start = Instant::now();
-        let output = Command::new(binary).arg("-i").arg(target).output()?;
+        let output = Command::new(binary.as_ref())
+            .arg("-i")
+            .arg(target)
+            .output()?;
         match output.status.success() {
             true => Ok(start.elapsed()),
             false => Err(TaskError::UnsuccessfulCommandDuringLooseBench(output)),

@@ -7,7 +7,7 @@ use log::debug;
 use std::env;
 use thiserror::Error;
 
-use crate::config::{ColorMode, Config, DisplayMode};
+use crate::config::{ColorMode, Config, JsonOptions};
 use crate::display::DisplayHarness;
 
 const HELP: &str = "\
@@ -19,25 +19,25 @@ Description:
   working directory.
 
 Config File Usage:
-  While CLI options are prioritized, default options will fallback to the
-  config file if it exists. Here is the config file lookup locations for some
-  common platforms:
+  While CLI options are prioritized, default options will fallback to a config
+  file if one exists. Here is the config file lookup locations for common
+  platforms:
 
-    macOS, Linux, etc.    $HOME/.config/gfold.toml
-    Windows               {{FOLDERID_Profile}}\\.config\\gfold.toml
+    macOS and Linux    $HOME/.config/gfold.toml
+    Windows            {{FOLDERID_Profile}}\\.config\\gfold.toml
 
 Troubleshooting:
   Investigate unexpected behavior by prepending execution with
-  \"RUST_BACKTRACE=1\"and \"RUST_LOG=debug\". You can adjust those variable's
-  values to aid investigation.";
+  \"RUST_BACKTRACE=1\"and \"RUST_LOG=debug\". You can adjust the values for
+  both environment variables, as needed.";
 
 #[remain::sorted]
 #[derive(Error, Debug)]
 pub enum CliError {
-    #[error("invalid color mode provided (exec \"--help\" for options): {0}")]
+    #[error("invalid color mode provided (use \"--help\" for options): {0}")]
     InvalidColorMode(String),
-    #[error("invalid display mode provided (exec \"--help\" for options): {0}")]
-    InvalidDisplayMode(String),
+    #[error("invalid json option provided (use \"--help\" for options): {0}")]
+    InvalidJsonOption(String),
 }
 
 #[derive(Parser)]
@@ -46,18 +46,17 @@ struct Cli {
     #[arg(help = "specify path to target directory (defaults to current working directory)")]
     path: Option<String>,
 
+    // --------------------------------
     #[arg(
         short,
         long,
         help = "specify color mode (options: [\"always\", \"compatibility\", \"never\"])"
     )]
     color_mode: Option<String>,
-    #[arg(
-        short,
-        long,
-        help = "specify display format (options: [\"standard\", \"standard-alphabetical\", \"json\", \"classic\", \"default\"])"
-    )]
-    display_mode: Option<String>,
+    #[arg(short, long)]
+    json: Option<String>,
+
+    // --------------------------------
     #[arg(
         long,
         help = "display finalized config options and exit (merged options from an optional config file and command line arguments)"
@@ -87,24 +86,20 @@ impl CliHarness {
         };
         debug!("loaded initial config");
 
-        if let Some(found_display_mode_raw) = &self.cli.display_mode {
-            config.display_mode = match DisplayMode::from_str(found_display_mode_raw.to_lowercase())
-            {
-                Some(found_display_mode) => found_display_mode,
-                None => {
-                    return Err(
-                        CliError::InvalidDisplayMode(found_display_mode_raw.to_string()).into(),
-                    );
-                }
-            }
-        }
-
         if let Some(found_color_mode) = &self.cli.color_mode {
             config.color_mode = match found_color_mode.to_lowercase().as_str() {
                 "always" => ColorMode::Always,
                 "compatibility" => ColorMode::Compatibility,
                 "never" => ColorMode::Never,
                 _ => return Err(CliError::InvalidColorMode(found_color_mode.to_string()).into()),
+            }
+        }
+        if let Some(found_json) = &self.cli.json {
+            config.json = match found_json.to_lowercase().as_str() {
+                "false" => JsonOptions::False,
+                "pretty" => JsonOptions::Pretty,
+                "raw" => JsonOptions::Raw,
+                _ => return Err(CliError::InvalidJsonOption(found_json.to_string()).into()),
             }
         }
 
@@ -116,16 +111,20 @@ impl CliHarness {
         match &self.cli.dry_run {
             true => config.print()?,
             false => {
-                let (include_email, include_submodules) = match config.display_mode {
-                    DisplayMode::Classic => (false, false),
-                    DisplayMode::Json => (true, true),
-                    DisplayMode::Standard => (true, false),
-                    DisplayMode::StandardAlphabetical => (true, false),
-                };
-                let repository_collection =
-                    RepositoryCollector::run(&config.path, include_email, include_submodules)?;
-                let display_harness = DisplayHarness::new(config.display_mode, config.color_mode);
-                display_harness.run(&repository_collection)?;
+                let repository_collection = RepositoryCollector::run(
+                    &config.path,
+                    config.include_email,
+                    config.include_submodules,
+                    config.parallel,
+                )?;
+                DisplayHarness::run(
+                    config.color_mode,
+                    &repository_collection,
+                    config.json,
+                    config.alphabetical,
+                    config.sort_status,
+                    config.group_by_parent_directory,
+                )?;
             }
         }
         Ok(())

@@ -15,14 +15,20 @@ pub enum ConfigError {
 /// This struct is the actual config type consumed through the codebase. It is boostrapped via its
 /// public methods and uses [`EntryConfig`], a private struct, under the hood in order to
 /// deserialize empty, non-existent, partial, and complete config files.
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct Config {
     /// The path that `gfold` will begin traversal in and collect results from.
     pub path: PathBuf,
-    /// The display format for results printed to `stdout`.
-    pub display_mode: DisplayMode,
     /// The color mode for results printed to `stdout`.
     pub color_mode: ColorMode,
+    /// Toggles parallel collection optimizations (default is "true").
+    pub parallel: bool,
+    pub json: JsonOptions,
+    pub group_by_parent_directory: bool,
+    pub sort_status: bool,
+    pub alphabetical: bool,
+    pub include_email: bool,
+    pub include_submodules: bool,
 }
 
 impl Config {
@@ -34,7 +40,7 @@ impl Config {
         // should be able to proceed with empty config files. If empty or not found, then we fall
         // back to the "EntryConfig" default before conversion.
         let home = dirs::home_dir().ok_or(ConfigError::HomeDirNotFound)?;
-        let path = home.join(".config").join("gfold.toml");
+        let path = home.join(".config").join("gfold").join("config.toml");
         let entry_config = match fs::read_to_string(path) {
             Ok(contents) => match contents.is_empty() {
                 true => EntryConfig::default(),
@@ -66,13 +72,37 @@ impl Config {
                 Some(path) => path.clone(),
                 None => env::current_dir()?.canonicalize()?,
             },
-            display_mode: match &entry_config.display_mode {
-                Some(display_mode) => *display_mode,
-                None => DisplayMode::Standard,
-            },
             color_mode: match &entry_config.color_mode {
                 Some(color_mode) => *color_mode,
                 None => ColorMode::Always,
+            },
+            parallel: match &entry_config.parallel {
+                Some(parallel) => *parallel,
+                None => true,
+            },
+            json: match &entry_config.json {
+                Some(json) => *json,
+                None => JsonOptions::False,
+            },
+            group_by_parent_directory: match &entry_config.group_by_parent_directory {
+                Some(group_by_parent_directory) => *group_by_parent_directory,
+                None => true,
+            },
+            sort_status: match &entry_config.sort_status {
+                Some(sort_status) => *sort_status,
+                None => true,
+            },
+            alphabetical: match &entry_config.alphabetical {
+                Some(alphabetical) => *alphabetical,
+                None => true,
+            },
+            include_submodules: match &entry_config.include_submodules {
+                Some(include_submodules) => *include_submodules,
+                None => false,
+            },
+            include_email: match &entry_config.include_email {
+                Some(include_email) => *include_email,
+                None => true,
             },
         })
     }
@@ -87,44 +117,16 @@ impl Config {
 struct EntryConfig {
     /// Reflection of the `path` field on [`Config`].
     pub path: Option<PathBuf>,
-    /// Reflection of the `display_mode` field on [`Config`].
-    pub display_mode: Option<DisplayMode>,
     /// Reflection of the `color_mode` field on [`Config`].
     pub color_mode: Option<ColorMode>,
-}
-
-/// Dictates how the results gathered should be displayed to the user via `stdout`. Setting this
-/// enum is _mostly_ cosmetic, but it is possible that collected data may differ in order to
-/// reduce compute load. For example: if one display mode displays more information than another
-/// display mode, more data may need to be collected. Conversely, if another display mode requires
-/// less information to be displayed, then some commands and functions might get skipped.
-/// In summary, while this setting is primarily for cosmetics, it may also affect runtime
-/// performance based on what needs to be displayed.
-#[remain::sorted]
-#[derive(Serialize, Deserialize, Clone, Copy)]
-pub enum DisplayMode {
-    /// Informs the caller to display results in the classic format.
-    Classic,
-    /// Informs the caller to display results in JSON format.
-    Json,
-    /// Informs the caller to display results in the standard (default) format. All results are
-    /// sorted alphabetically and then sorted by status.
-    Standard,
-    /// Informs the caller to display results in the standard (default) format with a twist: all
-    /// results are solely sorted alphabetically (i.e. no additional sort by status).
-    StandardAlphabetical,
-}
-
-impl DisplayMode {
-    pub fn from_str(input: impl AsRef<str>) -> Option<Self> {
-        match input.as_ref() {
-            "classic" => Some(Self::Classic),
-            "json" => Some(Self::Json),
-            "standard" | "default" => Some(Self::Standard),
-            "standard-alphabetical" => Some(Self::StandardAlphabetical),
-            _ => None,
-        }
-    }
+    /// Reflection of the `parallel` if on [`Config`].
+    pub parallel: Option<bool>,
+    pub json: Option<JsonOptions>,
+    pub group_by_parent_directory: Option<bool>,
+    pub sort_status: Option<bool>,
+    pub alphabetical: Option<bool>,
+    pub include_email: Option<bool>,
+    pub include_submodules: Option<bool>,
 }
 
 /// Set the color mode of results printed to `stdout`.
@@ -138,4 +140,12 @@ pub enum ColorMode {
     Compatibility,
     /// Never display colors.
     Never,
+}
+
+#[remain::sorted]
+#[derive(Serialize, Deserialize, Clone, Copy)]
+pub enum JsonOptions {
+    False,
+    Pretty,
+    Raw,
 }

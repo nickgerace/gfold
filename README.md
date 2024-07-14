@@ -229,10 +229,22 @@ Please attach relevant logs from execution with _sensitive bits redacted_ in ord
 
 If `fold` from [GNU Coreutils](https://www.gnu.org/software/coreutils/) is installed on macOS via `brew`, it will be named `gfold`.
 You can avoid this collision with shell aliases, shell functions, and/or `PATH` changes.
-Here is an example with the `o` dropped from `gfold`:
+
+#### Option 1/2: Alias
+
+One option is to use an alias in your dotfiles (e.g. `.bashrc` or `.zshrc`).
+Here is an example with the `o` dropped from `gfold`.
 
 ```shell
 alias gfld=$HOME/.cargo/bin/gfold
+```
+
+#### Option 2/2: Force Unlink Colliding File
+
+AlterBy doing this, you would lose access to the aforementioned binary in your `PATH`.
+
+```shell
+brew link --overwrite gfold --dry-run
 ```
 
 ### Upstream `libgit2` Issue

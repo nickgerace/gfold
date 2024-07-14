@@ -26,6 +26,7 @@
 )]
 
 pub mod collector;
+pub mod error;
 pub mod repository_view;
 pub mod status;
 
@@ -206,18 +207,27 @@ mod tests {
         // TODO(nick): convert to an independent bench.
         {
             let start = Instant::now();
-            RepositoryCollector::run(root.path(), false, false)?;
+            RepositoryCollector::run(root.path(), false, false, true)?;
             println!("default run 1 took: {:?}", start.elapsed());
             let start = Instant::now();
-            RepositoryCollector::run(root.path(), false, false)?;
+            RepositoryCollector::run(root.path(), false, false, false)?;
+            println!("no parallel run 1 took: {:?}", start.elapsed());
+            let start = Instant::now();
+            RepositoryCollector::run(root.path(), false, false, true)?;
             println!("default run 2 took: {:?}", start.elapsed());
             let start = Instant::now();
-            RepositoryCollector::run(root.path(), false, false)?;
+            RepositoryCollector::run(root.path(), false, false, false)?;
+            println!("no parallel run 2 took: {:?}", start.elapsed());
+            let start = Instant::now();
+            RepositoryCollector::run(root.path(), false, false, true)?;
             println!("default run 3 took: {:?}", start.elapsed());
+            let start = Instant::now();
+            RepositoryCollector::run(root.path(), false, false, false)?;
+            println!("no parallel run 3 took: {:?}", start.elapsed());
         }
 
         // Generate a collection.
-        let found_collection = RepositoryCollector::run(root.path(), false, false)?;
+        let found_collection = RepositoryCollector::run(root.path(), false, false, true)?;
 
         // Ensure the found collection matches our expected one. Sort the collection for the
         // assertion.
