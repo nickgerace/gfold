@@ -14,7 +14,7 @@ pub struct ColorHarness {
 }
 
 impl ColorHarness {
-    pub fn new(color_mode: &ColorMode) -> Self {
+    pub fn new(color_mode: ColorMode) -> Self {
         Self {
             color_choice: match &color_mode {
                 ColorMode::Always => ColorChoice::Always,
@@ -25,7 +25,7 @@ impl ColorHarness {
     }
 
     /// Writes the [`Status`] of the Git repository to `stdout`.
-    pub fn write_status(&self, status: &Status, status_width: usize) -> io::Result<()> {
+    pub fn write_status(&self, status: Status, status_width: usize) -> io::Result<()> {
         let mut stdout = StandardStream::stdout(self.color_choice);
         stdout.set_color(ColorSpec::new().set_fg(Some(match status {
             Status::Bare | Status::Unknown => Color::Red,
@@ -68,9 +68,10 @@ impl ColorHarness {
     ) -> io::Result<()> {
         let mut stdout = StandardStream::stdout(self.color_choice);
         stdout.set_color(color_spec)?;
-        match newline {
-            true => writeln!(&mut stdout, "{input}")?,
-            false => write!(&mut stdout, "{input}")?,
+        if newline {
+            writeln!(&mut stdout, "{input}")?;
+        } else {
+            write!(&mut stdout, "{input}")?;
         }
         stdout.reset()
     }

@@ -20,9 +20,9 @@ mod display;
 /// [`CliHarness::run()`].
 fn main() -> anyhow::Result<()> {
     if env::var("RUST_LOG").is_err() {
-        Builder::new().filter_level(LevelFilter::Off).init()
+        Builder::new().filter_level(LevelFilter::Off).init();
     } else {
-        env_logger::init()
+        env_logger::init();
     }
     debug!("initialized logger");
 

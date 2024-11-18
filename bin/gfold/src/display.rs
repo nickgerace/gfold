@@ -64,17 +64,14 @@ impl DisplayHarness {
             all_reports.sort_by(|a, b| a.status.as_str().cmp(b.status.as_str()));
         }
 
-        let color_harness = ColorHarness::new(&color_mode);
+        let color_harness = ColorHarness::new(color_mode);
 
         for report in all_reports {
             color_harness.write_bold(&report.name, false)?;
 
-            let parent = match report.parent {
-                Some(s) => s,
-                None => {
-                    warn!("parent is empty for collector: {}", report.name);
-                    continue;
-                }
+            let Some(parent) = report.parent else {
+                warn!("parent is empty for collector: {}", report.name);
+                continue;
             };
             let full_path = Path::new(&parent).join(&report.name);
             let full_path_formatted = format!(
@@ -86,7 +83,7 @@ impl DisplayHarness {
             color_harness.write_gray(&full_path_formatted, true)?;
 
             print!("  ");
-            color_harness.write_status(&report.status, PAD)?;
+            color_harness.write_status(report.status, PAD)?;
             println!(" ({})", report.branch);
             if let Some(url) = &report.url {
                 println!("  {url}");
@@ -114,18 +111,17 @@ impl DisplayHarness {
     /// Display [`RepositoryCollection`] to `stdout` in the classic format.
     fn classic(reports: &RepositoryCollection, color_mode: ColorMode) -> io::Result<()> {
         debug!("detected classic display mode");
-        let color_harness = ColorHarness::new(&color_mode);
+        let color_harness = ColorHarness::new(color_mode);
 
         let length = reports.keys().len();
         let mut first = true;
         for (title, group) in reports {
             // FIXME(nick): make group title matching less cumbersome.
             if length > 1 {
-                match first {
-                    true => {
-                        first = false;
-                    }
-                    false => println!(),
+                if first {
+                    first = false;
+                } else {
+                    println!();
                 }
                 color_harness.write_bold(
                     match &title {
@@ -158,7 +154,7 @@ impl DisplayHarness {
 
             for report in reports {
                 print!("{:<path_width$}", report.name, path_width = name_max + PAD);
-                color_harness.write_status(&report.status, status_max + PAD)?;
+                color_harness.write_status(report.status, status_max + PAD)?;
                 println!(
                     "{:<branch_width$}{}",
                     report.branch,

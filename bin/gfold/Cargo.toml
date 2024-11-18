@@ -27,3 +27,8 @@ serde_json = { workspace = true }
 termcolor = { workspace = true }
 thiserror = { workspace = true }
 toml = { workspace = true }
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
+module_name_repetitions = "allow"
