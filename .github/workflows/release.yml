@@ -20,14 +20,12 @@ jobs:
             artifact_name: gfold
             asset_name: gfold-darwin-amd64
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          override: true
       - run: cargo build --release --locked
-      - if: runner.os != 'Windows'
+      - shell: bash
         run: |
           if [ $(echo ${{ github.ref }} | grep "rc") ]; then
             echo "PRERELEASE=true" >> $GITHUB_ENV
@@ -38,31 +36,9 @@ jobs:
           fi
           echo $PRERELEASE
 
-          VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\///g')
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "VERSION=$VERSION"
-      - if: runner.os == 'Windows'
-        shell: powershell
-        run: |
-          $full = "${{ github.ref }}"
-
-          if ( $full -like '*rc*' ) {
-            echo "PRERELEASE=true" >> $env:GITHUB_ENV
-            echo "PRERELEASE=true"
-          } else {
-            echo "PRERELEASE=false" >> $env:GITHUB_ENV
-            echo "PRERELEASE=false"
-          }
-
-          $trimmed = $full -replace 'refs/tags/',''
-          echo "VERSION=$trimmed" >> $env:GITHUB_ENV
-          echo "VERSION=$trimmed"
-      - uses: svenstaro/upload-release-action@v2
+          mv target/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
+      - uses: softprops/action-gh-release@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/${{ matrix.artifact_name }}
-          asset_name: ${{ matrix.asset_name }}
-          tag: ${{ github.ref }}
+          files: ${{ matrix.asset_name }}
           prerelease: ${{ env.PRERELEASE }}
-          release_name: "gfold ${{ env.VERSION }}"
           body: "Please refer to **[CHANGELOG.md](https://github.com/nickgerace/gfold/blob/main/CHANGELOG.md)** for information on this release."
