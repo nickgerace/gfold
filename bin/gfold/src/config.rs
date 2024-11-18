@@ -37,10 +37,13 @@ impl Config {
         let home = dirs::home_dir().ok_or(ConfigError::HomeDirNotFound)?;
         let path = home.join(".config").join("gfold.toml");
         let entry_config = match fs::read_to_string(path) {
-            Ok(contents) => match contents.is_empty() {
-                true => EntryConfig::default(),
-                false => toml::from_str(&contents)?,
-            },
+            Ok(contents) => {
+                if contents.is_empty() {
+                    EntryConfig::default()
+                } else {
+                    toml::from_str(&contents)?
+                }
+            }
             Err(e) => match e.kind() {
                 io::ErrorKind::NotFound => EntryConfig::default(),
                 _ => return Err(e.into()),
