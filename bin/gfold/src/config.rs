@@ -1,5 +1,6 @@
 //! This module contains the config specification and functionality for creating a config.
 
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{env, fs, io};
@@ -101,7 +102,7 @@ struct EntryConfig {
 /// In summary, while this setting is primarily for cosmetics, it may also affect runtime
 /// performance based on what needs to be displayed.
 #[remain::sorted]
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum DisplayMode {
     /// Informs the caller to display results in the classic format.
     Classic,
@@ -115,21 +116,9 @@ pub enum DisplayMode {
     StandardAlphabetical,
 }
 
-impl DisplayMode {
-    pub fn from_str(input: impl AsRef<str>) -> Option<Self> {
-        match input.as_ref() {
-            "classic" => Some(Self::Classic),
-            "json" => Some(Self::Json),
-            "standard" | "default" => Some(Self::Standard),
-            "standard-alphabetical" => Some(Self::StandardAlphabetical),
-            _ => None,
-        }
-    }
-}
-
 /// Set the color mode of results printed to `stdout`.
 #[remain::sorted]
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum ColorMode {
     /// Attempt to display colors as intended (default behavior).
     Always,

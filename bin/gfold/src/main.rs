@@ -19,9 +19,10 @@ mod display;
 /// the [`CliHarness`] to generate a [`Config`](config::Config). Then, this calls
 /// [`CliHarness::run()`].
 fn main() -> anyhow::Result<()> {
-    match env::var("RUST_LOG").is_err() {
-        true => Builder::new().filter_level(LevelFilter::Off).init(),
-        false => env_logger::init(),
+    if env::var("RUST_LOG").is_err() {
+        Builder::new().filter_level(LevelFilter::Off).init()
+    } else {
+        env_logger::init()
     }
     debug!("initialized logger");
 
