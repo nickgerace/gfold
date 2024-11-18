@@ -89,8 +89,7 @@ impl CliHarness {
             let (include_email, include_submodules) = match config.display_mode {
                 DisplayMode::Classic => (false, false),
                 DisplayMode::Json => (true, true),
-                DisplayMode::Standard => (true, false),
-                DisplayMode::StandardAlphabetical => (true, false),
+                DisplayMode::Standard | DisplayMode::StandardAlphabetical => (true, false),
             };
             let repository_collection =
                 RepositoryCollector::run(&config.path, include_email, include_submodules)?;
