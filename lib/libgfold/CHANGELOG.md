@@ -9,6 +9,12 @@
 
 The latest version contains all changes.
 
+## 0.1.4 - 2024-12-09
+
+### Changed
+
+- Bump dependencies
+
 ## 0.1.3 - 2024-05-23
 
 ### Changed
