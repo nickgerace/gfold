@@ -24,7 +24,7 @@
         (import rust-overlay)
       ];
 
-      rust-version = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain;
+      rust-version = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
       rust-bin-with-overrides = rust-version.override {
         extensions = ["rust-analyzer" "rust-src"];
       };
