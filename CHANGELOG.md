@@ -9,6 +9,12 @@
 
 The latest version contains all changes.
 
+## 4.5.1 - 2024-12-09
+
+### Changed
+
+- Bump dependencies
+
 ## 4.5.0 - 2024-05-23
 
 ### Added
