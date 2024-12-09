@@ -1,6 +1,7 @@
-**/target/
 **/*.rs.bk
+**/.DS_Store
+**/.direnv
+**/.idea/
 **/.vs/
 **/.vscode/
-**/.DS_Store
-**/.idea/
+**/target/
