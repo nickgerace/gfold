@@ -38,3 +38,11 @@ scan: prepare
 
 bench directory=('../'): build-release
     hyperfine --warmup 1 'target/release/gfold {{directory}}' 'gfold {{directory}}'
+
+size: build-release
+    #!/usr/bin/env bash
+    gdu -b target/release/gfold
+    binary=$(which gfold)
+    if [[ -n "$binary" ]]; then
+        gdu -b "$(realpath "$binary")"
+    fi
