@@ -12,23 +12,15 @@ use crate::display::DisplayHarness;
 const HELP: &str = "\
 More information: https://github.com/nickgerace/gfold
 
-Description:
-  This application helps you keep track of multiple Git repositories via CLI.
-  By default, it displays relevant information for all repos in the current
-  working directory.
+Description: this application helps you keep track of multiple Git repositories via CLI. By default, it displays relevant information for all repos in the current working directory.
 
-Config File Usage:
-  While CLI options are prioritized, default options will fallback to the
-  config file if it exists. Here are the config file lookup locations:
+Config File Usage: while CLI options are prioritized, default options will fallback to the config file if it exists. Here are the config file lookup locations:
 
     $XDG_CONFIG_HOME/gfold.toml
     $XDG_CONFIG_HOME/gfold/config.toml
     $HOME/.config/gfold.toml (or {{FOLDERID_Profile}}\\.config\\gfold.toml on Windows)
 
-Troubleshooting:
-  Investigate unexpected behavior by prepending execution with
-  \"RUST_BACKTRACE=1\"and \"RUST_LOG=debug\". You can adjust those variable's
-  values to aid investigation.";
+Troubleshooting: investigate unexpected behavior by prepending execution with \"RUST_BACKTRACE=1\"and \"RUST_LOG=debug\". You can adjust those variable's values to aid investigation.";
 
 #[derive(Parser)]
 #[command(version, about = HELP, long_about = None)]
