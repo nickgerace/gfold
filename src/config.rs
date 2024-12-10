@@ -2,7 +2,7 @@
 
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::{env, fs, io};
 
 /// This struct is the actual config type consumed through the codebase. It is boostrapped via its
@@ -64,7 +64,7 @@ impl Config {
     fn from_entry_config(entry_config: &EntryConfig) -> io::Result<Self> {
         Ok(Config {
             path: match &entry_config.path {
-                Some(path) => path.clone(),
+                Some(path) => normalize_path(path),
                 None => env::current_dir()?.canonicalize()?,
             },
             display_mode: match &entry_config.display_mode {
@@ -76,6 +76,17 @@ impl Config {
                 None => ColorMode::Always,
             },
         })
+    }
+}
+
+fn normalize_path(path: &Path) -> PathBuf {
+    let path = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
+    match path
+        .strip_prefix("~")
+        .or_else(|_| path.strip_prefix("$HOME"))
+    {
+        Ok(stripped) => user_dirs::home_dir().unwrap().join(stripped),
+        Err(_) => path,
     }
 }
 
