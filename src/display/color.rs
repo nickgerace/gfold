@@ -1,6 +1,6 @@
 //! This module provides a harness for non-trivial displays of information to `stdout`.
 
-use libgfold::Status;
+use gfold::Status;
 use std::io;
 use std::io::Write;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};

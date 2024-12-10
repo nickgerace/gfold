@@ -2,7 +2,7 @@
 //! settings and environment.
 
 use clap::Parser;
-use libgfold::RepositoryCollector;
+use gfold::RepositoryCollector;
 use log::debug;
 use std::env;
 

@@ -298,11 +298,15 @@ dependencies = [
  "clap",
  "dirs",
  "env_logger",
- "libgfold",
+ "git2",
  "log",
+ "pretty_assertions",
+ "rayon",
  "remain",
  "serde",
  "serde_json",
+ "strum",
+ "tempfile",
  "termcolor",
  "thiserror",
  "toml",
@@ -520,22 +524,6 @@ name = "libc"
 version = "0.2.168"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5aaeb2981e0606ca11d79718f8bb01164f1d6ed75080182d3abf017e6d244b6d"
-
-[[package]]
-name = "libgfold"
-version = "0.1.4"
-dependencies = [
- "anyhow",
- "env_logger",
- "git2",
- "log",
- "pretty_assertions",
- "rayon",
- "remain",
- "serde",
- "tempfile",
- "thiserror",
-]
 
 [[package]]
 name = "libgit2-sys"
@@ -1148,18 +1136,6 @@ name = "writeable"
 version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e9df38ee2d2c3c5948ea468a8406ff0db0b29ae1ffde1bcf20ef305bcc95c51"
-
-[[package]]
-name = "xtask"
-version = "0.1.0"
-dependencies = [
- "clap",
- "dirs",
- "remain",
- "strum",
- "termcolor",
- "thiserror",
-]
 
 [[package]]
 name = "yansi"
