@@ -1,9 +1,21 @@
 # Changelog
 
-- All notable, released changes to this project will be documented in this file
+- All notable, released changes to this project from a user's perspective will be documented in this file
 - All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwise specified
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+
+## 4.6.0 - 2024-12-10
+
+### Added
+
+- Add XDG-first user directory lookup using [`user_dirs`](https://github.com/uncenter/user_dirs/blob/193547d1d2f190dbc6fbf9f29a4aa2d4318070db/README.md)
+
+### Changed
+
+- Bump dependencies
+- Help message to rely on line wrapping
+- Update release binary names for clarity (including fixing the macOS one for the correct architecture)
 
 ## 4.5.1 - 2024-12-09
 

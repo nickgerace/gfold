@@ -19,6 +19,7 @@ Steps should be executed in sequential order.
 - [ ] Open a web browser tab to the following link: `https://github.com/nickgerace/gfold/compare/<last-tag>...main`
 - [ ] Add a new section the version in [`CHANGELOG.md`](../CHANGELOG.md) with the current date
 - [ ] Using the diff, commit messages and commit title, populate the new section with all user-relevant changes
+- [ ] Once the section is finalized, determine what field should be bumped (alongside the section title) using aforementioned Semantic Versioning best practices
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
