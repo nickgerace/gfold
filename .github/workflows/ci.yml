@@ -15,4 +15,5 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt, clippy
-      - run: cargo xtask ci
+      - uses: taiki-e/install-action@just
+      - run: just ci

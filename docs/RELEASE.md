@@ -26,7 +26,7 @@ Steps should be executed in sequential order.
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
-cargo xtask ci
+just ci
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update libgfold to <tag>`
@@ -56,7 +56,7 @@ Steps should be executed in sequential order.
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
-cargo xtask ci
+just ci
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update gfold to <tag>`
