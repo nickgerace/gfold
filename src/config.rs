@@ -38,7 +38,7 @@ impl Config {
 
         let path = match paths.into_iter().find(|p| p.exists()) {
             Some(path) => path,
-            None => return Ok(Self::try_config_default()?),
+            None => return Self::try_config_default(),
         };
 
         let contents = fs::read_to_string(path)?;
@@ -47,7 +47,7 @@ impl Config {
         } else {
             toml::from_str(&contents)?
         };
-        Ok(Self::from_entry_config(&entry_config)?)
+        Self::from_entry_config(&entry_config)
     }
 
     /// This method does not look for the config file and uses [`EntryConfig`]'s defaults instead.
