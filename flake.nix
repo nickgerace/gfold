@@ -38,6 +38,7 @@
             bash
             cargo-audit
             cargo-bloat
+            cargo-outdated
             cargo-udeps
             coreutils
             hyperfine
