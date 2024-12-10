@@ -53,18 +53,15 @@ If you find yourself providing the same arguments frequently, you can create and
 `gfold` does not come with a config file by default and config files are entirely optional.
 
 How does it work?
-Upon execution, `gfold` will look for a config file at the following path on macOS, Linux and similar operating systems.
+Upon execution, `gfold` will look for a config file at the following paths (in order):
 
+- `$XDG_CONFIG_HOME/gfold.toml`
+- `$XDG_CONFIG_HOME/gfold/config.toml`
+- `$HOME/.config/gfold.toml`
 
-```shell
-$HOME/.config/gfold.toml
-```
+`$XDG_CONFIG_HOME` refers to the literal `XDG_CONFIG_HOME` environment variable, but will default to the appropriate operating system-specific path if not set (see [`user_dirs`](https://github.com/uncenter/user_dirs) for more information).
 
-On Windows, the lookup path will be in a similar location.
-
-```powershell
-{FOLDERID_Profile}\.config\gfold.toml
-```
+If a config file is found, `gfold` will read it and use the options specified within.
 
 For config file creation, you can use the `--dry-run` flag to print valid TOML.
 Here is an example config file creation workflow on macOS, Linux and similar platforms:
@@ -203,8 +200,8 @@ Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platf
 
 There are two ways to use `gfold` as a "library".
 
-1) Use the [`libgfold`](./lib/libgfold/README.md) crate that powers `gfold`
-1) Consume valid JSON results from `gfold -d json` (not a library, but useful for non-Rust applications)
+1. Use the [`libgfold`](./lib/libgfold/README.md) crate that powers `gfold`
+1. Consume valid JSON results from `gfold -d json` (not a library, but useful for non-Rust applications)
 
 ## Troubleshooting and Known Issues
 

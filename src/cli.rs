@@ -19,11 +19,11 @@ Description:
 
 Config File Usage:
   While CLI options are prioritized, default options will fallback to the
-  config file if it exists. Here is the config file lookup locations for some
-  common platforms:
+  config file if it exists. Here are the config file lookup locations:
 
-    macOS, Linux, etc.    $HOME/.config/gfold.toml
-    Windows               {{FOLDERID_Profile}}\\.config\\gfold.toml
+    $XDG_CONFIG_HOME/gfold.toml
+    $XDG_CONFIG_HOME/gfold/config.toml
+    $HOME/.config/gfold.toml (or {{FOLDERID_Profile}}\\.config\\gfold.toml on Windows)
 
 Troubleshooting:
   Investigate unexpected behavior by prepending execution with
