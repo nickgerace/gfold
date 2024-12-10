@@ -10,7 +10,6 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
 jobs:
   ci:
-    name: "Post Merge Checks"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
