@@ -1,4 +1,6 @@
-# Thanks
+# Community Thanks
+
+This document contains "thank you" messages to those who aided or contributed to this project outside of source code changes and issues filed to this repository.
 
 - [@AcksID](https://github.com/AckslD/nvim-gfold.lua) for creating and maintaining [nvim-gfold.lua](https://github.com/AckslD/nvim-gfold.lua), a `neovim` plugin for `gfold`
 - [@jrcichra](https://github.com/jrcichra) for adding multi-OS support to the original, early-stage CI pipeline

@@ -112,27 +112,15 @@ Now, you can update the config file within your repository and include the linki
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/gfold.svg)](https://repology.org/project/gfold/versions)
 
-### Homebrew
+### Homebrew (macOS and Linux)
 
-You can use [Homebrew](https://brew.sh) to install `gfold` with a choice of two methods.
+You can use [Homebrew](https://brew.sh) to install `gfold` using the [core formulae](https://formulae.brew.sh/formula/gfold).
 
-#### Core (macOS and Linux)
-
-`gfold` is now available in the [core formulae](https://formulae.brew.sh/formula/gfold)!
 However, you may run into a naming collision on macOS if [coreutils](https://formulae.brew.sh/formula/coreutils) is installed via `brew`.
 See the [troubleshooting](#troubleshooting-and-known-issues) section for a workaround and more information.
 
 ```shell
 brew install gfold
-```
-
-#### Tap (macOS only)
-
-The [tap](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb) is still available if you would like to use it.
-This is subject to change.
-
-```shell
-brew install nickgerace/nickgerace/gfold
 ```
 
 ### Arch Linux
@@ -187,6 +175,11 @@ For an example on how to do that, refer to the [manual install](./docs/MANUAL_IN
 
 If you would like an example on how to build from source, refer to the [manual install](./docs/MANUAL_INSTALL.md) guide.
 
+### Deprecated: Homebrew Tap (macOS only)
+
+The [tap located at nickgerace/homebrew-nickgerace](https://github.com/nickgerace/homebrew-nickgerace/blob/main/Formula/gfold.rb) has been deprecated.
+Please use the aforementioned core Homebrew package instead.
+
 ### Preferred Installation Method Not Listed?
 
 Please [file an issue](https://github.com/nickgerace/gfold/issues/new)!
@@ -195,13 +188,6 @@ Please [file an issue](https://github.com/nickgerace/gfold/issues/new)!
 
 `gfold` is intended to be ran on _any_ tier one Rust 🦀 target.
 Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platform is unsupported.
-
-## Usage as a Library
-
-There are two ways to use `gfold` as a "library".
-
-1. Use the [`libgfold`](./lib/libgfold/README.md) crate that powers `gfold`
-1. Consume valid JSON results from `gfold -d json` (not a library, but useful for non-Rust applications)
 
 ## Troubleshooting and Known Issues
 
@@ -241,7 +227,7 @@ This repository's tracking issue is [#205](https://github.com/nickgerace/gfold/i
 
 ## Community
 
-For more information and thanks to contributors, users, and the "community" at large, please refer to the **[THANKS](./docs/THANKS.md)** file.
+For more information and thanks to users and the "community" at large, please refer to the **[COMMUNITY THANKS](./docs/COMMUNITY_THANKS.md)** file.
 
 - [Packages for NixOS, Arch Linux and more](https://repology.org/project/gfold/versions)
 - ["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/), an article that featured `gfold`

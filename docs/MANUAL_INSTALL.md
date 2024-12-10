@@ -6,8 +6,7 @@ This document contains methods on how to install `gfold` "manually" (i.e. withou
 
 Executing the commands in this section requires the following:
 
-- macOS or Linux (GNU, not MUSL) system
-- `x86_64 / amd64` architecture
+- macOS `aarch64` or Linux (GNU) `x86_64` system
 - `bash` shell (or compatible)
 - `jq`, `wget` and `curl` installed and in `PATH`
 
@@ -22,27 +21,23 @@ for BINARY in "jq" "wget" "curl"; do
 done
 ```
 
-Now, let's determine which binary we need to choose based on our platform.
-
-```bash
-INSTALL_OS=""
-if [ "$(uname -s)" = "Linux" ] && [ "$(uname -m)" = "x86_64" ]; then
-    INSTALL_OS="linux-gnu"
-elif [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "x86_64" ]; then
-    INSTALL_OS="darwin"
-else
-    echo "must execute on Linux or Darwin x86_64 (x86_64 / amd64) host"
-    return
-fi
-```
-
-We need to determine to latest tag to build our release URL.
+Now, we need to determine to latest tag to build our release URL.
 
 ```bash
 LATEST=$(curl -s https://api.github.com/repos/nickgerace/gfold/releases/latest | jq -r ".tag_name")
 ```
 
-With the latest tag and platform determined, we can finally download and install `gfold` to `/usr/local/bin/`.
+Choose our platform.
+
+```bash
+# If we are using Linux (GNU) x86_64...
+INSTALL_PLATFORM=linux-gnu-x84-64
+
+# If we are using macOS aarch64 (i.e. Apple Silicon or arm64)
+INSTALL_PLATFORM=darwin-aarch64
+```
+
+With the latest tag and platform in hand, we can download and install `gfold` to `/usr/local/bin/`.
 
 ```bash
 # Remove gfold if it is already in /tmp.
@@ -51,7 +46,7 @@ if [ -f /tmp/gfold ]; then
 fi
 
 # Perform the download.
-wget -O /tmp/gfold https://github.com/nickgerace/gfold/releases/download/$LATEST/gfold-$INSTALL_OS-amd64
+wget -O /tmp/gfold https://github.com/nickgerace/gfold/releases/download/$LATEST/gfold-$INSTALL_PLATFORM
 
 # Set executable permissions.
 chmod +x /tmp/gfold
@@ -84,10 +79,8 @@ If you want to install from source locally, and not from [crates.io](https://cra
 This should work on all major platforms.
 
 ```bash
-git clone https://github.com/nickgerace/gfold.git
-cd gfold; cargo install --path crates/gfold
+git clone https://github.com/nickgerace/gfold.git; cd gfold; cargo install
 ```
 
 The commands above were tested on macOS.
-Slight modification may be required for your platform, but the flow should be the same: clone, change directory and run
-`cargo install`.
+Slight modification may be required for your platform, but the flow should be the same: clone, change directory and run `cargo install`.

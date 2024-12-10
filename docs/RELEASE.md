@@ -10,60 +10,26 @@ Generally, the versioning scheme looks like the following formats where `X` is a
 - **Release candidates (RCs):** `X.X.X-rc.X`
 - **Full releases:** `X.X.X`
 
-## Overview
-
-If only `gfold` has changed, release `gfold` alone.
-If `libgfold` has changed, release `libgfold` and _then_ `gfold`.
-
-## Checklist for `libgfold`
-
-Steps should be executed in sequential order.
-
-- [ ] Checkout and rebase `main` to its latest commit and checkout a new branch
-- [ ] Change the `version` field in [`Cargo.toml`](../lib/libgfold/Cargo.toml) to the new tag
-- [ ] Use the new version in the `gfold` [`Cargo.toml`](../lib/gfold/Cargo.toml) file
-- [ ] Change the version in [`CHANGELOG.md`](../CHANGELOG.md) and uncomment the following line: `<!--The latest version contains all changes.-->` (skip this for release candidates)
-- [ ] Verify that everything looks/works as expected:
-
-```shell
-just ci
-```
-
-- [ ] Create and _do not merge_ a commit with the following message: `Update libgfold to <tag>`
-- [ ] Test and verify the publishing workflow:
-
-```shell
-cargo publish --dry-run -p libgfold
-```
-
-- [ ] Merge the preparation commit into `main`
-- [ ] Publish the crate:
-
-```shell
-cargo publish -p libgfold
-```
-
-- [ ] Verify that the [crate](https://crates.io/crates/libgfold) on `crates.io` looks correct
-- [ ] Ensure that the [docs](https://docs.rs/libgfold/latest/libgfold/) on `docs.rs` look correct
-
-## Checklist for `gfold`
+## Checklist
 
 Steps should be executed in sequential order.
 
 - [ ] Checkout and rebase `main` to its latest commit, then checkout a new branch
-- [ ] Change the `version` field in [`Cargo.toml`](../bin/gfold/Cargo.toml) to the new tag
-- [ ] Change the version in [`CHANGELOG.md`](../CHANGELOG.md) and uncomment the following line: `<!--The latest version contains all changes.-->` (skip this for release candidates)
+- [ ] Change the `version` field in [`Cargo.toml`](../Cargo.toml) to the new tag
+- [ ] Open a web browser tab to the following link: `https://github.com/nickgerace/gfold/compare/<last-tag>...main`
+- [ ] Add a new section the version in [`CHANGELOG.md`](../CHANGELOG.md) with the current date
+- [ ] Using the diff, commit messages and commit title, populate the new section with all user-relevant changes
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
 just ci
 ```
 
-- [ ] Create and _do not merge_ a commit with the following message: `Update gfold to <tag>`
+- [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
 - [ ] Test and verify the publishing workflow:
 
 ```shell
-cargo publish --dry-run -p gfold
+cargo publish --dry-run
 ```
 
 - [ ] Merge the preparation commit into `main`
@@ -78,7 +44,7 @@ git push --tags origin main
 - [ ] Publish the crate:
 
 ```shell
-cargo publish -p gfold
+cargo publish
 ```
 
 - [ ] Verify that the [crate](https://crates.io/crates/gfold) on `crates.io` looks correct
