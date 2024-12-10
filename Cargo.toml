@@ -22,7 +22,6 @@ panic = "abort"
 [dependencies]
 anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.5", features = ["derive"] }
-dirs = "5.0"
 env_logger = { version = "0.11", features = [
     "humantime",
 ], default-features = false }
@@ -38,3 +37,4 @@ tempfile = "3.10"
 termcolor = "1.4"
 thiserror = "1.0"
 toml = "0.8"
+user_dirs = "0.2.0"

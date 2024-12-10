@@ -4,14 +4,6 @@ use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::{env, fs, io};
-use thiserror::Error;
-
-#[remain::sorted]
-#[derive(Error, Debug)]
-pub enum ConfigError {
-    #[error("could not find home directory")]
-    HomeDirNotFound,
-}
 
 /// This struct is the actual config type consumed through the codebase. It is boostrapped via its
 /// public methods and uses [`EntryConfig`], a private struct, under the hood in order to
@@ -34,20 +26,25 @@ impl Config {
         // Within this method, we check if the config file is empty before deserializing it. Users
         // should be able to proceed with empty config files. If empty or not found, then we fall
         // back to the "EntryConfig" default before conversion.
-        let home = dirs::home_dir().ok_or(ConfigError::HomeDirNotFound)?;
-        let path = home.join(".config").join("gfold.toml");
-        let entry_config = match fs::read_to_string(path) {
-            Ok(contents) => {
-                if contents.is_empty() {
-                    EntryConfig::default()
-                } else {
-                    toml::from_str(&contents)?
-                }
-            }
-            Err(e) => match e.kind() {
-                io::ErrorKind::NotFound => EntryConfig::default(),
-                _ => return Err(e.into()),
-            },
+        let config_dir = user_dirs::config_dir()?;
+        let home_dir = user_dirs::home_dir()?;
+
+        let paths = [
+            config_dir.join("gfold.toml"),
+            config_dir.join("gfold").join("config.toml"),
+            home_dir.join(".config").join("gfold.toml"),
+        ];
+
+        let path = match paths.into_iter().find(|p| p.exists()) {
+            Some(path) => path,
+            None => return Ok(Self::try_config_default()?),
+        };
+
+        let contents = fs::read_to_string(path)?;
+        let entry_config = if contents.is_empty() {
+            EntryConfig::default()
+        } else {
+            toml::from_str(&contents)?
         };
         Ok(Self::from_entry_config(&entry_config)?)
     }
