@@ -1,29 +1,31 @@
-[workspace]
-members = ["bin/gfold", "bin/xtask", "lib/libgfold"]
-default-members = ["bin/gfold"]
-resolver = "2"
+[package]
+name = "gfold"
+version = "4.5.1"
 
-[workspace.package]
+categories = ["command-line-utilities", "command-line-interface"]
+description = "CLI tool to help keep track of your Git repositories."
+keywords = ["git", "cli"]
+readme = "README.md"
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 edition = "2021"
 homepage = "https://github.com/nickgerace/gfold"
 license = "Apache-2.0"
 repository = "https://github.com/nickgerace/gfold"
 
-[profile.release.package.gfold]
+[profile.release]
 codegen-units = 1
 opt-level = 3
 strip = true
-
-[profile.release]
 lto = true
 panic = "abort"
 
-[workspace.dependencies]
+[dependencies]
 anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.5", features = ["derive"] }
 dirs = "5.0"
-env_logger = { version = "0.11", features = ["humantime"], default-features = false }
+env_logger = { version = "0.11", features = [
+    "humantime",
+], default-features = false }
 git2 = { version = "0.18", default-features = false }
 log = "0.4"
 pretty_assertions = "1.4"

@@ -1,7 +1,7 @@
 //! This module contains the functionality for displaying reports to `stdout`.
 
 use color::ColorHarness;
-use libgfold::RepositoryCollection;
+use gfold::RepositoryCollection;
 use log::debug;
 use log::warn;
 use std::io;

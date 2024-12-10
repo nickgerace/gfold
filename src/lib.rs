@@ -1,30 +1,3 @@
-//! **libgfold** provides the ability to find a minimal set of user-relevant information for git
-//! repositories on a local filesystem.
-//!
-//! This library powers [**gfold**](https://github.com/nickgerace/gfold).
-
-#![warn(
-    missing_debug_implementations,
-    missing_docs,
-    rust_2018_idioms,
-    unreachable_pub,
-    bad_style,
-    dead_code,
-    improper_ctypes,
-    non_shorthand_field_patterns,
-    no_mangle_generic_items,
-    overflowing_literals,
-    path_statements,
-    patterns_in_fns_without_body,
-    unconditional_recursion,
-    unused,
-    unused_allocation,
-    unused_comparisons,
-    unused_parens,
-    while_true,
-    clippy::missing_panics_doc
-)]
-
 pub mod collector;
 pub mod repository_view;
 pub mod status;
