@@ -1,5 +1,2 @@
 [build]
 rustdocflags = "--document-private-items"
-
-[alias]
-xtask = "run -q --manifest-path ./bin/xtask/Cargo.toml --"

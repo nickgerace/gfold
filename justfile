@@ -41,8 +41,12 @@ bench directory=('../'): build-release
 
 size: build-release
     #!/usr/bin/env bash
-    gdu -b target/release/gfold
+    checker=gdu
+    if ! command -v $checker; then
+        checker=du
+    fi
+    $checker -b target/release/gfold
     binary=$(which gfold)
     if [[ -n "$binary" ]]; then
-        gdu -b "$(realpath "$binary")"
+        $checker -b "$(realpath "$binary")"
     fi

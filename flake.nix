@@ -35,6 +35,13 @@
         devShells.default = mkShell {
           packages = [
             alejandra
+            bash
+            cargo-audit
+            cargo-bloat
+            cargo-udeps
+            coreutils
+            hyperfine
+            just
             rust-bin-with-overrides
           ];
         };
