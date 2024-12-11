@@ -72,7 +72,7 @@ gfold -d classic -c never ~/ --dry-run > $HOME/.config/gfold.toml
 Here are the contents of the resulting config file:
 
 ```toml
-path = '/home/neloth'
+paths = ['/home/neloth']
 display_mode = 'Classic'
 color_mode = 'Never'
 ```

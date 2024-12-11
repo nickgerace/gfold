@@ -11,7 +11,7 @@ use gfold::RepositoryCollector;
 use clap::Parser;
 use env_logger::Builder;
 use log::{debug, LevelFilter};
-use std::env;
+use std::{env, path::PathBuf};
 
 mod config;
 mod display;
@@ -33,7 +33,7 @@ Troubleshooting: investigate unexpected behavior by prepending execution with \"
 #[command(version, about = HELP, long_about = None)]
 struct Cli {
     /// specify path to target directory (defaults to current working directory)
-    pub path: Option<String>,
+    pub paths: Option<Vec<PathBuf>>,
 
     #[arg(short, long)]
     pub color_mode: Option<ColorMode>,
@@ -73,8 +73,12 @@ fn main() -> anyhow::Result<()> {
     if let Some(found_color_mode) = &cli.color_mode {
         config.color_mode = *found_color_mode;
     }
-    if let Some(found_path) = &cli.path {
-        config.path = env::current_dir()?.join(found_path).canonicalize()?;
+    if let Some(found_paths) = &cli.paths {
+        let current_dir = env::current_dir()?;
+        config.paths = found_paths
+            .iter()
+            .map(|p| current_dir.join(p).canonicalize())
+            .collect::<Result<Vec<PathBuf>, _>>()?;
     }
     debug!("finalized config options");
 
@@ -86,10 +90,14 @@ fn main() -> anyhow::Result<()> {
             DisplayMode::Json => (true, true),
             DisplayMode::Standard | DisplayMode::StandardAlphabetical => (true, false),
         };
-        let repository_collection =
-            RepositoryCollector::run(&config.path, include_email, include_submodules)?;
-        let display_harness = DisplayHarness::new(config.display_mode, config.color_mode);
-        display_harness.run(&repository_collection)?;
+        for path in &config.paths {
+            debug!("processing path: {:?}", path);
+
+            let repository_collection =
+                RepositoryCollector::run(path, include_email, include_submodules)?;
+            let display_harness = DisplayHarness::new(config.display_mode, config.color_mode);
+            display_harness.run(&repository_collection)?;
+        }
     }
     Ok(())
 }
