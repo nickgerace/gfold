@@ -11,8 +11,8 @@ use std::{env, fs};
 /// deserialize empty, non-existent, partial, and complete config files.
 #[derive(Serialize)]
 pub struct Config {
-    /// The path that `gfold` will begin traversal in and collect results from.
-    pub path: PathBuf,
+    /// The paths that `gfold` will traverse and collect results from.
+    pub paths: Vec<PathBuf>,
     /// The display format for results printed to `stdout`.
     pub display_mode: DisplayMode,
     /// The color mode for results printed to `stdout`.
@@ -63,10 +63,24 @@ impl Config {
     }
 
     fn from_entry_config(entry_config: &EntryConfig) -> Result<Self> {
+        if entry_config.path.is_some() && entry_config.paths.is_some() {
+            return Err(anyhow::anyhow!(
+                "Cannot have both `path` and `paths` in config"
+            ));
+        }
         Ok(Config {
-            path: match &entry_config.path {
-                Some(path) => normalize_path(path)?,
-                None => env::current_dir()?.canonicalize()?,
+            paths: if let Some(paths) = &entry_config.paths {
+                paths
+                    .iter()
+                    .map(|p| normalize_path(p))
+                    .collect::<Result<Vec<PathBuf>, _>>()?
+            } else if let Some(path) = &entry_config.path {
+                eprintln!(
+                    "WARNING: the `path` configuration option is deprecated. Use `paths` instead."
+                );
+                vec![normalize_path(path)?]
+            } else {
+                vec![env::current_dir()?.canonicalize()?]
             },
             display_mode: match &entry_config.display_mode {
                 Some(display_mode) => *display_mode,
@@ -98,8 +112,11 @@ fn normalize_path(path: &Path) -> Result<PathBuf> {
 /// this struct privately.
 #[derive(Deserialize, Default)]
 struct EntryConfig {
-    /// Reflection of the `path` field on [`Config`].
+    /// Formerly a reflection of the `path` field on [`Config`]. Use `paths` instead.
+    /// This field is deprecated and will be removed in a future release.
     pub path: Option<PathBuf>,
+    /// Reflection of the `paths` field on [`Config`].
+    pub paths: Option<Vec<PathBuf>>,
     /// Reflection of the `display_mode` field on [`Config`].
     pub display_mode: Option<DisplayMode>,
     /// Reflection of the `color_mode` field on [`Config`].
