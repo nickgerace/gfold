@@ -75,7 +75,7 @@ impl Config {
                     .map(|p| normalize_path(p))
                     .collect::<Result<Vec<PathBuf>, _>>()?
             } else if let Some(path) = &entry_config.path {
-                println!(
+                eprintln!(
                     "WARNING: the `path` configuration option is deprecated. Use `paths` instead."
                 );
                 vec![normalize_path(path)?]
