@@ -31,14 +31,23 @@ prepare:
     cargo fix --edition-idioms --allow-dirty --allow-staged
     cargo clippy --all-features --all-targets --workspace --no-deps --fix --allow-dirty --allow-staged
 
-# Scan for vulnerabilities and unused dependencies
-scan: prepare
-    cargo +nightly udeps
+# Scan for vulnerabilities
+audit: prepare
     cargo audit
 
+# Scan for unused dependencies (requires nightly Rust!)
+udeps:
+    cargo udeps
+
+# Check which dependencies are outdated
+outdated:
+    cargo outdated
+
+# Perform a loose benchmark
 bench directory=('../'): build-release
     hyperfine --warmup 1 'target/release/gfold {{directory}}' 'gfold {{directory}}'
 
+# Peform a release binary size comparison
 size: build-release
     #!/usr/bin/env bash
     checker=gdu
