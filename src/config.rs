@@ -9,7 +9,7 @@ use std::{env, fs};
 /// This struct is the actual config type consumed through the codebase. It is boostrapped via its
 /// public methods and uses [`EntryConfig`], a private struct, under the hood in order to
 /// deserialize empty, non-existent, partial, and complete config files.
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct Config {
     /// The paths that `gfold` will traverse and collect results from.
     pub paths: Vec<PathBuf>,
@@ -131,7 +131,7 @@ struct EntryConfig {
 /// In summary, while this setting is primarily for cosmetics, it may also affect runtime
 /// performance based on what needs to be displayed.
 #[remain::sorted]
-#[derive(Serialize, Deserialize, Clone, Copy, ValueEnum)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum DisplayMode {
     /// Informs the caller to display results in the classic format.
     Classic,
@@ -147,7 +147,7 @@ pub enum DisplayMode {
 
 /// Set the color mode of results printed to `stdout`.
 #[remain::sorted]
-#[derive(Serialize, Deserialize, Clone, Copy, ValueEnum)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum ColorMode {
     /// Attempt to display colors as intended (default behavior).
     Always,

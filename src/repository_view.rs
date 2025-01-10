@@ -1,43 +1,18 @@
 //! This module contains [`RepositoryView`], which provides the [`Status`]
 //! and general overview of the state of a given Git repository.
 
+use std::path::Path;
+
+use anyhow::anyhow;
+use anyhow::Result;
 use git2::Repository;
 use log::{debug, error, trace};
 use serde::{Deserialize, Serialize};
-use std::io;
-use std::path::{Path, PathBuf};
 use submodule_view::SubmoduleView;
-use thiserror::Error;
 
-use crate::repository_view::submodule_view::SubmoduleError;
-use crate::status::{Status, StatusError};
+use crate::status::Status;
 
 mod submodule_view;
-
-#[allow(missing_docs)]
-#[remain::sorted]
-#[derive(Error, Debug)]
-pub enum RepositoryViewError {
-    #[error("received None (Option<&OsStr>) for file name: {0}")]
-    FileNameNotFound(PathBuf),
-    #[error("could not convert file name (&OsStr) to &str: {0}")]
-    FileNameToStrConversionFailure(PathBuf),
-    #[error(transparent)]
-    FromGit2(#[from] git2::Error),
-    #[error(transparent)]
-    FromStatus(#[from] StatusError),
-    #[error(transparent)]
-    FromStdIo(#[from] io::Error),
-    #[error(transparent)]
-    FromSubmodule(#[from] SubmoduleError),
-    #[error("full shorthand for Git reference is invalid UTF-8")]
-    GitReferenceShorthandInvalid,
-    #[error("could not convert path (Path) to &str: {0}")]
-    PathToStrConversionFailure(PathBuf),
-}
-
-#[allow(missing_docs)]
-pub type RepositoryViewResult<T> = Result<T, RepositoryViewError>;
 
 /// A collection of results for a Git repository at a given path.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -66,7 +41,7 @@ impl RepositoryView {
         repo_path: &Path,
         include_email: bool,
         include_submodules: bool,
-    ) -> RepositoryViewResult<RepositoryView> {
+    ) -> Result<RepositoryView> {
         debug!(
             "attempting to generate collector for repository_view at path: {:?}",
             repo_path
@@ -99,7 +74,7 @@ impl RepositoryView {
         let branch = match &head {
             Some(head) => head
                 .shorthand()
-                .ok_or(RepositoryViewError::GitReferenceShorthandInvalid)?,
+                .ok_or(anyhow!("full shorthand for Git reference is invalid UTF-8"))?,
             None => "HEAD",
         };
 
@@ -135,26 +110,26 @@ impl RepositoryView {
         url: Option<String>,
         email: Option<String>,
         submodules: Vec<SubmoduleView>,
-    ) -> Result<Self, RepositoryViewError> {
+    ) -> Result<Self> {
         let name = match path.file_name() {
             Some(s) => match s.to_str() {
                 Some(s) => s.to_string(),
                 None => {
-                    return Err(RepositoryViewError::FileNameToStrConversionFailure(
-                        path.to_path_buf(),
+                    return Err(anyhow!(
+                        "could not convert file name (&OsStr) to &str: {path:?}"
                     ));
                 }
             },
-            None => return Err(RepositoryViewError::FileNameNotFound(path.to_path_buf())),
+            None => {
+                return Err(anyhow!(
+                    "received None (Option<&OsStr>) for file name: {path:?}"
+                ))
+            }
         };
         let parent = match path.parent() {
             Some(s) => match s.to_str() {
                 Some(s) => Some(s.to_string()),
-                None => {
-                    return Err(RepositoryViewError::PathToStrConversionFailure(
-                        s.to_path_buf(),
-                    ));
-                }
+                None => return Err(anyhow!("could not convert path (Path) to &str: {s:?}")),
             },
             None => None,
         };

@@ -1,6 +1,10 @@
 _default:
     @just --list
 
+# Build and run at the debug level in the parent directory
+run:
+    cargo run -- -vvv ..
+
 # Scan for potential bloat
 bloat:
     cargo bloat --release

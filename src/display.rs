@@ -1,28 +1,24 @@
 //! This module contains the functionality for displaying reports to `stdout`.
 
+use std::io;
+use std::path::Path;
+
+use anyhow::{anyhow, Result};
 use color::ColorHarness;
-use gfold::RepositoryCollection;
 use log::debug;
 use log::warn;
-use std::io;
-use std::path::{Path, PathBuf};
-use thiserror::Error;
 
+use crate::collector::RepositoryCollection;
 use crate::config::{ColorMode, DisplayMode};
 
-mod color;
+// TODO(nick): make this module private.
+pub mod color;
 
 const PAD: usize = 2;
 const NONE: &str = "none";
 
-#[remain::sorted]
-#[derive(Error, Debug)]
-pub enum DisplayError {
-    #[error("could not convert path (Path) to &str: {0}")]
-    PathToStrConversionFailure(PathBuf),
-}
-
 /// This struct is used for displaying the contents of a [`RepositoryCollection`] to `stdout`.
+#[derive(Debug)]
 pub struct DisplayHarness {
     display_mode: DisplayMode,
     color_mode: ColorMode,
@@ -37,7 +33,7 @@ impl DisplayHarness {
     }
 
     /// This function chooses the display execution function based on the [`DisplayMode`] provided.
-    pub fn run(&self, reports: &RepositoryCollection) -> anyhow::Result<()> {
+    pub fn run(&self, reports: &RepositoryCollection) -> Result<()> {
         match self.display_mode {
             DisplayMode::Standard => Self::standard(reports, self.color_mode, false)?,
             DisplayMode::StandardAlphabetical => Self::standard(reports, self.color_mode, true)?,
@@ -52,7 +48,7 @@ impl DisplayHarness {
         reports: &RepositoryCollection,
         color_mode: ColorMode,
         alphabetical_sort_only: bool,
-    ) -> anyhow::Result<()> {
+    ) -> Result<()> {
         debug!("detected standard display mode");
         let mut all_reports = Vec::new();
         for grouped_report in reports {
@@ -76,9 +72,9 @@ impl DisplayHarness {
             let full_path = Path::new(&parent).join(&report.name);
             let full_path_formatted = format!(
                 " ~ {}",
-                full_path
-                    .to_str()
-                    .ok_or_else(|| DisplayError::PathToStrConversionFailure(full_path.clone()))?
+                full_path.to_str().ok_or(anyhow!(
+                    "could not convert path (Path) to &str: {full_path:?}"
+                ))?
             );
             color_harness.write_gray(&full_path_formatted, true)?;
 

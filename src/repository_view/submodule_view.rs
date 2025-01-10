@@ -1,28 +1,12 @@
 //! This module contains the ability to gather information on submodules for a given [`Repository`].
 
+use anyhow::{anyhow, Result};
 use git2::Repository;
 use log::error;
 use serde::Deserialize;
 use serde::Serialize;
-use std::io;
-use thiserror::Error;
 
-use crate::status::{Status, StatusError};
-
-#[remain::sorted]
-#[derive(Error, Debug)]
-pub enum SubmoduleError {
-    #[error(transparent)]
-    FromGit2(#[from] git2::Error),
-    #[error(transparent)]
-    FromStatus(#[from] StatusError),
-    #[error(transparent)]
-    FromStdIo(#[from] io::Error),
-    #[error("submodule name is invalid UTF-8")]
-    SubmoduleNameInvalid,
-}
-
-type SubmoduleResult<T> = Result<T, SubmoduleError>;
+use crate::status::Status;
 
 /// The view of a submodule with a [`Repository`].
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -33,7 +17,7 @@ pub struct SubmoduleView {
 
 impl SubmoduleView {
     /// Generate a list of [`submodule view(s)`](Self) for a given [`Repository`].
-    pub fn list(repo: &Repository) -> SubmoduleResult<Vec<Self>> {
+    pub fn list(repo: &Repository) -> Result<Vec<Self>> {
         let mut submodules = Vec::new();
         for submodule in repo.submodules()? {
             match submodule.open() {
@@ -41,7 +25,7 @@ impl SubmoduleView {
                     let (status, _, _) = Status::find(&subrepo)?;
                     let name = submodule
                         .name()
-                        .ok_or(SubmoduleError::SubmoduleNameInvalid)?;
+                        .ok_or(anyhow!("submodule name is invalid UTF-8"))?;
 
                     submodules.push(Self {
                         name: name.to_string(),
