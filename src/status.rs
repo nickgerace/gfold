@@ -1,20 +1,9 @@
 //! This module contains the [`crate::status::Status`] type.
 
+use anyhow::Result;
 use git2::{ErrorCode, Reference, Remote, Repository, StatusOptions};
 use log::debug;
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
-
-#[allow(missing_docs)]
-#[remain::sorted]
-#[derive(Error, Debug)]
-pub enum StatusError {
-    #[error(transparent)]
-    FromGit2(#[from] git2::Error),
-}
-
-#[allow(missing_docs)]
-pub type StatusResult<T> = Result<T, StatusError>;
 
 /// A summarized interpretation of the status of a Git working tree.
 #[remain::sorted]
@@ -46,9 +35,7 @@ impl Status {
 
     /// Find the [`Status`] for a given [`Repository`]. The
     /// [`head`](Option<git2::Reference>) and [`remote`](Option<git2::Remote>) are also returned.
-    pub fn find(
-        repo: &Repository,
-    ) -> StatusResult<(Status, Option<Reference<'_>>, Option<Remote<'_>>)> {
+    pub fn find(repo: &Repository) -> Result<(Status, Option<Reference<'_>>, Option<Remote<'_>>)> {
         let head = match repo.head() {
             Ok(head) => Some(head),
             Err(ref e)
