@@ -5,6 +5,10 @@ _default:
 run:
     cargo run -- -vvv ..
 
+# Build and run with the help flag
+run-help:
+    cargo run -- -h
+
 # Scan for potential bloat
 bloat:
     cargo bloat --release

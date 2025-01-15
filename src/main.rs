@@ -30,53 +30,21 @@
 use std::{env, path::PathBuf};
 
 use anyhow::Result;
+use args::Cli;
 use clap::Parser;
-use clap_verbosity_flag::{InfoLevel, Verbosity};
 use collector::RepositoryCollector;
 use log::debug;
 
-use crate::config::{ColorMode, Config, DisplayMode};
+use crate::config::{Config, DisplayMode};
 use crate::display::DisplayHarness;
 
+// TODO(nick): investigate module visibility.
+pub mod args;
 pub mod collector;
-pub mod repository_view;
-pub mod status;
-// TODO(nick): make this module private.
 pub mod config;
 pub mod display;
-
-const HELP: &str = "\
-More information: https://github.com/nickgerace/gfold
-
-Description: this application helps you keep track of multiple Git repositories via CLI. By default, it displays relevant information for all repos in the current working directory.
-
-Config File Usage: while CLI options are prioritized, default options will fallback to the config file if it exists. Here are the config file lookup locations:
-
-    $XDG_CONFIG_HOME/gfold.toml
-    $XDG_CONFIG_HOME/gfold/config.toml
-    $HOME/.config/gfold.toml (or {{FOLDERID_Profile}}\\.config\\gfold.toml on Windows)";
-
-#[derive(Parser)]
-#[command(version, about = HELP, long_about = None)]
-struct Cli {
-    /// specify path to target directory (defaults to current working directory)
-    pub paths: Option<Vec<PathBuf>>,
-
-    #[arg(short, long)]
-    pub color_mode: Option<ColorMode>,
-    #[arg(short, long)]
-    pub display_mode: Option<DisplayMode>,
-
-    /// display finalized config options and exit (merged options from an optional config file and command line arguments)
-    #[arg(long)]
-    pub dry_run: bool,
-    /// ignore config file settings
-    #[arg(short, long)]
-    pub ignore_config_file: bool,
-
-    #[command(flatten)]
-    verbose: Verbosity<InfoLevel>,
-}
+pub mod repository_view;
+pub mod status;
 
 /// Initializes the logger based on the debug flag and `RUST_LOG` environment variable, then
 /// parses CLI arguments and generates a [`Config`] by merging configurations as needed,
