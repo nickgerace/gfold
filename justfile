@@ -31,13 +31,13 @@ ci:
     cargo test --all-targets --workspace
     cargo build --locked --all-targets
 
-# Update dependencies
-update:
+# Update the nix flake lockfile
+update-flake:
     nix flake update
-    cargo update
     
-# Run formatter and run baseline lints and checks
+# Update deps, run formatter, and run baseline lints and checks
 prepare:
+    cargo update
     cargo fmt
     cargo check --all-targets --all-features --workspace
     cargo fix --edition-idioms --allow-dirty --allow-staged

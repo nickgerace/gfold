@@ -3,8 +3,8 @@
 
 use std::path::Path;
 
-use anyhow::anyhow;
 use anyhow::Result;
+use anyhow::anyhow;
 use git2::Repository;
 use log::{debug, error, trace};
 use serde::{Deserialize, Serialize};
@@ -50,7 +50,9 @@ impl RepositoryView {
         let repo = match Repository::open(repo_path) {
             Ok(repo) => repo,
             Err(e) if e.message() == "unsupported extension name extensions.worktreeconfig" => {
-                error!("skipping error ({e}) until upstream libgit2 issue is resolved: https://github.com/libgit2/libgit2/issues/6044");
+                error!(
+                    "skipping error ({e}) until upstream libgit2 issue is resolved: https://github.com/libgit2/libgit2/issues/6044"
+                );
                 let unknown_report = RepositoryView::finalize(
                     repo_path,
                     None,
@@ -123,7 +125,7 @@ impl RepositoryView {
             None => {
                 return Err(anyhow!(
                     "received None (Option<&OsStr>) for file name: {path:?}"
-                ))
+                ));
             }
         };
         let parent = match path.parent() {

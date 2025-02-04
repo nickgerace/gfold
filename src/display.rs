@@ -3,7 +3,7 @@
 use std::io;
 use std::path::Path;
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use color::ColorHarness;
 use log::debug;
 use log::warn;
