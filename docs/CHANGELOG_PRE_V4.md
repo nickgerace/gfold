@@ -8,7 +8,7 @@ For new changes, please see the current [CHANGELOG](../CHANGELOG.md).
 
 ## [After 3.0.0]
 
-Please see [CHANGELOG](../CHANGELOG.md).
+Please see [CHANGELOG_PRE_CALVER_POST_V4](./CHANGELOG_PRE_CALVER_POST_V4.md).
 
 ## [3.0.0] - 2022-01-06
 

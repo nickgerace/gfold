@@ -3,12 +3,23 @@
 [![latest release tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=git&logoColor=white&label=version&style=for-the-badge&color=blue)](https://github.com/nickgerace/gfold/releases/latest)
 [![crates.io version](https://img.shields.io/crates/v/gfold?style=for-the-badge&logo=rust&color=orange)](https://crates.io/crates/gfold)
 [![build status](https://img.shields.io/github/actions/workflow/status/nickgerace/gfold/ci.yml?branch=main&style=for-the-badge&logo=github&logoColor=white)](https://github.com/nickgerace/gfold/actions)
+[![calver](https://img.shields.io/badge/calver-YYYY.MM.MICRO-cyan.svg?style=for-the-badge)](https://calver.org)
+[![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
 `gfold` is a CLI tool that helps you keep track of multiple Git repositories.
 
 [![A GIF showcasing gfold in action](https://raw.githubusercontent.com/nickgerace/gfold/main/assets/demo.gif)](https://raw.githubusercontent.com/nickgerace/gfold/main/assets/demo.gif)
 
 If you'd prefer to use the classic display mode by default, and avoid setting the flag every time, you can set it in the config file (see **Usage** section).
+
+## Announcement (February 2025)
+
+All releases now follow the [CalVer](https://calver.org/) versioning scheme, starting with `2025.2.0`.
+This change is both forwards and backwards compatible with the [Semantic Versioning](https://semver.org/spec/v2.0.0.html) versioning scheme, which was used from the first release through version `4.6.0`.
+
+*No end user action is required specifically for the versioning scheme change itself.*
+
+This announcement will be eventually removed from this [README](./README.md) and will eventually be moved into the [CHANGELOG](./CHANGELOG.md).
 
 ## Description
 
@@ -44,6 +55,9 @@ gfold /this/is/an/absolute/path
 
 # Operate with a relative path.
 gfold ../../this/is/a/relative/path
+
+# Operate with three paths.
+gfold ~/src ~/projects ~/code
 ```
 
 ### Config File
@@ -190,21 +204,13 @@ Please [file an issue](https://github.com/nickgerace/gfold/issues) if your platf
 
 ## Troubleshooting and Known Issues
 
-If you encounter unexpected behavior or a bug and would like to see more details, please run `gfold` with the following
-environment variables:
+If you encounter unexpected behavior or a bug and would like to see more details, please run with increased verbosity.
 
 ```shell
-# You may also want to add relevant arg(s) and flag(s).
-RUST_BACKTRACE=1 RUST_LOG=debug gfold
+gfold -vvv
 ```
 
 If the issue persists, please [file an issue](https://github.com/nickgerace/gfold/issues).
-
-### Tuning Environment Variables
-
-Since [`RUST_BACKTRACE`](https://doc.rust-lang.org/std/backtrace/index.html) and
-[`RUST_LOG`](https://docs.rs/env_logger/latest/env_logger/) do not have `gfold`-specific behaviors, you can adjust
-them just as you would in other projects to aid investigation.
 Please attach relevant logs from execution with _sensitive bits redacted_ in order to help resolve your issue.
 
 ### Coreutils Collision on macOS
