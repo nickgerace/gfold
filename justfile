@@ -31,9 +31,13 @@ ci:
     cargo test --all-targets --workspace
     cargo build --locked --all-targets
 
-# Run update, and baseline lints and checks
-prepare:
+# Update dependencies
+update:
+    nix flake update
     cargo update
+    
+# Run formatter and run baseline lints and checks
+prepare:
     cargo fmt
     cargo check --all-targets --all-features --workspace
     cargo fix --edition-idioms --allow-dirty --allow-staged
