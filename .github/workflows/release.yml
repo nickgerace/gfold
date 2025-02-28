@@ -13,18 +13,26 @@ jobs:
           - os: ubuntu-latest
             artifact_name: gfold
             asset_name: gfold-linux-gnu-x86-64
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            artifact_name: gfold
+            asset_name: gfold-linux-musl-x86-64
+            target: x86_64-unknown-linux-musl
           - os: windows-latest
             artifact_name: gfold.exe
             asset_name: gfold-windows-x86-64.exe
+            target: x86_64-pc-windows-msvc
           - os: macos-latest
             artifact_name: gfold
             asset_name: gfold-darwin-aarch64
+            target: aarch64-apple-darwin
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-      - run: cargo build --release --locked
+          targets: ${{ matrix.target }}
+      - run: cargo build --release --locked --target ${{ matrix.target }}
       - shell: bash
         run: |
           if [ $(echo ${{ github.ref }} | grep "rc") ]; then
@@ -36,7 +44,7 @@ jobs:
           fi
           echo $PRERELEASE
 
-          mv target/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
+          mv target/${{ matrix.target }}/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
       - uses: softprops/action-gh-release@v2
         with:
           files: ${{ matrix.asset_name }}
