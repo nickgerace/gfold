@@ -1,6 +1,6 @@
 //! This module contains the ability to gather information on submodules for a given [`Repository`].
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use git2::Repository;
 use log::error;
 use serde::Deserialize;

@@ -4,11 +4,7 @@ This document contains all information related to release.
 
 ## Versioning Scheme
 
-This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-Generally, the versioning scheme looks like the following formats where `X` is an unsigned integer:
-
-- **Release candidates (RCs):** `X.X.X-rc.X`
-- **Full releases:** `X.X.X`
+See the [CHANGELOG](../CHANGELOG.md) for more information.
 
 ## Checklist
 
@@ -52,11 +48,7 @@ cargo publish
 - [ ] Download and install the crate:
 
 ```shell
-# Full releases
 cargo install --locked gfold
-
-# Release candidates (RCs)
-cargo install --locked --version <tag> gfold
 ```
 
 - [ ] Verify that the [GitHub release](https://github.com/nickgerace/gfold/releases) on the repository's releases page looks correct

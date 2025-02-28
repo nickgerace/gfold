@@ -1,11 +1,11 @@
 [package]
 name = "gfold"
-version = "4.6.0"
+version = "2025.2.0"
 
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 categories = ["command-line-utilities", "command-line-interface"]
 description = "CLI tool to help keep track of your Git repositories."
-edition = "2021"
+edition = "2024"
 homepage = "https://github.com/nickgerace/gfold"
 keywords = ["git", "cli"]
 license = "Apache-2.0"

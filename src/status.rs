@@ -99,7 +99,10 @@ impl Status {
         let remote_head = match repo.resolve_reference_from_short_name(&remote) {
             Ok(reference) => reference.peel_to_commit()?,
             Err(e) => {
-                debug!("assuming unpushed; could not resolve remote reference from short name (ignored error: {})", e);
+                debug!(
+                    "assuming unpushed; could not resolve remote reference from short name (ignored error: {})",
+                    e
+                );
                 return Ok(true);
             }
         };
