@@ -34,7 +34,12 @@ Here is an example of a theorhetical third release in December 2024:
 
 In both examples, the exact day of release did not matter.
 
-## `2025.2.0` - Tue 04 Feb 2025
+## `2025.2.1` - Tue 27 Feb 2025
+
+- Add MUSL release builds
+- Fix release builds for all platforms
+
+## `2025.2.0` - Tue 27 Feb 2025
 
 - Add "paths" configuration option to allow for multiple paths for `gfold` to execute on from [@uncenter](https://github.com/uncenter)
 - Move logging verbosity from an environment variable to a flag

@@ -1,6 +1,6 @@
 [package]
 name = "gfold"
-version = "2025.2.0"
+version = "2025.2.1"
 
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 categories = ["command-line-utilities", "command-line-interface"]
