@@ -47,11 +47,7 @@ jobs:
           fi
           echo $PRERELEASE
 
-          if [[ "${{ matrix.target }}" == "x86_64-unknown-linux-musl" ]]; then
-            mv target/${{ matrix.target }}/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
-          else
-            mv target/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
-          fi
+          mv target/${{ matrix.target }}/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
       - uses: softprops/action-gh-release@v2
         with:
           files: ${{ matrix.asset_name }}
