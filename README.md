@@ -14,7 +14,7 @@ If you'd prefer to use the classic display mode by default, and avoid setting th
 
 ## Announcement (February 2025)
 
-All releases now follow the [CalVer](https://calver.org/) versioning scheme, starting with `2025.2.0`.
+All releases now follow the [CalVer](https://calver.org/) versioning scheme, starting with `2025.2.1`.
 This change is both forwards and backwards compatible with the [Semantic Versioning](https://semver.org/spec/v2.0.0.html) versioning scheme, which was used from the first release through version `4.6.0`.
 
 *No end user action is required specifically for the versioning scheme change itself.*

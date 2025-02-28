@@ -6,7 +6,7 @@
 
 ## Versioning Scheme
 
-This project follows [CalVer](https://calver.org/) for its versioning scheme, starting with `2025.2.0`.
+This project follows [CalVer](https://calver.org/) for its versioning scheme, starting with `2025.2.1`.
 It used to follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) from the first release through version `4.6.0`.
 This versioning approach is both backwards and forwards compatible with Semantic Versioning.
 
@@ -38,8 +38,9 @@ In both examples, the exact day of release did not matter.
 
 - Add MUSL release builds
 - Fix release builds for all platforms
+- Yank previous release due to broken release builds
 
-## `2025.2.0` - Tue 27 Feb 2025
+## `2025.2.0` (yanked) - Tue 27 Feb 2025
 
 - Add "paths" configuration option to allow for multiple paths for `gfold` to execute on from [@uncenter](https://github.com/uncenter)
 - Move logging verbosity from an environment variable to a flag
