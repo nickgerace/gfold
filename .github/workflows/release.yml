@@ -3,6 +3,11 @@ on:
   push:
     tags:
       - "*"
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   release:
     name: "Release"
