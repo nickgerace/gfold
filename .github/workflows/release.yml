@@ -6,35 +6,65 @@ on:
 jobs:
   release:
     name: "Release"
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.job.os }}
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            artifact_name: gfold
+        job:
+          # Linux
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+            asset_name: gfold-linux-gnu-aarch64
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: true
             asset_name: gfold-linux-gnu-x86-64
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
-            artifact_name: gfold
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            cross: true
             asset_name: gfold-linux-musl-x86-64
-            target: x86_64-unknown-linux-musl
-          - os: windows-latest
-            artifact_name: gfold.exe
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-24.04-arm
+            asset_name: gfold-linux-musl-aarch64
+          - target: powerpc64le-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: true
+            asset_name: gfold-linux-gnu-powerpc64le
+          # Windows
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
             asset_name: gfold-windows-x86-64.exe
-            target: x86_64-pc-windows-msvc
-          - os: macos-latest
-            artifact_name: gfold
+          # macOS
+          - target: aarch64-apple-darwin
+            os: macos-latest
             asset_name: gfold-darwin-aarch64
-            target: aarch64-apple-darwin
+          - target: x86_64-apple-darwin
+            os: macos-13
+            asset_name: gfold-darwin-x86-64
+
+    env:
+      CARGO: cargo
+
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Set up cross compiling
+        if: matrix.job.cross
+        uses: taiki-e/install-action@v2
         with:
-          toolchain: stable
-          targets: ${{ matrix.target }}
-      - if: matrix.target == 'x86_64-unknown-linux-musl'
-        run: sudo apt update && sudo apt install -y musl-tools
-      - run: cargo build --release --locked --target ${{ matrix.target }}
+          tool: cross
+
+      - name: Configure cross compiling
+        if: matrix.job.cross
+        run: echo "CARGO=cross" >> $GITHUB_ENV
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.job.target }}
+
+      - name: Build
+        run: $CARGO build --release --locked --target ${{ matrix.job.target }}
+
       - shell: bash
         run: |
           if [ $(echo ${{ github.ref }} | grep "rc") ]; then
@@ -46,9 +76,9 @@ jobs:
           fi
           echo $PRERELEASE
 
-          mv target/${{ matrix.target }}/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
+          mv target/${{ matrix.job.target }}/release/gfold${{ '.exe' && startsWith(matrix.job.os, 'windows-') || '' }} ${{ matrix.job.asset_name }}
       - uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.asset_name }}
+          files: ${{ matrix.job.asset_name }}
           prerelease: ${{ env.PRERELEASE }}
           body: "Please refer to **[CHANGELOG.md](https://github.com/nickgerace/gfold/blob/main/CHANGELOG.md)** for information on this release."
