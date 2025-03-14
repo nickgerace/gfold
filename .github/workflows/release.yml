@@ -17,7 +17,8 @@ jobs:
         job:
           # Linux
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-24.04-arm
+            os: ubuntu-latest
+            cross: true
             asset_name: gfold-linux-gnu-aarch64
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
@@ -28,7 +29,7 @@ jobs:
             cross: true
             asset_name: gfold-linux-musl-x86-64
           - target: aarch64-unknown-linux-musl
-            os: ubuntu-24.04-arm
+            os: ubuntu-latest
             cross: true
             asset_name: gfold-linux-musl-aarch64
           - target: powerpc64le-unknown-linux-gnu
