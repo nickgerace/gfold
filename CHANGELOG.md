@@ -34,9 +34,14 @@ Here is an example of a theorhetical third release in December 2024:
 
 In both examples, the exact day of release did not matter.
 
+## `2025.4.0` - Wed 02 Apr 2025
+
+- Add many new pre-built binaries, including macOS x86_64, Linux (GNU) aarch64, Linux (GNU) powerpc64le, and Linux (MUSL) aarch64
+- Update dependencies
+
 ## `2025.2.1` - Tue 27 Feb 2025
 
-- Add MUSL release builds
+- Add MUSL pre-built binaries
 - Fix release builds for all platforms
 - Yank previous release due to broken release builds
 
