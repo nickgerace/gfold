@@ -3,7 +3,7 @@
 - All notable, released changes to this project from a user's perspective will be documented in this file
 - All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwise specified
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-- This project follows the [CalVer](https://calver.org) versioning scheme (more details in [VERSIONING_SCHEME.md](docs/VERSIONING_SCHEME.md))
+- This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [VERSIONING_SCHEME](docs/VERSIONING_SCHEME.md) docs)
 
 ## `2025.4.0` - Wed 02 Apr 2025
 
