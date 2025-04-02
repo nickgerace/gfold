@@ -36,7 +36,11 @@ In both examples, the exact day of release did not matter.
 
 ## `2025.4.0` - Wed 02 Apr 2025
 
+<<<<<<< Updated upstream
 - Add many new pre-built binaries, including macOS x86_64, Linux (GNU) aarch64, Linux (GNU) powerpc64le, and Linux (MUSL) aarch64
+=======
+- Add many new pre-built binaries, including macOS x86_64, Linux (GNU) aarch64, Linux (GNU) powerpc64le, and Linux (MUSL) aarch64 from [@ofek](https://github.com/ofek)
+>>>>>>> Stashed changes
 - Update dependencies
 
 ## `2025.2.1` - Tue 27 Feb 2025
