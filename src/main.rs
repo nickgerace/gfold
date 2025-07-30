@@ -88,7 +88,7 @@ fn main() -> Result<()> {
             DisplayMode::Standard | DisplayMode::StandardAlphabetical => (true, false),
         };
         for path in &config.paths {
-            debug!("processing path: {:?}", path);
+            debug!("processing path: {}", path.display());
 
             let repository_collection =
                 RepositoryCollector::run(path, include_email, include_submodules)?;
@@ -247,7 +247,7 @@ mod tests {
             )?,
             RepositoryView::finalize(
                 &repo_six,
-                Some("master".to_string()),
+                Some("main".to_string()),
                 Status::Unpushed,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
@@ -319,10 +319,7 @@ mod tests {
         // "revparse_single" cannot be converted into a commit, then it isn't a commit and we know
         // there is no parent _commit_.
         let maybe_parent = match repository.revparse_single("HEAD") {
-            Ok(object) => match object.into_commit() {
-                Ok(commit) => Some(commit),
-                Err(_) => None,
-            },
+            Ok(object) => object.into_commit().ok(),
             Err(e) if e.code() == ErrorCode::NotFound => None,
             Err(e) => return Err(e.into()),
         };

@@ -100,8 +100,7 @@ impl Status {
             Ok(reference) => reference.peel_to_commit()?,
             Err(e) => {
                 debug!(
-                    "assuming unpushed; could not resolve remote reference from short name (ignored error: {})",
-                    e
+                    "assuming unpushed; could not resolve remote reference from short name (ignored error: {e})"
                 );
                 return Ok(true);
             }
