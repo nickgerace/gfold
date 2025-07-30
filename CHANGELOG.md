@@ -5,6 +5,11 @@
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [VERSIONING_SCHEME](docs/VERSIONING_SCHEME.md) docs)
 
+## `2025.7.0` - Wed 30 Jul 2025
+
+- Add git worktrees support [@AucaCoyan](https://github.com/AucaCoyan)
+- Update dependencies
+
 ## `2025.4.0` - Wed 02 Apr 2025
 
 - Add many new pre-built binaries, including macOS x86_64, Linux (GNU) aarch64, Linux (GNU) powerpc64le, and Linux (MUSL) aarch64 from [@ofek](https://github.com/ofek)

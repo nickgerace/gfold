@@ -1,6 +1,6 @@
 [package]
 name = "gfold"
-version = "2025.4.0"
+version = "2025.7.0"
 
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 categories = ["command-line-utilities", "command-line-interface"]
@@ -31,9 +31,9 @@ remain = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 termcolor = "1.4"
-toml = "0.8"
+toml = "0.9"
 user_dirs = "0.2"
 
 [dev-dependencies]
 pretty_assertions = "1.4"
-tempfile = "3.19"
+tempfile = "3.20"

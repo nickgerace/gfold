@@ -106,8 +106,8 @@ mod tests {
     use collector::RepositoryCollection;
     use git2::ErrorCode;
     use git2::Oid;
-    use git2::Repository;
     use git2::Signature;
+    use git2::{Repository, RepositoryInitOptions};
     use pretty_assertions::assert_eq;
     use repository_view::RepositoryView;
     use status::Status;
@@ -147,18 +147,23 @@ mod tests {
         let repo_seven = create_directory(&nested, "seven")?;
         // repo_eight doesn't need a dir. It's created via 'worktree add'
 
+        // Setup repo opts
+        let mut opts = RepositoryInitOptions::new();
+        let initial_head = "main";
+        opts.initial_head(initial_head);
+
         // Repo One
-        Repository::init(&repo_one)?;
+        Repository::init_opts(&repo_one, &opts)?;
         create_file(&repo_one)?;
 
         // Repo Two
-        Repository::init(&repo_two)?;
+        Repository::init_opts(&repo_two, &opts)?;
 
         // Repo Three
-        Repository::init(&repo_three)?;
+        Repository::init_opts(&repo_three, &opts)?;
 
         // Repo Four
-        let repository = Repository::init(&repo_four)?;
+        let repository = Repository::init_opts(&repo_four, &opts)?;
         if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
             if e.code() != ErrorCode::Exists {
                 return Err(e.into());
@@ -166,11 +171,11 @@ mod tests {
         }
 
         // Repo Five
-        Repository::init(&repo_five)?;
+        Repository::init_opts(&repo_five, &opts)?;
         create_file(&repo_five)?;
 
         // Repo Six
-        let repository = Repository::init(&repo_six)?;
+        let repository = Repository::init_opts(&repo_six, &opts)?;
         if let Err(e) = repository.remote("fork", "https://github.com/nickgerace/gfold") {
             if e.code() != ErrorCode::Exists {
                 return Err(e.into());
@@ -179,7 +184,7 @@ mod tests {
         commit_head_and_create_branch(&repository, "feat")?;
 
         // Repo Seven
-        let repository = Repository::init(&repo_seven)?;
+        let repository = Repository::init_opts(&repo_seven, &opts)?;
         if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
             if e.code() != ErrorCode::Exists {
                 return Err(e.into());
@@ -261,7 +266,7 @@ mod tests {
             )?,
             RepositoryView::finalize(
                 &repo_six,
-                Some("main".to_string()),
+                Some(initial_head.to_string()),
                 Status::Unpushed,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
