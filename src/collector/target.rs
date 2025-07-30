@@ -49,25 +49,26 @@ impl TargetCollector {
     /// exists, which will indicate if the entry is a repository. If the directory is not a Git
     /// repository, then we will recursively call [`Self::run()`].
     fn determine_target(entry: &DirEntry) -> io::Result<MaybeTarget> {
-        match entry.file_type()?.is_dir()
+        if entry.file_type()?.is_dir()
             && !entry
                 .file_name()
                 .to_str()
-                .map(|file_name| file_name.starts_with('.'))
-                .unwrap_or(false)
+                .is_some_and(|file_name| file_name.starts_with('.'))
         {
-            true => {
-                let path = entry.path();
-                let git_sub_directory = path.join(".git");
-                match git_sub_directory.exists() && git_sub_directory.is_dir() {
-                    true => {
-                        debug!("found target: {:?}", &path);
-                        Ok(MaybeTarget::Single(path))
-                    }
-                    false => Ok(MaybeTarget::Multiple(Self::run(path)?)),
+            let path = entry.path();
+            let git_sub_item = path.join(".git");
+            if git_sub_item.exists() {
+                if git_sub_item.is_dir() {
+                    debug!("found target: {:?}", &path.display());
+                    return Ok(MaybeTarget::Single(path));
+                } else if git_sub_item.is_file() {
+                    debug!("found a worktree: {:?}", &path.display());
+                    return Ok(MaybeTarget::Single(path));
                 }
             }
-            false => Ok(MaybeTarget::None),
+            Ok(MaybeTarget::Multiple(Self::run(path)?))
+        } else {
+            Ok(MaybeTarget::None)
         }
     }
 }
