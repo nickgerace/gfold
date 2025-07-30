@@ -134,6 +134,7 @@ mod tests {
         //         │   └── file
         //         ├── six (repo)
         //         └── seven (repo)
+        //         └── eight (worktree repo)
         let root = tempdir()?;
         let repo_one = create_directory(&root, "one")?;
         let repo_two = create_directory(&root, "two")?;
@@ -144,6 +145,7 @@ mod tests {
         let repo_five = create_directory(&nested, "five")?;
         let repo_six = create_directory(&nested, "six")?;
         let repo_seven = create_directory(&nested, "seven")?;
+        // let repo_eight = create_directory(&nested, "eight")?;
 
         // Repo One
         Repository::init(&repo_one)?;
@@ -186,6 +188,10 @@ mod tests {
         commit_head_and_create_branch(&repository, "needtopush")?;
         repository.set_head("refs/heads/needtopush")?;
 
+        // Repo Eight
+        let worktree_path = root.path().join("eight");
+        repository.worktree("working-in-a-tree", &worktree_path, None)?;
+
         // Generate the collection directly with a default config and ensure the resulting views
         // match what we expect.
         let mut expected_collection = RepositoryCollection::new();
@@ -195,6 +201,14 @@ mod tests {
             .expect("could not convert PathBuf to &str")
             .to_string();
         let mut expected_views = vec![
+            RepositoryView::finalize(
+                &worktree_path,
+                Some("working-in-a-tree".to_string()),
+                Status::Unpushed,
+                Some("https://github.com/nickgerace/gfold".to_string()),
+                None,
+                Vec::with_capacity(0),
+            )?,
             RepositoryView::finalize(
                 &repo_one,
                 Some("HEAD".to_string()),
