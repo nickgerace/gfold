@@ -128,13 +128,13 @@ mod tests {
         //     │   └── file
         //     ├── two (repo)
         //     ├── three (repo)
+        //     ├── eight (worktree repo)
         //     └── nested
         //         ├── four (repo)
         //         ├── five (repo)
         //         │   └── file
         //         ├── six (repo)
         //         └── seven (repo)
-        //         └── eight (worktree repo)
         let root = tempdir()?;
         let repo_one = create_directory(&root, "one")?;
         let repo_two = create_directory(&root, "two")?;
@@ -145,7 +145,7 @@ mod tests {
         let repo_five = create_directory(&nested, "five")?;
         let repo_six = create_directory(&nested, "six")?;
         let repo_seven = create_directory(&nested, "seven")?;
-        // let repo_eight = create_directory(&nested, "eight")?;
+        // repo_eight doesn't need a dir. It's created via 'worktree add'
 
         // Repo One
         Repository::init(&repo_one)?;
