@@ -43,8 +43,8 @@ impl RepositoryView {
         include_submodules: bool,
     ) -> Result<RepositoryView> {
         debug!(
-            "attempting to generate collector for repository_view at path: {:?}",
-            repo_path
+            "attempting to generate collector for repository_view at path: {}",
+            repo_path.display()
         );
 
         let repo = match Repository::open(repo_path) {
@@ -91,8 +91,8 @@ impl RepositoryView {
         };
 
         debug!(
-            "finalized collector collection for repository_view at path: {:?}",
-            repo_path
+            "finalized collector collection for repository_view at path: {}",
+            repo_path.display()
         );
         RepositoryView::finalize(
             repo_path,
@@ -159,14 +159,14 @@ impl RepositoryView {
         let config = match repository.config() {
             Ok(v) => v,
             Err(e) => {
-                trace!("ignored error: {}", e);
+                trace!("ignored error: {e}");
                 return None;
             }
         };
         let mut entries = match config.entries(None) {
             Ok(v) => v,
             Err(e) => {
-                trace!("ignored error: {}", e);
+                trace!("ignored error: {e}");
                 return None;
             }
         };
@@ -183,7 +183,7 @@ impl RepositoryView {
                         }
                     }
                 }
-                Err(e) => debug!("ignored error: {}", e),
+                Err(e) => debug!("ignored error: {e}"),
             }
         }
         None

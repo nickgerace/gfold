@@ -88,7 +88,7 @@ fn main() -> Result<()> {
             DisplayMode::Standard | DisplayMode::StandardAlphabetical => (true, false),
         };
         for path in &config.paths {
-            debug!("processing path: {:?}", path);
+            debug!("processing path: {}", path.display());
 
             let repository_collection =
                 RepositoryCollector::run(path, include_email, include_submodules)?;
@@ -128,6 +128,7 @@ mod tests {
         //     │   └── file
         //     ├── two (repo)
         //     ├── three (repo)
+        //     ├── eight (worktree repo)
         //     └── nested
         //         ├── four (repo)
         //         ├── five (repo)
@@ -144,6 +145,7 @@ mod tests {
         let repo_five = create_directory(&nested, "five")?;
         let repo_six = create_directory(&nested, "six")?;
         let repo_seven = create_directory(&nested, "seven")?;
+        // repo_eight doesn't need a dir. It's created via 'worktree add'
 
         // Repo One
         Repository::init(&repo_one)?;
@@ -186,6 +188,10 @@ mod tests {
         commit_head_and_create_branch(&repository, "needtopush")?;
         repository.set_head("refs/heads/needtopush")?;
 
+        // Repo Eight
+        let worktree_path = root.path().join("eight");
+        repository.worktree("working-in-a-tree", &worktree_path, None)?;
+
         // Generate the collection directly with a default config and ensure the resulting views
         // match what we expect.
         let mut expected_collection = RepositoryCollection::new();
@@ -195,6 +201,14 @@ mod tests {
             .expect("could not convert PathBuf to &str")
             .to_string();
         let mut expected_views = vec![
+            RepositoryView::finalize(
+                &worktree_path,
+                Some("working-in-a-tree".to_string()),
+                Status::Unpushed,
+                Some("https://github.com/nickgerace/gfold".to_string()),
+                None,
+                Vec::with_capacity(0),
+            )?,
             RepositoryView::finalize(
                 &repo_one,
                 Some("HEAD".to_string()),
@@ -247,7 +261,7 @@ mod tests {
             )?,
             RepositoryView::finalize(
                 &repo_six,
-                Some("master".to_string()),
+                Some("main".to_string()),
                 Status::Unpushed,
                 Some("https://github.com/nickgerace/gfold".to_string()),
                 None,
@@ -319,10 +333,7 @@ mod tests {
         // "revparse_single" cannot be converted into a commit, then it isn't a commit and we know
         // there is no parent _commit_.
         let maybe_parent = match repository.revparse_single("HEAD") {
-            Ok(object) => match object.into_commit() {
-                Ok(commit) => Some(commit),
-                Err(_) => None,
-            },
+            Ok(object) => object.into_commit().ok(),
             Err(e) if e.code() == ErrorCode::NotFound => None,
             Err(e) => return Err(e.into()),
         };
