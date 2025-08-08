@@ -175,12 +175,11 @@ impl RepositoryView {
         while let Some(entry) = entries.next() {
             match entry {
                 Ok(entry) => {
-                    if let Some(name) = entry.name() {
-                        if name == "user.email" {
-                            if let Some(value) = entry.value() {
-                                return Some(value.to_string());
-                            }
-                        }
+                    if let Some(name) = entry.name()
+                        && name == "user.email"
+                        && let Some(value) = entry.value()
+                    {
+                        return Some(value.to_string());
                     }
                 }
                 Err(e) => debug!("ignored error: {e}"),
