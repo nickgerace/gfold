@@ -4,7 +4,6 @@
 [![crates.io version](https://img.shields.io/crates/v/gfold?style=for-the-badge&logo=rust&color=orange)](https://crates.io/crates/gfold)
 [![build status](https://img.shields.io/github/actions/workflow/status/nickgerace/gfold/ci.yml?branch=main&style=for-the-badge&logo=github&logoColor=white)](https://github.com/nickgerace/gfold/actions)
 [![calver](https://img.shields.io/badge/calver-YYYY.MM.MICRO-cyan.svg?style=for-the-badge)](https://calver.org)
-[![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
 `gfold` is a CLI tool that helps you keep track of multiple Git repositories.
 

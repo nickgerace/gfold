@@ -20,6 +20,9 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
+      - run: |
+          sudo apt update
+          sudo apt install -y mold
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:

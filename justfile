@@ -31,10 +31,6 @@ ci:
     cargo test --all-targets --workspace
     cargo build --locked --all-targets
 
-# Update the nix flake lockfile
-update-flake:
-    nix flake update
-    
 # Update deps, run formatter, and run baseline lints and checks
 prepare:
     cargo update
@@ -71,3 +67,7 @@ size: build-release
     if [[ -n "$binary" ]]; then
         $checker -b "$(realpath "$binary")"
     fi
+
+# Install dependencies needed to work on the project
+install-deps:
+    ./bin/install-deps.sh

@@ -164,10 +164,10 @@ mod tests {
 
         // Repo Four
         let repository = Repository::init_opts(&repo_four, &opts)?;
-        if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
-            if e.code() != ErrorCode::Exists {
-                return Err(e.into());
-            }
+        if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold")
+            && e.code() != ErrorCode::Exists
+        {
+            return Err(e.into());
         }
 
         // Repo Five
@@ -176,19 +176,19 @@ mod tests {
 
         // Repo Six
         let repository = Repository::init_opts(&repo_six, &opts)?;
-        if let Err(e) = repository.remote("fork", "https://github.com/nickgerace/gfold") {
-            if e.code() != ErrorCode::Exists {
-                return Err(e.into());
-            }
+        if let Err(e) = repository.remote("fork", "https://github.com/nickgerace/gfold")
+            && e.code() != ErrorCode::Exists
+        {
+            return Err(e.into());
         }
         commit_head_and_create_branch(&repository, "feat")?;
 
         // Repo Seven
         let repository = Repository::init_opts(&repo_seven, &opts)?;
-        if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold") {
-            if e.code() != ErrorCode::Exists {
-                return Err(e.into());
-            }
+        if let Err(e) = repository.remote("origin", "https://github.com/nickgerace/gfold")
+            && e.code() != ErrorCode::Exists
+        {
+            return Err(e.into());
         }
         commit_head_and_create_branch(&repository, "needtopush")?;
         repository.set_head("refs/heads/needtopush")?;
@@ -305,10 +305,10 @@ mod tests {
         let parent = parent.as_ref();
         let new_directory = parent.join(name);
 
-        if let Err(e) = fs::create_dir(&new_directory) {
-            if e.kind() != io::ErrorKind::AlreadyExists {
-                return Err(e);
-            }
+        if let Err(e) = fs::create_dir(&new_directory)
+            && e.kind() != io::ErrorKind::AlreadyExists
+        {
+            return Err(e);
         }
         Ok(new_directory)
     }

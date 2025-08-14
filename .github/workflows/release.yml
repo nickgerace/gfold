@@ -15,7 +15,6 @@ jobs:
     strategy:
       matrix:
         job:
-          # Linux
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
             cross: true
@@ -36,11 +35,9 @@ jobs:
             os: ubuntu-latest
             cross: true
             asset_name: gfold-linux-gnu-powerpc64le
-          # Windows
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             asset_name: gfold-windows-x86-64.exe
-          # macOS
           - target: aarch64-apple-darwin
             os: macos-latest
             asset_name: gfold-darwin-aarch64
@@ -53,6 +50,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install mold
+        if: matrix.job.target == 'x86_64-unknown-linux-gnu' || matrix.job.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mold
 
       - name: Set up cross compiling
         if: matrix.job.cross
