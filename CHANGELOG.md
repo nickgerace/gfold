@@ -5,6 +5,11 @@
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [VERSIONING_SCHEME](docs/VERSIONING_SCHEME.md) docs)
 
+## `2025.8.0` - Tue 19 Aug 2025
+
+- Update dependencies
+- Use `mold` when building release builds
+
 ## `2025.7.0` - Wed 30 Jul 2025
 
 - Add git worktrees support [@AucaCoyan](https://github.com/AucaCoyan)
