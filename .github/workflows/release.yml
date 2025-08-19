@@ -15,33 +15,46 @@ jobs:
     strategy:
       matrix:
         job:
-          - target: aarch64-unknown-linux-gnu
-            os: ubuntu-latest
-            cross: true
-            asset_name: gfold-linux-gnu-aarch64
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-            cross: true
-            asset_name: gfold-linux-gnu-x86-64
-          - target: x86_64-unknown-linux-musl
+          # Requires cross compilation
+          - name: Linux (MUSL) x86_64
+            target: x86_64-unknown-linux-musl
             os: ubuntu-latest
             cross: true
             asset_name: gfold-linux-musl-x86-64
-          - target: aarch64-unknown-linux-musl
+          - name: Linux (MUSL) aarch64
+            target: aarch64-unknown-linux-musl
             os: ubuntu-latest
             cross: true
             asset_name: gfold-linux-musl-aarch64
-          - target: powerpc64le-unknown-linux-gnu
+          - name: Linux (GNU) powerpc64le
+            target: powerpc64le-unknown-linux-gnu
             os: ubuntu-latest
             cross: true
             asset_name: gfold-linux-gnu-powerpc64le
-          - target: x86_64-pc-windows-msvc
+
+          # No cross compilation
+          - name: Linux (GNU) aarch64
+            target: aarch64-unknown-linux-gnu
+            # NOTE(nick): required to specify OS version...
+            # https://github.blog/changelog/2025-01-16-linux-arm64-hosted-runners-now-available-for-free-in-public-repositories-public-preview/
+            os: ubuntu-24.04-arm
+            asset_name: gfold-linux-gnu-aarch64
+          - name: Linux (GNU) x86_64
+            target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            asset_name: gfold-linux-gnu-x86-64
+          - name: Windows x86_64
+            target: x86_64-pc-windows-msvc
             os: windows-latest
             asset_name: gfold-windows-x86-64.exe
-          - target: aarch64-apple-darwin
+          - name: macOS aarch64
+            target: aarch64-apple-darwin
             os: macos-latest
             asset_name: gfold-darwin-aarch64
-          - target: x86_64-apple-darwin
+          - name: macOS x86_64
+            target: x86_64-apple-darwin
+            # NOTE(nick): macOS 13 will be the last to support x86_64 (for now)...
+            # https://github.com/actions/runner-images/issues/9741
             os: macos-13
             asset_name: gfold-darwin-x86-64
 
@@ -52,29 +65,40 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v5
 
-      - name: Install mold
-        if: matrix.job.target == 'x86_64-unknown-linux-gnu' || matrix.job.target == 'aarch64-unknown-linux-gnu'
-        uses: rui314/setup-mold@v1
-
-      - name: Set up cross compiling
-        if: matrix.job.cross
+      - name: Set up cross compilation
+        if: ${{ matrix.job.cross }}
         uses: taiki-e/install-action@v2
         with:
           tool: cross
-
-      - name: Configure cross compiling
-        if: matrix.job.cross
+      - name: Configure cross compilation
+        if: ${{ matrix.job.cross }}
         run: echo "CARGO=cross" >> $GITHUB_ENV
 
-      - name: Install Rust
+      - name: Install mold for compiling on the host (Linux (GNU) x86_64 and Linux (GNU) aarch64 only)
+        if: matrix.job.target == 'x86_64-unknown-linux-gnu' || matrix.job.target == 'aarch64-unknown-linux-gnu'
+        uses: rui314/setup-mold@v1
+      - name: Install Rust for compiling on the host
+        if: ${{ !matrix.job.cross }}
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.job.target }}
 
       - name: Build with release optimizations
         run: $CARGO build --release --locked --target ${{ matrix.job.target }}
+      
+      - name: Test the cross-compiled binary
+        if: ${{ matrix.job.cross }}
+        run: $CARGO run --release --locked --target ${{ matrix.job.target }} -- -V
 
       - name: Name the release
+        run: |
+          mv target/${{ matrix.job.target }}/release/gfold${{ startsWith(matrix.job.os, 'windows-') && '.exe' || '' }} ${{ matrix.job.asset_name }}
+      
+      - name: Test the binary on the host
+        if: ${{ !matrix.job.cross }}
+        run: ./${{ matrix.job.asset_name }} -V
+
+      - name: Check if release candidate
         shell: bash
         run: |
           if [ $(echo ${{ github.ref }} | grep "rc") ]; then
@@ -85,8 +109,7 @@ jobs:
             echo "PRERELEASE=false"
           fi
           echo $PRERELEASE
-
-          mv target/${{ matrix.job.target }}/release/gfold${{ startsWith(matrix.job.os, 'windows-') && '.exe' || '' }} ${{ matrix.job.asset_name }}
+  
       - name: Perform the release
         uses: softprops/action-gh-release@v2
         with:
