@@ -1,5 +1,8 @@
 name: release
 
+on:
+  workflow_dispatch:
+
 defaults:
   run:
     shell: bash
