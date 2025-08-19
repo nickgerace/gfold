@@ -108,7 +108,6 @@ mod tests {
     use git2::Oid;
     use git2::Signature;
     use git2::{Repository, RepositoryInitOptions};
-    use pretty_assertions::assert_eq;
     use repository_view::RepositoryView;
     use status::Status;
     use std::fs::File;

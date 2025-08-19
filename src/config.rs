@@ -1,6 +1,6 @@
 //! This module contains the config specification and functionality for creating a config.
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
@@ -64,9 +64,7 @@ impl Config {
 
     fn from_entry_config(entry_config: &EntryConfig) -> Result<Self> {
         if entry_config.path.is_some() && entry_config.paths.is_some() {
-            return Err(anyhow::anyhow!(
-                "Cannot have both `path` and `paths` in config"
-            ));
+            bail!("Cannot have both `path` and `paths` in config");
         }
         Ok(Config {
             paths: if let Some(paths) = &entry_config.paths {
