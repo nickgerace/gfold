@@ -51,4 +51,9 @@ cargo publish
 cargo install --locked gfold
 ```
 
+- [ ] (Optional) Remove the crate:
+```shell
+cargo uninstall gfold
+```
+
 - [ ] Verify that the [GitHub release](https://github.com/nickgerace/gfold/releases) on the repository's releases page looks correct
