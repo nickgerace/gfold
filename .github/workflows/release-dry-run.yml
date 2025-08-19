@@ -1,6 +1,7 @@
 name: "Release Dry Run"
 
 on:
+  # Only available for manual dispatch
   workflow_dispatch:
 
 defaults:
@@ -75,7 +76,7 @@ jobs:
         if: ${{ matrix.job.cross }}
         run: echo "CARGO=cross" >> $GITHUB_ENV
 
-      - name: Install mold for compiling on the host
+      - name: Install mold for compiling on the host (Linux (GNU) x86_64 and Linux (GNU) aarch64 only)
         if: matrix.job.target == 'x86_64-unknown-linux-gnu' || matrix.job.target == 'aarch64-unknown-linux-gnu'
         uses: rui314/setup-mold@v1
       - name: Install Rust for compiling on the host
