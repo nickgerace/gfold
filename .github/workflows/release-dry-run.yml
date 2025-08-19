@@ -1,0 +1,71 @@
+name: release
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    name: "Release Dry Run"
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      matrix:
+        job:
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: true
+            asset_name: gfold-linux-gnu-aarch64
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: true
+            asset_name: gfold-linux-gnu-x86-64
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            cross: true
+            asset_name: gfold-linux-musl-x86-64
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+            cross: true
+            asset_name: gfold-linux-musl-aarch64
+          - target: powerpc64le-unknown-linux-gnu
+            os: ubuntu-latest
+            cross: true
+            asset_name: gfold-linux-gnu-powerpc64le
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            asset_name: gfold-windows-x86-64.exe
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            asset_name: gfold-darwin-aarch64
+          - target: x86_64-apple-darwin
+            os: macos-13
+            asset_name: gfold-darwin-x86-64
+
+    env:
+      CARGO: cargo
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v5
+
+      - name: Install mold
+        if: matrix.job.target == 'x86_64-unknown-linux-gnu' || matrix.job.target == 'aarch64-unknown-linux-gnu'
+        uses: rui314/setup-mold@v1
+
+      - name: Set up cross compiling
+        if: matrix.job.cross
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+
+      - name: Configure cross compiling
+        if: matrix.job.cross
+        run: echo "CARGO=cross" >> $GITHUB_ENV
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.job.target }}
+
+      - name: Build with release optimizations
+        run: $CARGO build --release --locked --target ${{ matrix.job.target }}
