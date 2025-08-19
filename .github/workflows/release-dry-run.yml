@@ -71,4 +71,5 @@ jobs:
           targets: ${{ matrix.job.target }}
 
       - name: Build with release optimizations
+        if: always()
         run: $CARGO build --release --locked --target ${{ matrix.job.target }}
