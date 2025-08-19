@@ -49,13 +49,12 @@ jobs:
       CARGO: cargo
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout the repository
+        uses: actions/checkout@v5
 
       - name: Install mold
         if: matrix.job.target == 'x86_64-unknown-linux-gnu' || matrix.job.target == 'aarch64-unknown-linux-gnu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mold
+        uses: rui314/setup-mold@v1
 
       - name: Set up cross compiling
         if: matrix.job.cross
@@ -67,15 +66,16 @@ jobs:
         if: matrix.job.cross
         run: echo "CARGO=cross" >> $GITHUB_ENV
 
-      - name: Install Rust toolchain
+      - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.job.target }}
 
-      - name: Build
+      - name: Build with release optimizations
         run: $CARGO build --release --locked --target ${{ matrix.job.target }}
 
-      - shell: bash
+      - name: Name the release
+        shell: bash
         run: |
           if [ $(echo ${{ github.ref }} | grep "rc") ]; then
             echo "PRERELEASE=true" >> $GITHUB_ENV
@@ -87,7 +87,8 @@ jobs:
           echo $PRERELEASE
 
           mv target/${{ matrix.job.target }}/release/gfold${{ startsWith(matrix.job.os, 'windows-') && '.exe' || '' }} ${{ matrix.job.asset_name }}
-      - uses: softprops/action-gh-release@v2
+      - name: Perform the release
+        uses: softprops/action-gh-release@v2
         with:
           files: ${{ matrix.job.asset_name }}
           prerelease: ${{ env.PRERELEASE }}

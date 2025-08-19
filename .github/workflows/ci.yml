@@ -20,13 +20,20 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          sudo apt update
-          sudo apt install -y mold
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Checkout the repository
+        uses: actions/checkout@v5
+
+      - name: Install mold
+        uses: rui314/setup-mold@v1
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
           components: rustfmt, clippy
-      - uses: taiki-e/install-action@just
-      - run: just ci
+
+      - name: Install just
+        uses: taiki-e/install-action@just
+
+      - name: Perform CI
+        run: just ci

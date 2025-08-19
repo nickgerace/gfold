@@ -3,8 +3,7 @@
 
 use std::path::Path;
 
-use anyhow::Result;
-use anyhow::anyhow;
+use anyhow::{Result, anyhow, bail};
 use git2::Repository;
 use log::{debug, error, trace};
 use serde::{Deserialize, Serialize};
@@ -116,22 +115,14 @@ impl RepositoryView {
         let name = match path.file_name() {
             Some(s) => match s.to_str() {
                 Some(s) => s.to_string(),
-                None => {
-                    return Err(anyhow!(
-                        "could not convert file name (&OsStr) to &str: {path:?}"
-                    ));
-                }
+                None => bail!("could not convert file name (&OsStr) to &str: {path:?}"),
             },
-            None => {
-                return Err(anyhow!(
-                    "received None (Option<&OsStr>) for file name: {path:?}"
-                ));
-            }
+            None => bail!("received None (Option<&OsStr>) for file name: {path:?}"),
         };
         let parent = match path.parent() {
             Some(s) => match s.to_str() {
                 Some(s) => Some(s.to_string()),
-                None => return Err(anyhow!("could not convert path (Path) to &str: {s:?}")),
+                None => bail!("could not convert path (Path) to &str: {s:?}"),
             },
             None => None,
         };
