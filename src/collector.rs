@@ -21,30 +21,24 @@ pub type RepositoryCollection = BTreeMap<Option<String>, Vec<RepositoryView>>;
 
 type UnprocessedRepositoryView = Result<RepositoryView>;
 
-/// A unit struct that provides [`Self::run()`], which is used to generated [`RepositoryCollection`].
-#[derive(Debug)]
-pub struct RepositoryCollector;
+/// Generate [`RepositoryCollection`] for a given path and its children.
+pub fn run(
+    path: &Path,
+    include_email: bool,
+    include_submodules: bool,
+) -> Result<RepositoryCollection> {
+    let unprocessed = TargetCollector::run(path.to_path_buf())?
+        .par_iter()
+        .map(|path| RepositoryView::new(path, include_email, include_submodules))
+        .collect::<Vec<UnprocessedRepositoryView>>();
 
-impl RepositoryCollector {
-    /// Generate [`RepositoryCollection`] for a given path and its children.
-    pub fn run(
-        path: &Path,
-        include_email: bool,
-        include_submodules: bool,
-    ) -> Result<RepositoryCollection> {
-        let unprocessed = TargetCollector::run(path.to_path_buf())?
-            .par_iter()
-            .map(|path| RepositoryView::new(path, include_email, include_submodules))
-            .collect::<Vec<UnprocessedRepositoryView>>();
-
-        let mut processed = RepositoryCollection::new();
-        for maybe_view in unprocessed {
-            let view = maybe_view?;
-            if let Some(mut views) = processed.insert(view.parent.clone(), vec![view.clone()]) {
-                views.push(view.clone());
-                processed.insert(view.parent, views);
-            }
+    let mut processed = RepositoryCollection::new();
+    for maybe_view in unprocessed {
+        let view = maybe_view?;
+        if let Some(mut views) = processed.insert(view.parent.clone(), vec![view.clone()]) {
+            views.push(view.clone());
+            processed.insert(view.parent, views);
         }
-        Ok(processed)
     }
+    Ok(processed)
 }

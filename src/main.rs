@@ -30,16 +30,13 @@
 use std::{env, path::PathBuf};
 
 use anyhow::Result;
-use args::Cli;
 use clap::Parser;
-use collector::RepositoryCollector;
+use cli::Cli;
 use log::debug;
 
 use crate::config::{Config, DisplayMode};
-use crate::display::DisplayHarness;
 
-// TODO(nick): investigate module visibility.
-pub mod args;
+pub mod cli;
 pub mod collector;
 pub mod config;
 pub mod display;
@@ -90,10 +87,12 @@ fn main() -> Result<()> {
         for path in &config.paths {
             debug!("processing path: {}", path.display());
 
-            let repository_collection =
-                RepositoryCollector::run(path, include_email, include_submodules)?;
-            let display_harness = DisplayHarness::new(config.display_mode, config.color_mode);
-            display_harness.run(&repository_collection)?;
+            let repository_collection = collector::run(path, include_email, include_submodules)?;
+            display::run(
+                config.display_mode,
+                config.color_mode,
+                &repository_collection,
+            )?;
         }
     }
     Ok(())
@@ -284,7 +283,7 @@ mod tests {
         expected_collection.insert(Some(nested_expected_views_key), nested_expected_views_raw);
 
         // Generate a collection.
-        let found_collection = RepositoryCollector::run(root.path(), false, false)?;
+        let found_collection = collector::run(root.path(), false, false)?;
 
         // Ensure the found collection matches our expected one. Sort the collection for the
         // assertion.

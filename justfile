@@ -53,7 +53,7 @@ outdated:
 
 # Perform a loose benchmark
 bench directory=('../'): build-release
-    hyperfine --warmup 1 'target/release/gfold {{directory}}' 'gfold {{directory}}'
+    hyperfine --warmup 5 'target/release/gfold {{directory}}' 'gfold {{directory}}'
 
 # Peform a release binary size comparison
 size: build-release
