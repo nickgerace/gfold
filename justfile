@@ -31,10 +31,17 @@ ci:
     cargo test --all-targets --workspace
     cargo build --locked --all-targets
 
-# Update deps, run formatter, and run baseline lints and checks
-prepare:
-    cargo update
+# Format all code
+format:
+    shfmt -w -i 2 bin/install-deps.sh
+    taplo format Cargo.toml
+    taplo format Cross.toml
+    taplo format .cargo/config.toml
     cargo fmt
+
+# Update deps, format and run baseline lints and checks
+prepare: format
+    cargo update
     cargo check --all-targets --all-features --workspace
     cargo fix --edition-idioms --allow-dirty --allow-staged
     cargo clippy --all-features --all-targets --workspace --no-deps --fix --allow-dirty --allow-staged

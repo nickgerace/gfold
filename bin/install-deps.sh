@@ -17,20 +17,32 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 pacman=$(command -v pacman || true)
+brew=$(command -v brew || true)
+
 if [[ -n $pacman ]]; then
   deps=(
     cargo-bloat
     cargo-outdated
     cargo-udeps
-    coreutils
     hyperfine
     just
     mold
+    taplo-cli
   )
   "$sudo" "$pacman" -Sy --needed "${deps[@]}"
+  exit 0
+elif [[ -n $brew ]]; then
+  deps=(
+    cargo-bloat
+    cargo-outdated
+    cargo-udeps
+    hyperfine
+    just
+    taplo
+  )
+  "$brew" install "${deps[@]}"
   exit 0
 fi
 
 echo "platform not yet supported"
 exit 1
-
