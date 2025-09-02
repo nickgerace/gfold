@@ -5,7 +5,7 @@ use std::path::Path;
 
 use anyhow::{Result, anyhow, bail};
 use git2::Repository;
-use log::{debug, error, trace};
+use log::{debug, trace};
 use serde::{Deserialize, Serialize};
 use submodule_view::SubmoduleView;
 
@@ -46,24 +46,7 @@ impl RepositoryView {
             repo_path.display()
         );
 
-        let repo = match Repository::open(repo_path) {
-            Ok(repo) => repo,
-            Err(e) if e.message() == "unsupported extension name extensions.worktreeconfig" => {
-                error!(
-                    "skipping error ({e}) until upstream libgit2 issue is resolved: https://github.com/libgit2/libgit2/issues/6044"
-                );
-                let unknown_report = RepositoryView::finalize(
-                    repo_path,
-                    None,
-                    Status::Unknown,
-                    None,
-                    None,
-                    Vec::with_capacity(0),
-                )?;
-                return Ok(unknown_report);
-            }
-            Err(e) => return Err(e.into()),
-        };
+        let repo = Repository::open(repo_path)?;
         let (status, head, remote) = Status::find(&repo)?;
 
         let submodules = if include_submodules {

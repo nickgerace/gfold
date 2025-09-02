@@ -222,13 +222,6 @@ Here is an example with the `o` dropped from `gfold`:
 alias gfld=$HOME/.cargo/bin/gfold
 ```
 
-### Upstream `libgit2` Issue
-
-If you are seeing `unsupported extension name extensions.worktreeconfig` or similar errors, it may be related to
-[libgit2/libgit2#6044](https://github.com/libgit2/libgit2/issues/6044).
-
-This repository's tracking issue is [#205](https://github.com/nickgerace/gfold/issues/205).
-
 ## Community
 
 For more information and thanks to users and the "community" at large, please refer to the **[COMMUNITY THANKS](./docs/COMMUNITY_THANKS.md)** file.
