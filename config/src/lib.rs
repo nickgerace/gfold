@@ -6,9 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use std::{env, fs};
 
-/// This struct is the actual config type consumed through the codebase. It is boostrapped via its
-/// public methods and uses [`EntryConfig`], a private struct, under the hood in order to
-/// deserialize empty, non-existent, partial, and complete config files.
+/// The configuration for driving `gfold`.
 #[derive(Debug, Serialize)]
 pub struct Config {
     /// The paths that `gfold` will traverse and collect results from.
@@ -20,9 +18,8 @@ pub struct Config {
 }
 
 impl Config {
-    /// This method tries to deserialize the config file (empty, non-existent, partial or complete)
-    /// and uses [`EntryConfig`] as an intermediary struct. This is the primary method used when
-    /// creating a config.
+    /// This method tries to deserialize the config file (empty, non-existent, partial or
+    /// complete). This is the primary method used when creating a config.
     pub fn try_config() -> Result<Self> {
         // Within this method, we check if the config file is empty before deserializing it. Users
         // should be able to proceed with empty config files. If empty or not found, then we fall
@@ -50,7 +47,7 @@ impl Config {
         Self::from_entry_config(&entry_config)
     }
 
-    /// This method does not look for the config file and uses [`EntryConfig`]'s defaults instead.
+    /// This method does not look for the config file and renders a config file with its defaults.
     /// Use this method when the user wishes to skip config file lookup.
     pub fn try_config_default() -> Result<Self> {
         Self::from_entry_config(&EntryConfig::default())

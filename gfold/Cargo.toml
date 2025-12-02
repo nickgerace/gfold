@@ -1,0 +1,29 @@
+[package]
+name = "gfold"
+version = "2025.9.0"
+edition.workspace = true
+authors = ["Nick Gerace <nickagerace@gmail.com>"]
+categories = ["command-line-utilities", "command-line-interface"]
+description = "CLI tool to help keep track of your Git repositories."
+homepage = "https://github.com/nickgerace/gfold"
+keywords = ["git", "cli"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/nickgerace/gfold"
+
+[dependencies]
+cli = { path = "../cli" }
+config = { path = "../config" }
+clap = { workspace = true }
+anyhow = { workspace = true }
+env_logger = { workspace = true }
+git2 = { workspace = true }
+log = { workspace = true }
+rayon = { workspace = true }
+remain = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+termcolor = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

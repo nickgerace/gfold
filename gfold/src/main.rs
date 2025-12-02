@@ -32,13 +32,10 @@ use std::{env, path::PathBuf};
 use anyhow::Result;
 use clap::Parser;
 use cli::Cli;
+use config::{Config, DisplayMode};
 use log::debug;
 
-use crate::config::{Config, DisplayMode};
-
-pub mod cli;
 pub mod collector;
-pub mod config;
 pub mod display;
 pub mod repository_view;
 pub mod status;

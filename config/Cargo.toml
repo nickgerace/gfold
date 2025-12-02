@@ -1,0 +1,13 @@
+[package]
+name = "config"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+remain = { workspace = true }
+serde = { workspace = true }
+toml = { workspace = true }
+user_dirs = { workspace = true }

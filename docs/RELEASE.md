@@ -19,7 +19,7 @@ Steps should be executed in sequential order.
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
-just ci
+cargo xtask ci
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`

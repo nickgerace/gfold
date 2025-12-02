@@ -32,8 +32,5 @@ jobs:
           toolchain: stable
           components: rustfmt, clippy
 
-      - name: Install just
-        uses: taiki-e/install-action@just
-
       - name: Perform CI
-        run: just ci
+        run: cargo xtask ci
