@@ -1,0 +1,10 @@
+[package]
+name = "cli"
+version = "0.1.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+config = { path = "../config" }
+clap = { workspace = true }
+clap-verbosity-flag = { workspace = true }

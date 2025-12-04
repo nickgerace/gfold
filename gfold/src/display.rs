@@ -5,11 +5,11 @@ use std::path::Path;
 
 use anyhow::{Result, anyhow};
 use color::ColorHarness;
+use config::{ColorMode, DisplayMode};
 use log::debug;
 use log::warn;
 
 use crate::collector::RepositoryCollection;
-use crate::config::{ColorMode, DisplayMode};
 
 // TODO(nick): make this module private.
 pub mod color;

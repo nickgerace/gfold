@@ -53,9 +53,9 @@ jobs:
             asset_name: gfold-darwin-aarch64
           - name: macOS x86_64
             target: x86_64-apple-darwin
-            # NOTE(nick): macOS 13 will be the last to support x86_64 (for now)...
-            # https://github.com/actions/runner-images/issues/9741
-            os: macos-13
+            # NOTE(nick): this will be supported until Fall 2027.
+            # https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
+            os: macos-15-intel
             asset_name: gfold-darwin-x86-64
 
     env:

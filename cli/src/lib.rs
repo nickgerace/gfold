@@ -2,8 +2,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
-
-use crate::config::{ColorMode, DisplayMode};
+use config::{ColorMode, DisplayMode};
 
 const HELP: &str = "\
 More information: https://github.com/nickgerace/gfold

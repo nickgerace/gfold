@@ -1,5 +1,8 @@
+[alias]
+xtask = "run --package xtask --"
+
 [build]
-rustdocflags = "--document-private-items"
+rustdocflags = ["-D", "warnings", "--document-private-items"]
 
 [target.x86_64-unknown-linux-gnu]
 linker = "clang"
