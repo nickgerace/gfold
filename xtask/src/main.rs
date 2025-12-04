@@ -8,6 +8,7 @@ use clap::{CommandFactory, Parser, Subcommand};
 use clap_mangen::Man;
 
 const CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
+const VERSION: &str = "2025.9.0";
 
 #[derive(Parser)]
 struct Cli {
@@ -186,13 +187,13 @@ impl TaskRunner {
     }
 
     pub fn task_mangen(&self) -> Result<()> {
-        let cmd = cli::Cli::command();
+        let cmd = cli::Cli::command().name("gfold").version(VERSION);
         let man = Man::new(cmd);
 
         let mut buffer = Vec::new();
         man.render(&mut buffer)?;
 
-        let mut file = fs::File::create(Path::new(&self.root).join("target/gfold.1"))?;
+        let mut file = fs::File::create(Path::new(&self.root).join("target").join("gfold.1"))?;
         file.write_all(&buffer)?;
 
         Ok(())

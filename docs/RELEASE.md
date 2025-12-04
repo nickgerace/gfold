@@ -22,6 +22,14 @@ Steps should be executed in sequential order.
 cargo xtask ci
 ```
 
+- [ ] Change the `VERSION` const's value for [mangen](../xtask/src/main.rs)
+- [ ] Run mangen and verify that everything looks/works as expected:
+
+```shell
+cargo xtask mangen
+man target/gfold.1
+```
+
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`
 - [ ] Test and verify the publishing workflow:
 
