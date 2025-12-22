@@ -1,6 +1,6 @@
 [package]
 name = "gfold"
-version = "2025.9.0"
+version = "2025.12.0"
 edition.workspace = true
 authors = ["Nick Gerace <nickagerace@gmail.com>"]
 categories = ["command-line-utilities", "command-line-interface"]
@@ -8,7 +8,7 @@ description = "CLI tool to help keep track of your Git repositories."
 homepage = "https://github.com/nickgerace/gfold"
 keywords = ["git", "cli"]
 license = "Apache-2.0"
-readme = "README.md"
+readme = "../README.md"
 repository = "https://github.com/nickgerace/gfold"
 
 [dependencies]

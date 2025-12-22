@@ -11,7 +11,7 @@ See the [CHANGELOG](../CHANGELOG.md) for more information.
 Steps should be executed in sequential order.
 
 - [ ] Checkout and rebase `main` to its latest commit, then checkout a new branch
-- [ ] Change the `version` field in [`Cargo.toml`](../Cargo.toml) to the new tag
+- [ ] Change the `version` field in [`gfold/Cargo.toml`](../gfold/Cargo.toml) to the new tag
 - [ ] Open a web browser tab to the following link: `https://github.com/nickgerace/gfold/compare/<last-tag>...main`
 - [ ] Add a new section the version in [`CHANGELOG.md`](../CHANGELOG.md) with the current date
 - [ ] Using the diff, commit messages and commit title, populate the new section with all user-relevant changes
@@ -25,8 +25,7 @@ cargo xtask ci
 - [ ] Run `--generate-man` and verify that everything looks/works as expected:
 
 ```shell
-cargo run -- --generate-man
-man ./gfold.1
+cargo xtask mangen
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`

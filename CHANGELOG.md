@@ -5,7 +5,7 @@
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [VERSIONING_SCHEME](docs/VERSIONING_SCHEME.md) docs)
 
-## Unreleased
+## `2025.12.0` - Mon 22 Dec 2025
 
 - Add `--generate-man` flag to generate a man page
 - Update dependencies
