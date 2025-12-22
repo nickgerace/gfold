@@ -1,14 +1,11 @@
-use std::io::Write;
+use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::{env, fs};
 
 use anyhow::{Result, bail};
-use clap::{CommandFactory, Parser, Subcommand};
-use clap_mangen::Man;
+use clap::{Parser, Subcommand};
 
 const CARGO_MANIFEST_DIR: &str = env!("CARGO_MANIFEST_DIR");
-const VERSION: &str = "2025.9.0";
 
 #[derive(Parser)]
 struct Cli {
@@ -19,29 +16,29 @@ struct Cli {
 #[remain::sorted]
 #[derive(Subcommand)]
 enum CliCommand {
-    /// Runs "cargo audit".
+    /// Runs "cargo audit"
     Audit,
-    /// Performs a loose benchmark against gfold in "PATH".
+    /// Performs a loose benchmark against gfold in "PATH"
     Bench,
-    /// Runs "cargo bloat".
+    /// Runs "cargo bloat"
     Bloat,
-    /// Builds with release optimizations.
+    /// Builds with release optimizations
     BuildRelease,
-    /// Performs checks for CI.
+    /// Performs checks for CI
     Ci,
-    /// Formats all code.
+    /// Formats all code
     Format,
-    /// Generates a manpage.
+    /// Generates a man page and opens it
     Mangen,
-    /// Runs "cargo outdated".
+    /// Runs "cargo outdated"
     Outdated,
-    /// Formats and prepares all code for a PR.
+    /// Formats and prepares all code for a PR
     Prepare,
-    /// Runs with increased verbositry.
+    /// Runs with increased verbositry
     Run,
-    /// Run with the help flag.
+    /// Run with the help flag
     RunHelp,
-    /// Compares the size of gfold in "PATH" to the local release build.
+    /// Compares the size of gfold in "PATH" to the local release build
     Size,
 }
 
@@ -187,15 +184,8 @@ impl TaskRunner {
     }
 
     pub fn task_mangen(&self) -> Result<()> {
-        let cmd = cli::Cli::command().name("gfold").version(VERSION);
-        let man = Man::new(cmd);
-
-        let mut buffer = Vec::new();
-        man.render(&mut buffer)?;
-
-        let mut file = fs::File::create(Path::new(&self.root).join("target").join("gfold.1"))?;
-        file.write_all(&buffer)?;
-
+        self.exec("cargo", "run -- --generate-man")?;
+        self.exec("man", "./gfold.1")?;
         Ok(())
     }
 
