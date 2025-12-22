@@ -5,6 +5,12 @@
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [VERSIONING_SCHEME](docs/VERSIONING_SCHEME.md) docs)
 
+## Unreleased
+
+- Update dependencies
+
+**Note for package maintainers: this release added support for generating `man` pages, which can be generated via `cargo xtask mangen` and checked via `man target/gfold.1`.**
+
 ## `2025.9.0` - Tue 02 Sep 2025
 
 - Remove workaround for worktrees error tracked via [#205](https://github.com/nickgerace/gfold/issues/205)
