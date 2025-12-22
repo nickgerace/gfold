@@ -7,9 +7,8 @@
 
 ## Unreleased
 
+- Add `--generate-man` flag to generate a man page
 - Update dependencies
-
-**Note for package maintainers: this release added support for generating `man` pages, which can be generated via `cargo xtask mangen` and checked via `man target/gfold.1`.**
 
 ## `2025.9.0` - Tue 02 Sep 2025
 

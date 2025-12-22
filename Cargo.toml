@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["gfold", "cli", "config", "xtask"]
+members = ["gfold", "xtask"]
 default-members = ["gfold"]
 
 [workspace.package]

@@ -176,31 +176,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "cli"
-version = "0.1.0"
-dependencies = [
- "clap",
- "clap-verbosity-flag",
- "config",
-]
-
-[[package]]
 name = "colorchoice"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
-
-[[package]]
-name = "config"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "remain",
- "serde",
- "toml",
- "user_dirs",
-]
 
 [[package]]
 name = "crossbeam-deque"
@@ -319,8 +298,8 @@ version = "2025.9.0"
 dependencies = [
  "anyhow",
  "clap",
- "cli",
- "config",
+ "clap-verbosity-flag",
+ "clap_mangen",
  "env_logger",
  "git2",
  "log",
@@ -330,6 +309,8 @@ dependencies = [
  "serde_json",
  "tempfile",
  "termcolor",
+ "toml",
+ "user_dirs",
 ]
 
 [[package]]
@@ -1007,8 +988,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "clap_mangen",
- "cli",
  "remain",
 ]
 

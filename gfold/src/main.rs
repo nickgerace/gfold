@@ -11,8 +11,7 @@
     dead_code,
     improper_ctypes,
     missing_debug_implementations,
-    // TODO(nick): fix missing docs.
-    // missing_docs,
+    missing_docs,
     no_mangle_generic_items,
     non_shorthand_field_patterns,
     overflowing_literals,
@@ -27,15 +26,18 @@
     while_true
 )]
 
-use std::{env, path::PathBuf};
+use std::{env, fs, io::Write, path::PathBuf};
 
 use anyhow::Result;
-use clap::Parser;
+use clap::{CommandFactory, Parser};
+use clap_mangen::Man;
 use cli::Cli;
 use config::{Config, DisplayMode};
 use log::debug;
 
+pub mod cli;
 pub mod collector;
+pub mod config;
 pub mod display;
 pub mod repository_view;
 pub mod status;
@@ -57,6 +59,22 @@ fn main() -> Result<()> {
         Config::try_config()?
     };
     debug!("loaded initial config");
+
+    if cli.generate_man {
+        debug!("generating man page");
+        let cmd = Cli::command();
+        let man = Man::new(cmd);
+
+        let mut buffer = Vec::new();
+        man.render(&mut buffer)?;
+
+        let current_dir = env::current_dir()?;
+        let mut file = fs::File::create(current_dir.join("gfold.1"))?;
+        file.write_all(&buffer)?;
+
+        debug!("generated and wrote out man page");
+        return Ok(());
+    }
 
     if let Some(found_display_mode_raw) = &cli.display_mode {
         config.display_mode = *found_display_mode_raw;

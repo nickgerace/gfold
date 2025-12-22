@@ -1,10 +1,10 @@
 //! This module provides a harness for non-trivial displays of information to `stdout`.
 
-use config::ColorMode;
 use std::io;
 use std::io::Write;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
+use crate::config::ColorMode;
 use crate::status::Status;
 
 /// This harness provides methods to write to `stdout`. It maps the internal [`ColorMode`] type to

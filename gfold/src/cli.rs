@@ -1,8 +1,11 @@
+//! This module contains the CLI options for gfold.
+
 use std::path::PathBuf;
 
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
-use config::{ColorMode, DisplayMode};
+
+use crate::config::{ColorMode, DisplayMode};
 
 const HELP: &str = "\
 More information: https://github.com/nickgerace/gfold
@@ -15,6 +18,7 @@ Config file usage: while CLI options are prioritized, default options will fallb
     $XDG_CONFIG_HOME/gfold/config.toml
     $HOME/.config/gfold.toml (or {{FOLDERID_Profile}}\\.config\\gfold.toml on Windows)";
 
+/// The CLI options for gfold.
 #[derive(Debug, Parser)]
 #[command(version, about = HELP, long_about = None)]
 pub struct Cli {
@@ -29,9 +33,13 @@ pub struct Cli {
     /// Display finalized config options and exit (merged options from an optional config file and command line arguments)
     #[arg(long)]
     pub dry_run: bool,
+    /// Generate a man page for gfold
+    #[arg(long)]
+    pub generate_man: bool,
     /// Ignore config file settings
     #[arg(short, long)]
     pub ignore_config_file: bool,
+    /// Specify verbosity levels for runtime execution
     #[command(flatten)]
     pub verbose: Verbosity<InfoLevel>,
 }
