@@ -51,15 +51,4 @@ cargo publish
 ```
 
 - [ ] Verify that the [crate](https://crates.io/crates/gfold) on `crates.io` looks correct
-- [ ] Download and install the crate:
-
-```shell
-cargo install --locked gfold
-```
-
-- [ ] (Optional) Remove the crate:
-```shell
-cargo uninstall gfold
-```
-
 - [ ] Verify that the [GitHub release](https://github.com/nickgerace/gfold/releases) on the repository's releases page looks correct
