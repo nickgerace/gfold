@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=nickgerace&project=gfold&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # gfold
 
 [![latest release tag](https://img.shields.io/github/v/tag/nickgerace/gfold?sort=semver&logo=git&logoColor=white&label=version&style=for-the-badge&color=blue)](https://github.com/nickgerace/gfold/releases/latest)
