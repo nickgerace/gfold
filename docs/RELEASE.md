@@ -19,13 +19,13 @@ Steps should be executed in sequential order.
 - [ ] Verify that everything looks/works as expected:
 
 ```shell
-cargo xtask ci
+just ci
 ```
 
 - [ ] Run `--generate-man` and verify that everything looks/works as expected:
 
 ```shell
-cargo xtask mangen
+just mangen
 ```
 
 - [ ] Create and _do not merge_ a commit with the following message: `Update to <tag>`

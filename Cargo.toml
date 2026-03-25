@@ -1,21 +1,25 @@
-[workspace]
-resolver = "3"
-members = ["gfold", "xtask"]
-default-members = ["gfold"]
-
-[workspace.package]
+[package]
+name = "gfold"
+version = "2026.3.0"
 edition = "2024"
 
-[profile.release]
-panic = "abort"
-lto = true
+authors = ["Nick Gerace <nickagerace@gmail.com>"]
+categories = ["command-line-utilities", "command-line-interface"]
+description = "CLI tool to help keep track of your Git repositories."
+homepage = "https://github.com/nickgerace/gfold"
+keywords = ["git", "cli"]
+license = "Apache-2.0"
+readme = "../README.md"
+repository = "https://github.com/nickgerace/gfold"
 
-[profile.release.package.gfold]
+[profile.release]
 codegen-units = 1
+lto = true
 opt-level = 3
+panic = "abort"
 strip = true
 
-[workspace.dependencies]
+[dependencies]
 anyhow = { version = "1.0", features = ["backtrace"] }
 clap = { version = "4.6", features = ["derive"] }
 clap-verbosity-flag = "3.0"
@@ -30,6 +34,8 @@ remain = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 termcolor = "1.4"
-tempfile = "3.27"
 toml = "1.1"
 user_dirs = "0.2"
+
+[dev-dependencies]
+tempfile = "3.27"
