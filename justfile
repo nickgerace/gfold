@@ -1,3 +1,7 @@
+set unstable
+
+gfold := canonicalize(which("gfold"))
+
 _default:
     @just --list
 
@@ -9,7 +13,7 @@ run:
 help:
     cargo run -- -h
 
-# Scan for potential bloat
+# Scan for potential bloat (requires: cargo-bloat)
 bloat:
     cargo bloat --release
     cargo bloat --release --crates
@@ -31,47 +35,46 @@ ci:
     cargo test --all-targets --workspace
     cargo build --locked --all-targets
 
-# Format all code
+# Format all code (requires: taplo)
 format:
-    shfmt -w -i 2 bin/install-deps.sh
     taplo format Cargo.toml
     taplo format Cross.toml
     taplo format .cargo/config.toml
     cargo fmt
 
-# Generate a man file and view it
+# Generate a man file and view it (requires: man)
 mangen:
     cargo run -- --generate-man
     man ./gfold.1
 
-# Update deps, format and run baseline lints and checks
+# Update dependencies, format and run baseline lints and checks
 prepare: format
     cargo update
     cargo check --all-targets --all-features --workspace
     cargo fix --edition-idioms --allow-dirty --allow-staged --workspace
     cargo clippy --all-features --all-targets --workspace --no-deps --fix --allow-dirty --allow-staged
 
-# Scan for vulnerabilities
+# Upgrade dependencies, including incompatible versions (requires: cargo-edit)
+upgrade:
+    cargo upgrade --incompatible
+
+# Scan for vulnerabilities (requires: cargo-audit)
 audit: prepare
     cargo audit
 
-# Scan for unused dependencies (requires nightly Rust!)
+# Scan for unused dependencies (requires: cargo-udeps, nightly rust)
 udeps:
-    cargo udeps
+    cargo +nightly udeps
 
-# Check which dependencies are outdated
+# Check which dependencies are outdated (requires: cargo-outdated)
 outdated:
     cargo outdated
 
-# Perform a loose benchmark
+# Perform a loose benchmark (requires: hyperfine)
 bench directory=('../'): build-release
     hyperfine --warmup 5 'target/release/gfold {{directory}}' 'gfold {{directory}}'
 
-# Peform a release binary size comparison
+# Peform a release binary size comparison (requires: dua)
 size: build-release
-    #!/usr/bin/env bash
     dua target/release/gfold
-    binary=$(which gfold)
-    if [[ -n "$binary" ]]; then
-        dua "$(realpath "$binary")"
-    fi
+    dua {{gfold}}
