@@ -125,7 +125,6 @@ struct EntryConfig {
 /// less information to be displayed, then some commands and functions might get skipped.
 /// In summary, while this setting is primarily for cosmetics, it may also affect runtime
 /// performance based on what needs to be displayed.
-#[remain::sorted]
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum DisplayMode {
     /// Informs the caller to display results in the classic format.
@@ -141,7 +140,6 @@ pub enum DisplayMode {
 }
 
 /// Set the color mode of results printed to `stdout`.
-#[remain::sorted]
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, ValueEnum)]
 pub enum ColorMode {
     /// Attempt to display colors as intended (default behavior).

@@ -6,7 +6,6 @@ use log::debug;
 use serde::{Deserialize, Serialize};
 
 /// A summarized interpretation of the status of a Git working tree.
-#[remain::sorted]
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Status {
     /// Corresponds to a "bare" working tree.
