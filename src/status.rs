@@ -87,7 +87,7 @@ impl Status {
         let remote = format!(
             "{}/{}",
             remote_name,
-            match head.shorthand() {
+            match head.shorthand()? {
                 Some(v) => v,
                 None => {
                     debug!("assuming unpushed; could not determine shorthand for head");
