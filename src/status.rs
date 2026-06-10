@@ -84,17 +84,7 @@ impl Status {
         remote_name: &str,
     ) -> Result<bool, git2::Error> {
         let local_head = head.peel_to_commit()?;
-        let remote = format!(
-            "{}/{}",
-            remote_name,
-            match head.shorthand()? {
-                Some(v) => v,
-                None => {
-                    debug!("assuming unpushed; could not determine shorthand for head");
-                    return Ok(true);
-                }
-            }
-        );
+        let remote = format!("{}/{}", remote_name, head.shorthand()?,);
         let remote_head = match repo.resolve_reference_from_short_name(&remote) {
             Ok(reference) => reference.peel_to_commit()?,
             Err(e) => {
@@ -113,7 +103,7 @@ impl Status {
         repository: &Repository,
     ) -> Result<(Option<Remote<'_>>, Option<String>), git2::Error> {
         let remotes = repository.remotes()?;
-        Ok(match remotes.get(0) {
+        Ok(match remotes.get(0)? {
             Some(remote_name) => (
                 Some(repository.find_remote(remote_name)?),
                 Some(remote_name.to_string()),

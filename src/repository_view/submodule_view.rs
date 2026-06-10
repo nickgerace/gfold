@@ -1,6 +1,6 @@
 //! This module contains the ability to gather information on submodules for a given [`Repository`].
 
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 use git2::Repository;
 use log::error;
 use serde::Deserialize;
@@ -23,12 +23,8 @@ impl SubmoduleView {
             match submodule.open() {
                 Ok(subrepo) => {
                     let (status, _, _) = Status::find(&subrepo)?;
-                    let name = submodule
-                        .name()
-                        .ok_or(anyhow!("submodule name is invalid UTF-8"))?;
-
                     submodules.push(Self {
-                        name: name.to_string(),
+                        name: submodule.name()?.to_string(),
                         status,
                     });
                 }

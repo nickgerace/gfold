@@ -3,7 +3,7 @@
 
 use std::path::Path;
 
-use anyhow::{Result, anyhow, bail};
+use anyhow::{Result, bail};
 use git2::Repository;
 use log::{debug, trace};
 use serde::{Deserialize, Serialize};
@@ -56,14 +56,12 @@ impl RepositoryView {
         };
 
         let branch = match &head {
-            Some(head) => head
-                .shorthand()
-                .ok_or(anyhow!("full shorthand for Git reference is invalid UTF-8"))?,
+            Some(head) => head.shorthand()?,
             None => "HEAD",
         };
 
         let url = match remote {
-            Some(remote) => remote.url().map(|s| s.to_string()),
+            Some(remote) => Some(remote.url()?.to_string()),
             None => None,
         };
 
@@ -148,14 +146,14 @@ impl RepositoryView {
         // Greedily find our "user.email" value. Return the first result found.
         while let Some(entry) = entries.next() {
             match entry {
-                Ok(entry) => {
-                    if let Some(name) = entry.name()
-                        && name == "user.email"
-                        && let Some(value) = entry.value()
-                    {
-                        return Some(value.to_string());
-                    }
-                }
+                Ok(entry) => match entry.name() {
+                    Ok("user.email") => match entry.value() {
+                        Ok(value) => return Some(value.to_string()),
+                        Err(e) => debug!("ignored error: {e}"),
+                    },
+                    Ok(_) => {}
+                    Err(e) => debug!("ignored error: {e}"),
+                },
                 Err(e) => debug!("ignored error: {e}"),
             }
         }
