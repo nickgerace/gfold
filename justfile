@@ -1,4 +1,5 @@
 set unstable
+set lists
 
 gfold := canonicalize(which("gfold"))
 

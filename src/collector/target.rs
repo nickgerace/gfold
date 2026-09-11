@@ -21,8 +21,8 @@ impl TargetCollector {
             Ok(read_dir) => read_dir.filter_map(|r| r.ok()).collect(),
             Err(e) => {
                 match e.kind() {
-                    io::ErrorKind::PermissionDenied => warn!("{}: {}", e, &path.display()),
-                    _ => error!("{}: {}", e, &path.display()),
+                    io::ErrorKind::PermissionDenied => warn!("{}: {}", e, path.display()),
+                    _ => error!("{}: {}", e, path.display()),
                 }
                 return Ok(Vec::with_capacity(0));
             }
@@ -59,10 +59,10 @@ impl TargetCollector {
             let git_sub_item = path.join(".git");
             if git_sub_item.exists() {
                 if git_sub_item.is_dir() {
-                    debug!("found target: {:?}", &path.display());
+                    debug!("found target: {:?}", path.display());
                     return Ok(MaybeTarget::Single(path));
                 } else if git_sub_item.is_file() {
-                    debug!("found a worktree: {:?}", &path.display());
+                    debug!("found a worktree: {:?}", path.display());
                     return Ok(MaybeTarget::Single(path));
                 }
             }

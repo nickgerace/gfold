@@ -5,6 +5,11 @@
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [VERSIONING_SCHEME](docs/VERSIONING_SCHEME.md) docs)
 
+## `2026.9.0` - Fri 11 Sep 2026
+
+- Update dependencies
+- Remove unneeded "remain" dependency
+
 ## `2026.3.0` - Wed 25 Mar 2026
 
 - Update dependencies
