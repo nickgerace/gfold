@@ -3,7 +3,7 @@
 - All notable, released changes to this project from a user's perspective will be documented in this file
 - All changes are from [@nickgerace](https://github.com/nickgerace) unless otherwise specified
 - The format was inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-- This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [VERSIONING_SCHEME](docs/VERSIONING_SCHEME.md) docs)
+- This project follows the [CalVer](https://calver.org) versioning scheme (more details in the [versioning-scheme](docs/versioning-scheme.md) docs)
 
 ## `2026.9.0` - Fri 11 Sep 2026
 
@@ -59,4 +59,4 @@
 
 ## Before `2025.2.0`
 
-Please see [CHANGELOG_PRE_CALVER_POST_V4](./docs/CHANGELOG_PRE_CALVER_POST_V4.md).
+Please see [changelog-pre-calver-post-v4](./docs/changelog-pre-calver-post-v4.md).

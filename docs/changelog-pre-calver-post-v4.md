@@ -208,4 +208,4 @@ Please see [CHANGELOG](../CHANGELOG.md).
 
 ## Before 4.0.0
 
-Please see [CHANGELOG_PRE_V4](./CHANGELOG_PRE_V4.md).
+Please see [changelog-pre-v4](./changelog-pre-v4.md).

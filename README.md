@@ -181,11 +181,11 @@ cargo install-update -a
 ### Download a Binary
 
 If you do not want to use one of the above installation methods and do not want to clone the repository, you can download a binary from the [releases](https://github.com/nickgerace/gfold/releases) page.
-For an example on how to do that, refer to the [manual install](./docs/MANUAL_INSTALL.md) guide.
+For an example on how to do that, refer to the [manual install](./docs/manual-install.md) guide.
 
 ### Build From Source
 
-If you would like an example on how to build from source, refer to the [manual install](./docs/MANUAL_INSTALL.md) guide.
+If you would like an example on how to build from source, refer to the [manual install](./docs/manual-install.md) guide.
 
 ### Deprecated: Homebrew Tap (macOS only)
 
@@ -224,7 +224,7 @@ alias gfld=$HOME/.cargo/bin/gfold
 
 ## Community
 
-For more information and thanks to users and the "community" at large, please refer to the **[COMMUNITY THANKS](./docs/COMMUNITY_THANKS.md)** file.
+For more information and thanks to users and the "community" at large, please refer to the **[community thanks](./docs/community-thanks.md)** file.
 
 - [Packages for NixOS, Arch Linux and more](https://repology.org/project/gfold/versions)
 - ["One Hundred Rust Binaries"](https://www.wezm.net/v2/posts/2020/100-rust-binaries/page2/), an article that featured `gfold`
