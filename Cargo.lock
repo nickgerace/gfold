@@ -1633,6 +1633,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
+name = "hegeltest"
+version = "0.45.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a878f8634d697afd026433f37037a388791c0eb2405742c75248fc69e1f5903e"
+dependencies = [
+ "hegeltest-macros",
+ "parking_lot",
+]
+
+[[package]]
+name = "hegeltest-macros"
+version = "0.45.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2abaa0817b835387999cf2b2485a3438fed94148adc1e6bf58f30af3c70d91d4"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
 name = "home"
 version = "0.5.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1874,6 +1895,7 @@ dependencies = [
  "clap-verbosity-flag",
  "clap_mangen",
  "env_logger",
+ "hegeltest",
  "jj-lib",
  "log",
  "pollster",
