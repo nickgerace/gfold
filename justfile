@@ -1,8 +1,6 @@
 set unstable
 set lists
 
-gfold := canonicalize(which("gfold"))
-
 _default:
     @just --list
 
@@ -51,9 +49,9 @@ mangen:
 # Update dependencies, format and run baseline lints and checks
 prepare: format
     cargo update
-    cargo check --all-targets --all-features --workspace
-    cargo fix --edition-idioms --allow-dirty --allow-staged --workspace
-    cargo clippy --all-features --all-targets --workspace --no-deps --fix --allow-dirty --allow-staged
+    cargo check --all-targets --all-features --package gfold
+    cargo fix --edition-idioms --allow-dirty --allow-staged --package gfold
+    cargo clippy --all-features --all-targets --package gfold --no-deps --fix --allow-dirty --allow-staged
 
 # Upgrade dependencies, including incompatible versions (requires: cargo-edit)
 upgrade:
@@ -78,4 +76,23 @@ bench directory=('../'): build-release
 # Peform a release binary size comparison (requires: dua)
 size: build-release
     dua target/release/gfold
-    dua {{gfold}}
+    dua "$(command -v gfold)"
+
+jjfold-run:
+    cargo run --package jjfold -- -vvv ~/src
+
+jjfold-bench:
+    cargo build --release --package jjfold
+    hyperfine \
+        'cargo run --release --quiet --package jjfold -- ~/' \
+        'cargo run --release --quiet --package jjfold -- --parallel-collect-threads 4 ~/' \
+        'cargo run --release --quiet --package jjfold -- --sequential ~/'
+    hyperfine \
+        'cargo run --release --quiet --package jjfold -- ~/src' \
+        'cargo run --release --quiet --package jjfold -- --parallel-collect-threads 4 ~/src' \
+        'cargo run --release --quiet --package jjfold -- --sequential ~/src'
+
+jjfold-mangen:
+    cargo run --package jjfold -- --generate-man-page > man.1
+    man ./man.1
+    -rm man.1

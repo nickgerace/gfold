@@ -1,0 +1,22 @@
+[package]
+name = "jjfold"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = { version = "1.0", features = ["backtrace"] }
+clap = { version = "4", features = ["derive"] }
+clap-verbosity-flag = "3.0"
+clap_mangen = "0.3"
+env_logger = { version = "0.11", features = [
+  "humantime",
+], default-features = false }
+rayon = "1.12"
+jj-lib = "0.40"
+log = "0.4"
+pollster = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+toml = "1.1"
+
+[dev-dependencies]
+tempfile = "3.27"
