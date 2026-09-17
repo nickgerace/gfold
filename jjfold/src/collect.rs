@@ -12,6 +12,9 @@ pub(crate) fn collect_targets(
     sequential: bool,
     sort: bool,
 ) -> io::Result<Vec<PathBuf>> {
+    if is_workspace(&path) {
+        return Ok(vec![path]);
+    }
     collect_targets_inner(path, sequential, sort, true)
 }
 
@@ -60,6 +63,11 @@ fn collect_targets_inner(
     Ok(results)
 }
 
+fn is_workspace(path: &std::path::Path) -> bool {
+    let repo = path.join(".jj").join("repo");
+    repo.is_dir() || repo.is_file()
+}
+
 fn determine_target(entry: &DirEntry, sequential: bool) -> io::Result<MaybeTarget> {
     if entry.file_type()?.is_dir()
         && !entry
@@ -93,6 +101,9 @@ enum MaybeTarget {
 #[cfg(test)]
 mod tests {
     use std::path::{Path, PathBuf};
+
+    use hegel::TestCase;
+    use hegel::generators as gs;
 
     use super::collect_targets;
 
@@ -224,5 +235,72 @@ mod tests {
         );
 
         Ok(())
+    }
+    #[test]
+    fn collects_root_workspace() -> anyhow::Result<()> {
+        let temp_dir = tempfile::tempdir()?;
+        create_workspace(temp_dir.path())?;
+
+        assert_eq!(
+            collect_targets(temp_dir.path().to_path_buf(), true, true)?,
+            vec![temp_dir.path().to_path_buf()]
+        );
+
+        Ok(())
+    }
+
+    #[hegel::test]
+    fn collected_targets_match_generated_filesystem(tc: TestCase) {
+        let layouts = tc.draw(gs::vecs(gs::integers::<u8>()).max_size(24));
+        let temp_dir = tempfile::tempdir().expect("temporary directory should be created");
+        let mut expected = Vec::new();
+
+        for (index, layout) in layouts.into_iter().enumerate() {
+            let depth = usize::from(layout & 0b11);
+            let hidden_ancestor = layout & 0b100 != 0;
+            let hidden_workspace = layout & 0b1000 != 0;
+            let marker = (layout >> 4) & 0b11;
+            let mut path = temp_dir.path().join(format!("case-{index}"));
+
+            for level in 0..depth {
+                let name = if hidden_ancestor && level == 0 {
+                    format!(".group-{level}")
+                } else {
+                    format!("group-{level}")
+                };
+                path = path.join(name);
+            }
+
+            path = path.join(if hidden_workspace {
+                ".workspace"
+            } else {
+                "workspace"
+            });
+            std::fs::create_dir_all(&path).expect("generated workspace path should be created");
+
+            match marker {
+                0 => create_workspace(&path).expect("workspace marker should be created"),
+                1 => create_colocated_workspace(&path)
+                    .expect("colocated workspace marker should be created"),
+                2 => {
+                    std::fs::create_dir(path.join(".jj"))
+                        .expect("incomplete workspace marker should be created");
+                }
+                _ => {}
+            }
+
+            if marker < 2 && !hidden_workspace && !(hidden_ancestor && depth > 0) {
+                expected.push(path);
+            }
+        }
+
+        expected.sort();
+        let sequential = collect_targets(temp_dir.path().to_path_buf(), true, true)
+            .expect("sequential collection should succeed");
+        let parallel = collect_targets(temp_dir.path().to_path_buf(), false, true)
+            .expect("parallel collection should succeed");
+
+        assert_eq!(sequential, expected);
+        assert_eq!(parallel, expected);
     }
 }
