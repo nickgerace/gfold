@@ -2,18 +2,20 @@ use std::collections::{BTreeMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
+use futures::TryStreamExt as _;
 use jj_lib::backend::{ChangeId, CommitId, MillisSinceEpoch};
 use jj_lib::config::StackedConfig;
+use jj_lib::default_backend_factories::{
+    default_backend_factories, default_working_copy_factories,
+};
 use jj_lib::gitignore::GitIgnoreFile;
 use jj_lib::matchers::{EverythingMatcher, NothingMatcher};
 use jj_lib::object_id::ObjectId as _;
-use jj_lib::repo::{Repo as _, StoreFactories};
+use jj_lib::repo::Repo as _;
 use jj_lib::revset::{ResolvedRevsetExpression, RevsetExpression};
 use jj_lib::settings::UserSettings;
 use jj_lib::working_copy::SnapshotOptions;
-use jj_lib::workspace::{
-    DefaultWorkspaceLoaderFactory, WorkspaceLoaderFactory as _, default_working_copy_factories,
-};
+use jj_lib::workspace::{DefaultWorkspaceLoaderFactory, WorkspaceLoaderFactory as _};
 use log::{info, trace};
 use pollster::FutureExt as _;
 
@@ -129,7 +131,7 @@ fn inspect_repository(
     let loader = DefaultWorkspaceLoaderFactory.create(&first_workspace_path)?;
     let workspace = loader.load(
         settings,
-        &StoreFactories::default(),
+        &default_backend_factories(),
         &default_working_copy_factories(),
     )?;
     let repo = workspace.repo_loader().load_at_head().block_on()?;
@@ -150,7 +152,7 @@ fn inspect_workspace(path: &Path, settings: &UserSettings) -> Result<WorkspaceRe
     let loader = DefaultWorkspaceLoaderFactory.create(path)?;
     let mut workspace = loader.load(
         settings,
-        &StoreFactories::default(),
+        &default_backend_factories(),
         &default_working_copy_factories(),
     )?;
     let operation = workspace
@@ -169,7 +171,7 @@ fn inspect_workspace(path: &Path, settings: &UserSettings) -> Result<WorkspaceRe
         })?;
     let wc_commit = repo.store().get_commit(wc_commit_id)?;
 
-    let mut locked_workspace = workspace.start_working_copy_mutation()?;
+    let mut locked_workspace = workspace.start_working_copy_mutation().block_on()?;
     let (tree, stats) = locked_workspace
         .locked_wc()
         .snapshot(&SnapshotOptions {
@@ -215,15 +217,17 @@ fn find_local_stacks(repo: &dyn jj_lib::repo::Repo) -> Result<Vec<LocalStack>> {
     let local_ids = local_expression
         .clone()
         .evaluate(repo)?
-        .iter()
-        .collect::<Result<Vec<_>, _>>()?;
+        .stream()
+        .try_collect::<Vec<_>>()
+        .block_on()?;
     let ignored_wc_ids = ignorable_working_copy_ids(repo, &local_ids)?;
     let meaningful_expression = local_expression.minus(&RevsetExpression::commits(ignored_wc_ids));
     let head_ids = meaningful_expression
         .heads()
         .evaluate(repo)?
-        .iter()
-        .collect::<Result<Vec<_>, _>>()?;
+        .stream()
+        .try_collect::<Vec<_>>()
+        .block_on()?;
 
     head_ids
         .into_iter()
@@ -262,12 +266,14 @@ fn find_divergent_changes(repo: &dyn jj_lib::repo::Repo) -> Result<Vec<Divergent
     let focused_divergent_ids = RevsetExpression::commits(focused_ids)
         .intersection(&divergent)
         .evaluate(repo)?
-        .iter()
-        .collect::<Result<HashSet<_>, _>>()?;
+        .stream()
+        .try_collect::<HashSet<_>>()
+        .block_on()?;
     let ids = divergent
         .evaluate(repo)?
-        .iter()
-        .collect::<Result<Vec<_>, _>>()?;
+        .stream()
+        .try_collect::<Vec<_>>()
+        .block_on()?;
     let mut changes = BTreeMap::<ChangeId, Vec<(MillisSinceEpoch, CommitId)>>::new();
     let mut focused_changes = HashSet::new();
     for id in ids {
@@ -344,8 +350,9 @@ fn build_stack(
     let commit_count = meaningful_expression
         .intersection(&RevsetExpression::commit(head_id.clone()).ancestors())
         .evaluate(repo)?
-        .iter()
-        .collect::<Result<Vec<_>, _>>()?
+        .stream()
+        .try_collect::<Vec<_>>()
+        .block_on()?
         .len();
     let bookmarks = repo
         .view()
@@ -472,11 +479,12 @@ mod tests {
     use jj_lib::backend::{MillisSinceEpoch, Signature, Timestamp};
     use jj_lib::commit::Commit;
     use jj_lib::config::StackedConfig;
+    use jj_lib::default_backend_factories::default_working_copy_factory;
     use jj_lib::op_store::{RefTarget, RemoteRef, RemoteRefState};
     use jj_lib::ref_name::{RefName, RemoteName, RemoteRefSymbol, WorkspaceNameBuf};
     use jj_lib::repo::{ReadonlyRepo, Repo as _};
     use jj_lib::settings::UserSettings;
-    use jj_lib::workspace::{Workspace, default_working_copy_factory};
+    use jj_lib::workspace::Workspace;
     use pollster::FutureExt as _;
 
     use super::{
