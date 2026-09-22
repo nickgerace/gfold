@@ -17,6 +17,7 @@ use std::thread;
 
 #[derive(Debug, Parser)]
 #[command(version)]
+#[allow(clippy::struct_excessive_bools)]
 struct Cli {
     #[arg(long)]
     sequential: bool,

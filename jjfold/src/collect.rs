@@ -1,5 +1,5 @@
 use std::fs::DirEntry;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::{fs, io};
 
 use log::{debug, trace, warn};
@@ -15,17 +15,17 @@ pub(crate) fn collect_targets(
     if is_workspace(&path) {
         return Ok(vec![path]);
     }
-    collect_targets_inner(path, sequential, sort, true)
+    collect_targets_inner(&path, sequential, sort, true)
 }
 
 fn collect_targets_inner(
-    path: PathBuf,
+    path: &Path,
     sequential: bool,
     sort: bool,
     is_root: bool,
 ) -> io::Result<Vec<PathBuf>> {
     trace!("scanning directory {}", path.display());
-    let entries: Vec<DirEntry> = match fs::read_dir(&path) {
+    let entries: Vec<DirEntry> = match fs::read_dir(path) {
         Ok(read_dir) => read_dir.filter_map(Result::ok).collect(),
         Err(err) if is_root => return Err(err),
         Err(err) => {
@@ -85,7 +85,7 @@ fn determine_target(entry: &DirEntry, sequential: bool) -> io::Result<MaybeTarge
             }
         }
         Ok(MaybeTarget::Multiple(collect_targets_inner(
-            path, sequential, false, false,
+            &path, sequential, false, false,
         )?))
     } else {
         Ok(MaybeTarget::None)

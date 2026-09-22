@@ -2,10 +2,11 @@ use std::collections::{BTreeMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
-use jj_lib::backend::CommitId;
+use jj_lib::backend::{ChangeId, CommitId, MillisSinceEpoch};
 use jj_lib::config::StackedConfig;
 use jj_lib::gitignore::GitIgnoreFile;
 use jj_lib::matchers::{EverythingMatcher, NothingMatcher};
+use jj_lib::object_id::ObjectId as _;
 use jj_lib::repo::{Repo as _, StoreFactories};
 use jj_lib::revset::{ResolvedRevsetExpression, RevsetExpression};
 use jj_lib::settings::UserSettings;
@@ -17,6 +18,7 @@ use log::{info, trace};
 use pollster::FutureExt as _;
 
 const MAX_NEW_FILE_SIZE: u64 = 1 << 20;
+const MAX_DISPLAYED_DIVERGENT_CHANGES: usize = 10;
 
 #[derive(Debug, PartialEq, Eq)]
 struct WorkspaceReport {
@@ -34,10 +36,17 @@ struct LocalStack {
 }
 
 #[derive(Debug, PartialEq, Eq)]
+struct DivergentChange {
+    change_id: String,
+    commit_ids: Vec<String>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
 struct RepositoryReport {
     path: PathBuf,
     workspaces: Vec<WorkspaceReport>,
     stacks: Vec<LocalStack>,
+    divergent_changes: Vec<DivergentChange>,
 }
 
 #[derive(Debug)]
@@ -49,6 +58,7 @@ struct InspectionFailure {
 impl RepositoryReport {
     fn needs_attention(&self) -> bool {
         !self.stacks.is_empty()
+            || !self.divergent_changes.is_empty()
             || self
                 .workspaces
                 .iter()
@@ -77,12 +87,16 @@ pub(crate) fn process_targets(targets: Vec<PathBuf>) -> Result<()> {
     }
 
     let mut reports = Vec::new();
-    for (repo_path, workspace_paths) in repositories {
-        info!("checking {}", repo_path.display());
-        match inspect_repository(repo_path.clone(), workspace_paths, &settings) {
+    for (_, workspace_paths) in repositories {
+        let display_path = workspace_paths
+            .first()
+            .context("repository has no workspaces")?
+            .clone();
+        info!("checking {}", display_path.display());
+        match inspect_repository(workspace_paths, &settings) {
             Ok(report) => reports.push(report),
             Err(error) => failures.push(InspectionFailure {
-                path: repo_path,
+                path: display_path,
                 error,
             }),
         }
@@ -99,7 +113,6 @@ fn repository_key(repo_path: &Path) -> std::io::Result<PathBuf> {
 }
 
 fn inspect_repository(
-    repo_path: PathBuf,
     workspace_paths: Vec<PathBuf>,
     settings: &UserSettings,
 ) -> Result<RepositoryReport> {
@@ -119,10 +132,12 @@ fn inspect_repository(
     )?;
     let repo = workspace.repo_loader().load_at_head().block_on()?;
     let stacks = find_local_stacks(repo.as_ref())?;
+    let divergent_changes = find_divergent_changes(repo.as_ref())?;
     Ok(RepositoryReport {
-        path: repo_path,
+        path: first_workspace_path,
         workspaces,
         stacks,
+        divergent_changes,
     })
 }
 
@@ -208,8 +223,65 @@ fn find_local_stacks(repo: &dyn jj_lib::repo::Repo) -> Result<Vec<LocalStack>> {
 
     head_ids
         .into_iter()
-        .map(|head_id| build_stack(repo, &meaningful_expression, head_id))
+        .map(|head_id| build_stack(repo, &meaningful_expression, &head_id))
         .collect()
+}
+
+fn find_divergent_changes(repo: &dyn jj_lib::repo::Repo) -> Result<Vec<DivergentChange>> {
+    let view = repo.view();
+    let focused_ids = view
+        .wc_commit_ids()
+        .values()
+        .chain(
+            view.local_bookmarks()
+                .flat_map(|(_, target)| target.added_ids()),
+        )
+        .cloned()
+        .collect::<Vec<_>>();
+    let divergent = RevsetExpression::divergent();
+    let focused_divergent_ids = RevsetExpression::commits(focused_ids)
+        .intersection(&divergent)
+        .evaluate(repo)?
+        .iter()
+        .collect::<Result<HashSet<_>, _>>()?;
+    let ids = divergent
+        .evaluate(repo)?
+        .iter()
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut changes = BTreeMap::<ChangeId, Vec<(MillisSinceEpoch, CommitId)>>::new();
+    let mut focused_changes = HashSet::new();
+    for id in ids {
+        let commit = repo.store().get_commit(&id)?;
+        if focused_divergent_ids.contains(&id) {
+            focused_changes.insert(commit.change_id().clone());
+        }
+        changes
+            .entry(commit.change_id().clone())
+            .or_default()
+            .push((commit.committer().timestamp.timestamp, id));
+    }
+    Ok(changes
+        .into_iter()
+        .filter(|(change_id, _)| focused_changes.contains(change_id))
+        .map(|(change_id, mut versions)| {
+            versions.sort_by(|left, right| right.cmp(left));
+            DivergentChange {
+                change_id: short_change_id(&change_id),
+                commit_ids: versions
+                    .iter()
+                    .map(|(_, commit_id)| short_commit_id(commit_id))
+                    .collect(),
+            }
+        })
+        .collect())
+}
+
+fn short_change_id(change_id: &ChangeId) -> String {
+    change_id.reverse_hex()[..8].to_owned()
+}
+
+fn short_commit_id(commit_id: &CommitId) -> String {
+    commit_id.hex()[..12].to_owned()
 }
 
 fn local_only_expression(remote_ids: Vec<CommitId>) -> std::sync::Arc<ResolvedRevsetExpression> {
@@ -246,9 +318,9 @@ fn ignorable_working_copy_ids(
 fn build_stack(
     repo: &dyn jj_lib::repo::Repo,
     meaningful_expression: &std::sync::Arc<ResolvedRevsetExpression>,
-    head_id: CommitId,
+    head_id: &CommitId,
 ) -> Result<LocalStack> {
-    let commit = repo.store().get_commit(&head_id)?;
+    let commit = repo.store().get_commit(head_id)?;
     let commit_count = meaningful_expression
         .intersection(&RevsetExpression::commit(head_id.clone()).ancestors())
         .evaluate(repo)?
@@ -257,7 +329,7 @@ fn build_stack(
         .len();
     let bookmarks = repo
         .view()
-        .local_bookmarks_for_commit(&head_id)
+        .local_bookmarks_for_commit(head_id)
         .map(|(name, _)| name.as_str().to_owned())
         .collect();
     let description = commit
@@ -267,7 +339,7 @@ fn build_stack(
         .unwrap_or_default()
         .to_owned();
     Ok(LocalStack {
-        change_id: commit.change_id().reverse_hex()[..8].to_owned(),
+        change_id: short_change_id(commit.change_id()),
         commit_count,
         description,
         bookmarks,
@@ -328,6 +400,30 @@ fn print_reports(reports: &[RepositoryReport], failures: &[InspectionFailure]) {
                 );
             }
         }
+        for change in report
+            .divergent_changes
+            .iter()
+            .take(MAX_DISPLAYED_DIVERGENT_CHANGES)
+        {
+            println!(
+                "  divergent    {} has {} visible commits: {}",
+                change.change_id,
+                change.commit_ids.len(),
+                change.commit_ids.join(", ")
+            );
+        }
+        let hidden_count = report
+            .divergent_changes
+            .len()
+            .saturating_sub(MAX_DISPLAYED_DIVERGENT_CHANGES);
+        if hidden_count > 0 {
+            println!(
+                "  divergent    {hidden_count} more change(s) omitted; jj log -r 'divergent()' shows all versions"
+            );
+        }
+        if !report.divergent_changes.is_empty() {
+            println!("  action       jj log -r 'change_id(<id>)', then abandon unwanted versions");
+        }
     }
     let safe_count = reports.len() - attention_count;
     if safe_count > 0 {
@@ -344,19 +440,22 @@ fn print_reports(reports: &[RepositoryReport], failures: &[InspectionFailure]) {
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
+    use std::sync::Arc;
 
     use anyhow::Result;
+    use jj_lib::backend::{MillisSinceEpoch, Signature, Timestamp};
+    use jj_lib::commit::Commit;
     use jj_lib::config::StackedConfig;
     use jj_lib::op_store::{RefTarget, RemoteRef, RemoteRefState};
     use jj_lib::ref_name::{RefName, RemoteName, RemoteRefSymbol, WorkspaceNameBuf};
-    use jj_lib::repo::Repo as _;
+    use jj_lib::repo::{ReadonlyRepo, Repo as _};
     use jj_lib::settings::UserSettings;
     use jj_lib::workspace::{Workspace, default_working_copy_factory};
     use pollster::FutureExt as _;
 
     use super::{
-        RepositoryReport, WorkspaceReport, find_local_stacks, inspect_repository, process_targets,
-        repository_key,
+        RepositoryReport, WorkspaceReport, find_divergent_changes, find_local_stacks,
+        inspect_repository, process_targets, repository_key, short_change_id, short_commit_id,
     };
 
     #[test]
@@ -368,6 +467,7 @@ mod tests {
                 unsnapshotted_paths: Vec::new(),
             }],
             stacks: Vec::new(),
+            divergent_changes: Vec::new(),
         };
 
         assert!(!report.needs_attention());
@@ -382,6 +482,7 @@ mod tests {
                 unsnapshotted_paths: vec!["file".to_owned()],
             }],
             stacks: Vec::new(),
+            divergent_changes: Vec::new(),
         };
 
         assert!(report.needs_attention());
@@ -460,6 +561,100 @@ mod tests {
         Ok(())
     }
 
+    fn write_divergent_versions(
+        repo: &Arc<ReadonlyRepo>,
+    ) -> Result<(Arc<ReadonlyRepo>, Commit, Commit)> {
+        let committer = |millis| Signature {
+            name: "test".to_owned(),
+            email: "test@example.com".to_owned(),
+            timestamp: Timestamp {
+                timestamp: MillisSinceEpoch(millis),
+                tz_offset: 0,
+            },
+        };
+        let mut transaction = repo.start_transaction();
+        let older = transaction
+            .repo_mut()
+            .new_commit(
+                vec![repo.store().root_commit_id().clone()],
+                repo.store().empty_merged_tree(),
+            )
+            .set_committer(committer(1_000))
+            .set_description("older version")
+            .write()
+            .block_on()?;
+        let newer = transaction
+            .repo_mut()
+            .new_commit(
+                vec![repo.store().root_commit_id().clone()],
+                repo.store().empty_merged_tree(),
+            )
+            .set_change_id(older.change_id().clone())
+            .set_committer(committer(2_000))
+            .set_description("newer version")
+            .write()
+            .block_on()?;
+        let repo = transaction.commit("create divergent change").block_on()?;
+        Ok((repo, older, newer))
+    }
+
+    #[test]
+    fn divergent_change_versions_are_reported() -> Result<()> {
+        let temp_dir = tempfile::tempdir()?;
+        let settings = UserSettings::from_config(StackedConfig::with_defaults())?;
+        let (_, repo) = Workspace::init_simple(&settings, temp_dir.path()).block_on()?;
+        let (repo, older, newer) = write_divergent_versions(&repo)?;
+        assert!(find_divergent_changes(repo.as_ref())?.is_empty());
+
+        let mut transaction = repo.start_transaction();
+        transaction.repo_mut().set_local_bookmark_target(
+            RefName::new("active"),
+            RefTarget::normal(older.id().clone()),
+        );
+        let repo = transaction.commit("bookmark divergent change").block_on()?;
+
+        let changes = find_divergent_changes(repo.as_ref())?;
+
+        assert_eq!(changes.len(), 1);
+        assert_eq!(changes[0].change_id, short_change_id(older.change_id()));
+        assert_eq!(
+            changes[0].commit_ids,
+            vec![short_commit_id(newer.id()), short_commit_id(older.id())]
+        );
+
+        let report = inspect_repository(vec![temp_dir.path().to_path_buf()], &settings)?;
+        assert_eq!(report.path, temp_dir.path());
+        assert_eq!(report.divergent_changes, changes);
+        assert!(report.needs_attention());
+
+        Ok(())
+    }
+
+    #[test]
+    fn divergent_ancestor_of_bookmark_is_not_reported() -> Result<()> {
+        let temp_dir = tempfile::tempdir()?;
+        let settings = UserSettings::from_config(StackedConfig::with_defaults())?;
+        let (_, repo) = Workspace::init_simple(&settings, temp_dir.path()).block_on()?;
+        let (repo, older, _) = write_divergent_versions(&repo)?;
+
+        let mut transaction = repo.start_transaction();
+        let child = transaction
+            .repo_mut()
+            .new_commit(vec![older.id().clone()], repo.store().empty_merged_tree())
+            .set_description("child")
+            .write()
+            .block_on()?;
+        transaction.repo_mut().set_local_bookmark_target(
+            RefName::new("active"),
+            RefTarget::normal(child.id().clone()),
+        );
+        let repo = transaction.commit("bookmark child").block_on()?;
+
+        assert!(find_divergent_changes(repo.as_ref())?.is_empty());
+
+        Ok(())
+    }
+
     #[test]
     fn repository_inspection_uses_resolved_operation_head() -> Result<()> {
         let temp_dir = tempfile::tempdir()?;
@@ -490,11 +685,8 @@ mod tests {
             .block_on()?;
         transaction.commit("create local-only commit").block_on()?;
 
-        let report = inspect_repository(
-            repository_key(first_workspace.repo_path())?,
-            vec![first_root, second_root],
-            &settings,
-        )?;
+        let report = inspect_repository(vec![first_root.clone(), second_root], &settings)?;
+        assert_eq!(report.path, first_root);
 
         assert!(
             report
