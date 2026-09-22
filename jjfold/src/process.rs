@@ -46,6 +46,7 @@ struct RepositoryReport {
     path: PathBuf,
     workspaces: Vec<WorkspaceReport>,
     stacks: Vec<LocalStack>,
+    conflicted_bookmarks: Vec<String>,
     divergent_changes: Vec<DivergentChange>,
 }
 
@@ -58,6 +59,7 @@ struct InspectionFailure {
 impl RepositoryReport {
     fn needs_attention(&self) -> bool {
         !self.stacks.is_empty()
+            || !self.conflicted_bookmarks.is_empty()
             || !self.divergent_changes.is_empty()
             || self
                 .workspaces
@@ -132,11 +134,13 @@ fn inspect_repository(
     )?;
     let repo = workspace.repo_loader().load_at_head().block_on()?;
     let stacks = find_local_stacks(repo.as_ref())?;
+    let conflicted_bookmarks = find_conflicted_bookmarks(repo.as_ref());
     let divergent_changes = find_divergent_changes(repo.as_ref())?;
     Ok(RepositoryReport {
         path: first_workspace_path,
         workspaces,
         stacks,
+        conflicted_bookmarks,
         divergent_changes,
     })
 }
@@ -225,6 +229,22 @@ fn find_local_stacks(repo: &dyn jj_lib::repo::Repo) -> Result<Vec<LocalStack>> {
         .into_iter()
         .map(|head_id| build_stack(repo, &meaningful_expression, &head_id))
         .collect()
+}
+
+fn find_conflicted_bookmarks(repo: &dyn jj_lib::repo::Repo) -> Vec<String> {
+    let view = repo.view();
+    let mut names = view
+        .local_bookmarks()
+        .filter(|(_, target)| target.has_conflict())
+        .map(|(name, _)| name.as_str().to_owned())
+        .chain(
+            view.all_remote_bookmarks()
+                .filter(|(_, remote_ref)| remote_ref.target.has_conflict())
+                .map(|(symbol, _)| symbol.to_string()),
+        )
+        .collect::<Vec<_>>();
+    names.sort();
+    names
 }
 
 fn find_divergent_changes(repo: &dyn jj_lib::repo::Repo) -> Result<Vec<DivergentChange>> {
@@ -400,6 +420,12 @@ fn print_reports(reports: &[RepositoryReport], failures: &[InspectionFailure]) {
                 );
             }
         }
+        for bookmark in &report.conflicted_bookmarks {
+            println!("  conflicted   bookmark {bookmark}");
+        }
+        if !report.conflicted_bookmarks.is_empty() {
+            println!("  action       jj bookmark list --conflicted --all-remotes");
+        }
         for change in report
             .divergent_changes
             .iter()
@@ -454,8 +480,9 @@ mod tests {
     use pollster::FutureExt as _;
 
     use super::{
-        RepositoryReport, WorkspaceReport, find_divergent_changes, find_local_stacks,
-        inspect_repository, process_targets, repository_key, short_change_id, short_commit_id,
+        RepositoryReport, WorkspaceReport, find_conflicted_bookmarks, find_divergent_changes,
+        find_local_stacks, inspect_repository, process_targets, repository_key, short_change_id,
+        short_commit_id,
     };
 
     #[test]
@@ -467,6 +494,7 @@ mod tests {
                 unsnapshotted_paths: Vec::new(),
             }],
             stacks: Vec::new(),
+            conflicted_bookmarks: Vec::new(),
             divergent_changes: Vec::new(),
         };
 
@@ -482,6 +510,7 @@ mod tests {
                 unsnapshotted_paths: vec!["file".to_owned()],
             }],
             stacks: Vec::new(),
+            conflicted_bookmarks: Vec::new(),
             divergent_changes: Vec::new(),
         };
 
@@ -510,6 +539,67 @@ mod tests {
         let temp_dir = tempfile::tempdir()?;
 
         assert!(process_targets(vec![temp_dir.path().join("missing")]).is_err());
+
+        Ok(())
+    }
+
+    #[test]
+    fn conflicted_local_and_remote_bookmarks_need_attention() -> Result<()> {
+        let temp_dir = tempfile::tempdir()?;
+        let settings = UserSettings::from_config(StackedConfig::with_defaults())?;
+        let (_, repo) = Workspace::init_simple(&settings, temp_dir.path()).block_on()?;
+        let mut transaction = repo.start_transaction();
+        let first = transaction
+            .repo_mut()
+            .new_commit(
+                vec![repo.store().root_commit_id().clone()],
+                repo.store().empty_merged_tree(),
+            )
+            .set_description("first")
+            .write()
+            .block_on()?;
+        let second = transaction
+            .repo_mut()
+            .new_commit(
+                vec![repo.store().root_commit_id().clone()],
+                repo.store().empty_merged_tree(),
+            )
+            .set_description("second")
+            .write()
+            .block_on()?;
+        let conflicted_target =
+            RefTarget::from_legacy_form([], [first.id().clone(), second.id().clone()]);
+        transaction
+            .repo_mut()
+            .set_local_bookmark_target(RefName::new("local"), conflicted_target.clone());
+        transaction.repo_mut().set_local_bookmark_target(
+            RefName::new("clean"),
+            RefTarget::normal(first.id().clone()),
+        );
+        transaction.repo_mut().set_remote_bookmark(
+            RemoteRefSymbol {
+                name: RefName::new("remote"),
+                remote: RemoteName::new("origin"),
+            },
+            RemoteRef {
+                target: conflicted_target,
+                state: RemoteRefState::New,
+            },
+        );
+        let repo = transaction
+            .commit("create conflicted bookmarks")
+            .block_on()?;
+
+        assert_eq!(
+            find_conflicted_bookmarks(repo.as_ref()),
+            vec!["local", "remote@origin"]
+        );
+        let report = inspect_repository(vec![temp_dir.path().to_path_buf()], &settings)?;
+        assert_eq!(report.conflicted_bookmarks, vec!["local", "remote@origin"]);
+        assert!(report.stacks.is_empty());
+        assert!(report.divergent_changes.is_empty());
+        assert!(report.workspaces[0].unsnapshotted_paths.is_empty());
+        assert!(report.needs_attention());
 
         Ok(())
     }
