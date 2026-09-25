@@ -1,6 +1,5 @@
 The core MVP is complete and clean, but these planned capabilities remain:
 
-  - Report stale or missing workspaces.
   - Use jj’s effective snapshot configuration instead of the fixed 1 MiB threshold.
   - List exact unsnapshotted paths rather than the generic working-copy changes.
   - Add structured JSON output.
@@ -8,6 +7,7 @@ The core MVP is complete and clean, but these planned capabilities remain:
 
 What is finished:
 
+  - Stale or missing workspace reporting.
   - Repository deduplication.
   - Filesystem-only detection.
   - Local-only stack detection.
