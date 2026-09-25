@@ -1,5 +1,5 @@
 use std::collections::{BTreeMap, HashSet};
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 use anyhow::{Context, Result};
 use futures::TryStreamExt as _;
@@ -16,6 +16,7 @@ use jj_lib::revset::{ResolvedRevsetExpression, RevsetExpression};
 use jj_lib::settings::UserSettings;
 use jj_lib::working_copy::SnapshotOptions;
 use jj_lib::workspace::{DefaultWorkspaceLoaderFactory, WorkspaceLoaderFactory as _};
+use jj_lib::workspace_store::{SimpleWorkspaceStore, WorkspaceStore as _};
 use log::{info, trace};
 use pollster::FutureExt as _;
 
@@ -44,9 +45,16 @@ struct DivergentChange {
 }
 
 #[derive(Debug, PartialEq, Eq)]
+struct StaleWorkspace {
+    name: String,
+    path: PathBuf,
+}
+
+#[derive(Debug, PartialEq, Eq)]
 struct RepositoryReport {
     path: PathBuf,
     workspaces: Vec<WorkspaceReport>,
+    stale_workspaces: Vec<StaleWorkspace>,
     stacks: Vec<LocalStack>,
     conflicted_bookmarks: Vec<String>,
     divergent_changes: Vec<DivergentChange>,
@@ -61,6 +69,7 @@ struct InspectionFailure {
 impl RepositoryReport {
     fn needs_attention(&self) -> bool {
         !self.stacks.is_empty()
+            || !self.stale_workspaces.is_empty()
             || !self.conflicted_bookmarks.is_empty()
             || !self.divergent_changes.is_empty()
             || self
@@ -116,6 +125,20 @@ fn repository_key(repo_path: &Path) -> std::io::Result<PathBuf> {
     std::fs::canonicalize(repo_path)
 }
 
+fn normalize_path(path: &Path) -> PathBuf {
+    let mut normalized = PathBuf::new();
+    for component in path.components() {
+        match component {
+            Component::ParentDir => {
+                normalized.pop();
+            }
+            Component::CurDir => {}
+            other => normalized.push(other.as_os_str()),
+        }
+    }
+    normalized
+}
+
 fn inspect_repository(
     workspace_paths: Vec<PathBuf>,
     settings: &UserSettings,
@@ -135,16 +158,82 @@ fn inspect_repository(
         &default_working_copy_factories(),
     )?;
     let repo = workspace.repo_loader().load_at_head().block_on()?;
+    let stale_workspaces = find_stale_workspaces(repo.as_ref(), workspace.repo_path(), settings)?;
     let stacks = find_local_stacks(repo.as_ref())?;
     let conflicted_bookmarks = find_conflicted_bookmarks(repo.as_ref());
     let divergent_changes = find_divergent_changes(repo.as_ref())?;
     Ok(RepositoryReport {
         path: first_workspace_path,
         workspaces,
+        stale_workspaces,
         stacks,
         conflicted_bookmarks,
         divergent_changes,
     })
+}
+
+fn find_stale_workspaces(
+    repo: &dyn jj_lib::repo::Repo,
+    repo_path: &Path,
+    settings: &UserSettings,
+) -> Result<Vec<StaleWorkspace>> {
+    let expected_repo_path = repository_key(repo_path)?;
+    let store_path = expected_repo_path.join("workspace_store").join("index");
+    anyhow::ensure!(
+        store_path.is_file(),
+        "workspace store index is missing at {}",
+        store_path.display()
+    );
+    let store = SimpleWorkspaceStore::load(&expected_repo_path)?;
+    let mut stale = Vec::new();
+    for name in repo.view().wc_commit_ids().keys() {
+        let stored_path = store.get_workspace_path(name)?.with_context(|| {
+            format!(
+                "workspace {} is missing from the workspace store",
+                name.as_str()
+            )
+        })?;
+        let paths = if stored_path.is_absolute() {
+            vec![stored_path]
+        } else {
+            // Workspace entries can be written against either repository path spelling.
+            vec![
+                normalize_path(&repo_path.join(&stored_path)),
+                normalize_path(&expected_repo_path.join(stored_path)),
+            ]
+        };
+        let valid = paths.iter().any(|path| {
+            DefaultWorkspaceLoaderFactory
+                .create(path)
+                .ok()
+                .is_some_and(|loader| {
+                    repository_key(loader.repo_path()).is_ok_and(|key| key == expected_repo_path)
+                        && loader
+                            .load(
+                                settings,
+                                &default_backend_factories(),
+                                &default_working_copy_factories(),
+                            )
+                            .is_ok_and(|workspace| workspace.workspace_name() == name)
+                })
+        });
+        if valid {
+            continue;
+        }
+        let path = &paths[0];
+        let display_path = std::fs::canonicalize(path)
+            .ok()
+            .or_else(|| {
+                let parent = std::fs::canonicalize(path.parent()?).ok()?;
+                Some(parent.join(path.file_name()?))
+            })
+            .unwrap_or_else(|| path.clone());
+        stale.push(StaleWorkspace {
+            name: name.as_str().to_owned(),
+            path: display_path,
+        });
+    }
+    Ok(stale)
 }
 
 fn inspect_workspace(path: &Path, settings: &UserSettings) -> Result<WorkspaceReport> {
@@ -386,6 +475,14 @@ fn print_reports(reports: &[RepositoryReport], failures: &[InspectionFailure]) {
     println!("jjfold: {attention_count} repositories need attention");
     for report in reports.iter().filter(|report| report.needs_attention()) {
         println!("\n{}", report.path.display());
+        for workspace in &report.stale_workspaces {
+            println!(
+                "  stale        workspace {} at {}",
+                workspace.name,
+                workspace.path.display()
+            );
+            println!("  action       inspect the path; if removed, jj workspace forget -- <name>");
+        }
         for workspace in &report.workspaces {
             if !workspace.unsnapshotted_paths.is_empty() {
                 println!(
@@ -485,6 +582,7 @@ mod tests {
     use jj_lib::repo::{ReadonlyRepo, Repo as _};
     use jj_lib::settings::UserSettings;
     use jj_lib::workspace::Workspace;
+    use jj_lib::workspace_store::{SimpleWorkspaceStore, WorkspaceStore as _};
     use pollster::FutureExt as _;
 
     use super::{
@@ -501,6 +599,7 @@ mod tests {
                 path: PathBuf::from("workspace"),
                 unsnapshotted_paths: Vec::new(),
             }],
+            stale_workspaces: Vec::new(),
             stacks: Vec::new(),
             conflicted_bookmarks: Vec::new(),
             divergent_changes: Vec::new(),
@@ -517,6 +616,7 @@ mod tests {
                 path: PathBuf::from("workspace"),
                 unsnapshotted_paths: vec!["file".to_owned()],
             }],
+            stale_workspaces: Vec::new(),
             stacks: Vec::new(),
             conflicted_bookmarks: Vec::new(),
             divergent_changes: Vec::new(),
@@ -791,6 +891,114 @@ mod tests {
                 .stacks
                 .iter()
                 .any(|stack| stack.description == "local-only")
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn stale_shared_workspace_needs_attention() -> Result<()> {
+        let temp_dir = tempfile::tempdir()?;
+        let first_root = temp_dir.path().join("first");
+        let second_root = temp_dir.path().join("second");
+        std::fs::create_dir(&first_root)?;
+        std::fs::create_dir(&second_root)?;
+        let settings = UserSettings::from_config(StackedConfig::with_defaults())?;
+        let (first_workspace, repo) = Workspace::init_simple(&settings, &first_root).block_on()?;
+        Workspace::init_workspace_with_existing_repo(
+            &second_root,
+            first_workspace.repo_path(),
+            &repo,
+            &*default_working_copy_factory(),
+            WorkspaceNameBuf::from("second"),
+        )
+        .block_on()?;
+
+        let active = inspect_repository(vec![first_root.clone()], &settings)?;
+        assert!(active.stale_workspaces.is_empty(), "{active:?}");
+
+        std::fs::remove_dir_all(second_root.join(".jj"))?;
+        let missing_metadata = inspect_repository(vec![first_root.clone()], &settings)?;
+        assert_eq!(missing_metadata.stale_workspaces.len(), 1);
+        assert!(missing_metadata.needs_attention());
+
+        std::fs::remove_dir_all(&second_root)?;
+        let report = inspect_repository(vec![first_root], &settings)?;
+        assert_eq!(report.stale_workspaces.len(), 1);
+        assert_eq!(report.stale_workspaces[0].name, "second");
+        assert_eq!(
+            report.stale_workspaces[0].path,
+            temp_dir.path().canonicalize()?.join("second")
+        );
+        assert!(report.needs_attention());
+
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn workspace_path_resolves_from_real_repository_path() -> Result<()> {
+        let temp_dir = tempfile::tempdir()?;
+        let real_root = temp_dir.path().join("real");
+        let alias_root = temp_dir.path().join("aliases");
+        std::fs::create_dir(&real_root)?;
+        std::fs::create_dir(&alias_root)?;
+        let first_root = real_root.join("first");
+        let second_root = real_root.join("second");
+        std::fs::create_dir(&first_root)?;
+        std::fs::create_dir(&second_root)?;
+        let settings = UserSettings::from_config(StackedConfig::with_defaults())?;
+        let (first_workspace, repo) = Workspace::init_simple(&settings, &first_root).block_on()?;
+        Workspace::init_workspace_with_existing_repo(
+            &second_root,
+            first_workspace.repo_path(),
+            &repo,
+            &*default_working_copy_factory(),
+            WorkspaceNameBuf::from("second"),
+        )
+        .block_on()?;
+
+        let alias = alias_root.join("first");
+        std::os::unix::fs::symlink(&first_root, &alias)?;
+        let report = inspect_repository(vec![alias], &settings)?;
+        assert!(report.stale_workspaces.is_empty(), "{report:?}");
+
+        Ok(())
+    }
+
+    #[test]
+    fn missing_workspace_store_metadata_fails_inspection() -> Result<()> {
+        let temp_dir = tempfile::tempdir()?;
+        let first_root = temp_dir.path().join("first");
+        let second_root = temp_dir.path().join("second");
+        std::fs::create_dir(&first_root)?;
+        std::fs::create_dir(&second_root)?;
+        let settings = UserSettings::from_config(StackedConfig::with_defaults())?;
+        let (first_workspace, repo) = Workspace::init_simple(&settings, &first_root).block_on()?;
+        Workspace::init_workspace_with_existing_repo(
+            &second_root,
+            first_workspace.repo_path(),
+            &repo,
+            &*default_working_copy_factory(),
+            WorkspaceNameBuf::from("second"),
+        )
+        .block_on()?;
+
+        let store = SimpleWorkspaceStore::load(first_workspace.repo_path())?;
+        store.forget(&[&WorkspaceNameBuf::from("second")])?;
+        let missing_entry = inspect_repository(vec![first_root.clone()], &settings).unwrap_err();
+        assert!(
+            missing_entry
+                .to_string()
+                .contains("workspace second is missing from the workspace store")
+        );
+
+        std::fs::remove_file(first_workspace.repo_path().join("workspace_store/index"))?;
+        let missing_index = inspect_repository(vec![first_root], &settings).unwrap_err();
+        assert!(
+            missing_index
+                .to_string()
+                .contains("workspace store index is missing")
         );
 
         Ok(())
