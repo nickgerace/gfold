@@ -12,7 +12,6 @@
     improper_ctypes,
     missing_debug_implementations,
     missing_docs,
-    no_mangle_generic_items,
     non_shorthand_field_patterns,
     overflowing_literals,
     path_statements,
@@ -96,8 +95,9 @@ fn main() -> Result<()> {
     } else {
         let (include_email, include_submodules) = match config.display_mode {
             DisplayMode::Classic => (false, false),
-            DisplayMode::Json => (true, true),
-            DisplayMode::Standard | DisplayMode::StandardAlphabetical => (true, false),
+            DisplayMode::Json | DisplayMode::Standard | DisplayMode::StandardAlphabetical => {
+                (true, true)
+            }
         };
         for path in &config.paths {
             debug!("processing path: {}", path.display());
@@ -370,5 +370,37 @@ mod tests {
             &tree,
             parents.as_ref(),
         )?)
+    }
+
+    #[test]
+    fn submodule_display_standard() -> anyhow::Result<()> {
+        use config::ColorMode;
+        use repository_view::SubmoduleView;
+
+        let root = tempdir()?;
+        let repo_path = create_directory(&root, "parent")?;
+        let submodules = vec![SubmoduleView {
+            name: "child_module".to_string(),
+            status: Status::Clean,
+        }];
+        let view = RepositoryView::finalize(
+            &repo_path,
+            Some("main".to_string()),
+            Status::Clean,
+            Some("https://github.com/example/parent".to_string()),
+            Some("user@example.com".to_string()),
+            submodules,
+        )?;
+        let mut collection = RepositoryCollection::new();
+        collection.insert(Some(root.path().display().to_string()), vec![view]);
+
+        display::run(DisplayMode::Standard, ColorMode::Never, &collection)?;
+        display::run(
+            DisplayMode::StandardAlphabetical,
+            ColorMode::Never,
+            &collection,
+        )?;
+        display::run(DisplayMode::Json, ColorMode::Never, &collection)?;
+        Ok(())
     }
 }

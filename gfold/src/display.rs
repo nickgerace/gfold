@@ -76,6 +76,11 @@ fn standard(
         if let Some(email) = &report.email {
             println!("  {email}");
         }
+        for submodule in &report.submodules {
+            print!("  submodule: {} - ", submodule.name);
+            color_harness.write_status(submodule.status, PAD)?;
+            println!();
+        }
     }
     Ok(())
 }

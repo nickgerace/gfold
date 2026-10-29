@@ -7,7 +7,7 @@ use anyhow::{Result, bail};
 use git2::Repository;
 use log::{debug, trace};
 use serde::{Deserialize, Serialize};
-use submodule_view::SubmoduleView;
+pub use submodule_view::SubmoduleView;
 
 use crate::status::Status;
 

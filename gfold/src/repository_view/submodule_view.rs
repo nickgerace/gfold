@@ -11,7 +11,9 @@ use crate::status::Status;
 /// The view of a submodule with a [`Repository`].
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SubmoduleView {
+    /// The name of the submodule.
     pub name: String,
+    /// The [`Status`] of the submodule repository.
     pub status: Status,
 }
 
@@ -31,6 +33,7 @@ impl SubmoduleView {
                 Err(e) => error!("could not open submodule as repository: {e}"),
             }
         }
+        submodules.sort_by(|a, b| a.name.cmp(&b.name));
         Ok(submodules)
     }
 }
